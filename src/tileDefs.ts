@@ -97,7 +97,7 @@ const loadTileFactory = (scene: Scene): Promise<TileFactory> => {
         dt("plain", "Plains01.obj", desertYellow),
         dt("alien", "Alien_Creep01.obj", alienRed),
         dt("hills", "Foothills01.obj", verdantGreen),
-        dt("hive", "hive_full.stl", codexGrey),
+        // dt("hive", "hive_full.stl", codexGrey),
         dt("plateau", "Plateaus01.obj", desertYellow),
     ])
     .then(values => {

@@ -13,7 +13,7 @@ interface MapData {
 }
 
 const fetchMapData = (): Promise<MapData> => {
-    return fetch("/data.json")
+    return fetch("data.json")
     .then(response => response.json());
 }
 
