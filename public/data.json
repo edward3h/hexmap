@@ -1,0 +1,13 @@
+{
+    "teams": [
+        {"name": "fist", "spriteUrl": "yellow_fist.png", "spriteWidth": 450, "spriteHeight": 612},
+        {"name": "wing", "spriteUrl": "wing.svg", "spriteWidth": 726, "spriteHeight": 971}
+    ],
+    "map": [
+        [0,0,"plain", "fist"],
+        [1,0,"hills"],
+        [0,1,"alien", "wing"],
+        [1,1,"plain", "wing"],
+        [2,1,"plateau"]
+    ]
+}

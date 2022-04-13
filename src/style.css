@@ -1,4 +1,18 @@
 #app {
-  width: 100%;
-  height: 100%;
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+  border: 12px greenyellow double;
+}
+
+body {
+  background-color: black;
+}
+
+footer {
+  margin: 1em;
+  color: gray;
+}
+
+footer a {
+  color: #8a8;
 }

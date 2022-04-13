@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@babylonjs/core": "^5.1.0",
-    "@babylonjs/loaders": "^5.1.0",
-    "earcut": "^2.2.3"
+    "@babylonjs/loaders": "^5.1.0"
   }
 }
