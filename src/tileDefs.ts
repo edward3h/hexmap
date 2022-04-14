@@ -53,8 +53,10 @@ const color = (color:Color3) => (scene:Scene) => {
 };
 const codexGrey = color(Color3.Gray());
 const alienRed = color(new Color3(0.7, 0, 0.3));
-const desertYellow = color(new Color3(0.7,0.7,0));
-const verdantGreen = color(new Color3(0.1,0.7,0.1));
+const desertYellow = color(Color3.FromHexString('#cccc99'));
+const verdantGreen = color(Color3.FromHexString('#339933'));
+const lightGrey = color(Color3.White());
+
 
 const _defineTile = (scene: Scene) => (name:string, filename:string, detailMaterial:(s:Scene) => Material): Promise<TileDef> => {
     return SceneLoader.LoadAssetContainerAsync("objects/", filename, scene)
@@ -94,11 +96,20 @@ const _createTile = (scene:Scene) => (data:TileData):Tile => {
 const loadTileFactory = (scene: Scene): Promise<TileFactory> => {
     const dt = _defineTile(scene);
     return Promise.all([
-        dt("plain", "Plains01.obj", desertYellow),
-        dt("alien", "Alien_Creep01.obj", alienRed),
-        dt("hills", "Foothills01.obj", verdantGreen),
-        dt("hive", "hive.obj", codexGrey), 
-        dt("plateau", "Plateaus01.obj", desertYellow),
+        dt('alien', 'Alien_Creep01.obj', alienRed),
+        // dt('astartes_base', 'Astartes_Base_v1.obj', codexGrey),
+        dt('craggy1', 'Craggy_Lava01.obj', codexGrey),
+        dt('craggy2', 'Craggy_Lava02.obj', codexGrey),
+        dt('desert', 'Dessert01.obj', desertYellow),
+        dt('hills', 'Foothills01.obj', verdantGreen),
+        dt('guard_base', 'Imperial_Guard_Base.obj', codexGrey),
+        dt('mountains1', 'Mountains02.obj', lightGrey),
+        dt('mountains2', 'Mountains03.obj', lightGrey),
+        dt('mountains3', 'Mountains04.obj', lightGrey),
+        dt('plain', 'Plains01.obj', desertYellow),
+        dt('plateau', 'Plateaus01.obj', desertYellow),
+        dt('hive', 'hive.obj', codexGrey),
+        dt('missile_silo', 'missile_silo.obj', codexGrey),
     ])
     .then(values => {
         values.forEach(tileDef => {

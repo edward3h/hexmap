@@ -7,7 +7,13 @@
         [0,0,"plain", "fist"],
         [1,0,"hills"],
         [0,1,"alien", "wing"],
-        [1,1,"plain", "wing"],
-        [2,1,"plateau"]
+        [1,1,"guard_base", "wing"],
+        [2,1,"plateau"],
+        [0,-1,"craggy1"],
+        [-1,0,"craggy2"],
+        [-1,-1,"desert"],
+        [-2,-1,"mountains1"],
+        [0,-2,"mountains2"],
+        [0,2,"mountains3"]
     ]
 }
