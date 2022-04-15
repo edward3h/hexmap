@@ -21,6 +21,7 @@ interface Tile {
 interface TileDef {
     name: string
     root: Mesh
+    options?: TileOptions
 }
 
 interface TileDefs {
@@ -45,6 +46,10 @@ const _tileClick = (baseMesh: AbstractMesh) => {
 
 
 type TileFactory = (d:TileData) => Tile
+type TileOptions = {
+    offset?: Vector3
+    rotation?: Vector3
+}
 
 const color = (color:Color3) => (scene:Scene) => {
     const mat = new StandardMaterial("mat", scene);
@@ -58,16 +63,20 @@ const verdantGreen = color(Color3.FromHexString('#339933'));
 const lightGrey = color(Color3.White());
 
 
-const _defineTile = (scene: Scene) => (name:string, filename:string, detailMaterial:(s:Scene) => Material): Promise<TileDef> => {
+const _defineTile = (scene: Scene) => (name:string, filename:string, detailMaterial:(s:Scene) => Material, options?: TileOptions): Promise<TileDef> => {
     return SceneLoader.LoadAssetContainerAsync("objects/", filename, scene)
     .then(container => {
         const root = container.createRootMesh();
             root.rotation.x = -Math.PI / 2;
+            if (options?.rotation) {
+                const r = options.rotation;
+                root.addRotation(r.x, r.y, r.z);
+            }
             root.scaling = new Vector3(0.2, 0.2, 0.2);
         const ms = container.meshes;
         ms.forEach(m => m.material = detailMaterial(scene));
         ms[ms.length - 1].material = codexGrey(scene);
-        return {name, root};
+        return {name, root, options};
     });
 };
 
@@ -81,6 +90,9 @@ const _createTile = (scene:Scene) => (data:TileData):Tile => {
     const base = m.getChildMeshes().at(-1) || m;
     scene.addMesh(m);
     m.position = center(col, row);
+    if (tileDef.options?.offset) {
+        m.position = m.position.add(tileDef.options.offset);
+    }
     m.getChildMeshes().forEach(c => {
     c.actionManager = new ActionManager(scene);
             c.actionManager.registerAction(
@@ -108,7 +120,7 @@ const loadTileFactory = (scene: Scene): Promise<TileFactory> => {
         dt('mountains3', 'Mountains04.obj', lightGrey),
         dt('plain', 'Plains01.obj', desertYellow),
         dt('plateau', 'Plateaus01.obj', desertYellow),
-        dt('hive', 'hive.obj', codexGrey),
+        dt('hive', 'hive.obj', codexGrey, {offset: new Vector3(-1,0,-0.1), rotation: new Vector3(0,0,Math.PI*21/128)}),
         dt('missile_silo', 'missile_silo.obj', codexGrey),
     ])
     .then(values => {
