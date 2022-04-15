@@ -12,7 +12,7 @@ import { MeshBuilder } from '@babylonjs/core/Meshes';
 import { DefaultLoadingScreen } from '@babylonjs/core/Loading';
 import '@babylonjs/core/Rendering/edgesRenderer';
 import { loadTileFactory } from './tileDefs';
-import { fetchMapData } from './mapData';
+import { fetchMapData } from './sheetsMapData';
 import { showMapIcons } from './teamSprites';
 
 var createScene = function (engine: Engine) {
