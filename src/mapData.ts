@@ -5,7 +5,7 @@ interface Team {
     spriteHeight: number;
 }
 
-type TileData = [number, number, string, string?];
+type TileData = [number, number, string, string?, string?];
 
 interface MapData {
     teams: Team[]

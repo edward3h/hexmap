@@ -14,17 +14,20 @@ import '@babylonjs/core/Rendering/edgesRenderer';
 import { loadTileFactory } from './tileDefs';
 import { fetchMapData } from './sheetsMapData';
 import { showMapIcons } from './teamSprites';
+import { diameter } from './hexUtil';
+import { AxesViewer } from '@babylonjs/core/Debug/axesViewer';
 
 var createScene = function (engine: Engine) {
   const scene = new Scene(engine);
 
   const camera = new ArcRotateCamera("Camera", -3 * Math.PI / 4, Math.PI / 3, 50, Vector3.Zero(), scene);
+  camera.upperBetaLimit = Math.PI / 2 - 0.1;
   camera.attachControl(canvas, true);
 
   const light = new DirectionalLight("dir01", new Vector3(0, -1, 1), scene);
   light.position = new Vector3(0, 15, -30);
   light.diffuse = new Color3(1, 1, 1);
-  light.specular = new Color3(0, 0, 0);
+  light.specular = new Color3(0.1, 0.1, 0.1);
 
   // Skybox
   var skybox = MeshBuilder.CreateBox("skyBox", { size: 150 }, scene);
@@ -42,6 +45,10 @@ var createScene = function (engine: Engine) {
   skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
   skyboxMaterial.disableLighting = true;
   skybox.material = skyboxMaterial;
+
+  if (import.meta.env.DEV) {
+    const axes = new AxesViewer(scene, diameter);
+  }
 
   Promise.all([
     loadTileFactory(scene),

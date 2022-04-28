@@ -1,6 +1,6 @@
 import { SpriteManager, Sprite } from "@babylonjs/core/Sprites";
 import { Scene } from "@babylonjs/core/scene";
-import { center } from "./hexUtil";
+import { tileCoordsTo3d } from "./hexUtil";
 import { MapData } from "./mapData";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 
@@ -38,10 +38,11 @@ const showMapIcons = (scene:Scene, mapData: MapData): void => {
         if (!spriteManager) {
             throw `Missing sprite manager for ${teamName}`;
         }
+        spriteManager.renderingGroupId = 1;
         const sprite = new Sprite(arr.join("_"), spriteManager);
         sprite.width = baseSize;
         sprite.height = baseSize * spriteManager.cellHeight / spriteManager.cellWidth;
-        sprite.position = new Vector3(0, sprite.height / 2 + 1, 0).add(center(col, row));
+        sprite.position = new Vector3(0, sprite.height / 2 + 1, 0).add(tileCoordsTo3d(col, row));
         sprites.push(sprite);
         console.log(sprite);
     });
