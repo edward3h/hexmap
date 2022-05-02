@@ -26,12 +26,12 @@ const showMapIcons = (scene:Scene, mapData: MapData): void => {
 
     mapData.map.forEach(arr => {
         if (arr.length < 4) {
-            console.log(arr);
+            // console.log(arr);
             return;
         }
-        const [col, row, _, teamName] = arr;
+        const [col, row, _a, teamName, _b, planet] = arr;
         if (!teamName) {
-            console.log(arr);
+            // console.log(arr);
             return;
         }
         const spriteManager = spriteManagers[teamName];
@@ -42,9 +42,9 @@ const showMapIcons = (scene:Scene, mapData: MapData): void => {
         const sprite = new Sprite(arr.join("_"), spriteManager);
         sprite.width = baseSize;
         sprite.height = baseSize * spriteManager.cellHeight / spriteManager.cellWidth;
-        sprite.position = new Vector3(0, sprite.height / 2 + 1, 0).add(tileCoordsTo3d(col, row));
+        sprite.position = new Vector3(0, sprite.height / 2 + 1, 0).add(tileCoordsTo3d(col, row, planet));
         sprites.push(sprite);
-        console.log(sprite);
+        // console.log(sprite);
     });
 
     scene.registerBeforeRender(() => {

@@ -1,11 +1,15 @@
 #app {
-  width: calc(100% - 24px);
-  height: calc(100% - 24px);
-  border: 12px greenyellow double;
+  /* width: 100%; */
+
+  /* height: calc(100% - 2rem); */
+  /* height: calc(100% - 24px); */
+  /* border: 12px greenyellow double; */
 }
 
 body {
   background-color: black;
+  display: flex;
+  flex-direction: column;
 }
 
 footer {
@@ -15,4 +19,22 @@ footer {
 
 footer a {
   color: #8a8;
+}
+
+#bar {
+  display: flex;
+  justify-content: center;
+  color: limegreen;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  flex: 0 0 auto;
+}
+
+#label {
+  width: 50%;
+  margin:0;
+}
+
+#bar button {
+  width: 10rem;
 }

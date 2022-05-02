@@ -5,11 +5,15 @@ interface Team {
     spriteHeight: number;
 }
 
-type TileData = [number, number, string, string?, string?];
-
+type TileData = [number, number, string, string?, string?, string?, string?];
+interface Planet {
+    code:string
+    display:string
+}
 interface MapData {
     teams: Team[]
     map: TileData[]
+    planets: Planet[]
 }
 
 const fetchMapData = (): Promise<MapData> => {
@@ -22,4 +26,5 @@ export {
     TileData,
     Team,
     MapData,
+    Planet,
 }

@@ -6,7 +6,9 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks: {
-                    "babylon": ["@babylonjs/core"]
+                    "babylon": ["@babylonjs/core"],
+                    "babylongui": ["@babylonjs/gui"],
+                    "earcut": ["earcut"],
                 }
             }
         }
