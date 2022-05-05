@@ -127,6 +127,7 @@ var createScene = function (engine: Engine) {
     });
 
   const changePlanet = (delta:number) => () => {
+    clearHighlight();
     const start = camera.target;
     cameraPlanet += delta;
     if (cameraPlanet > 2) cameraPlanet = 0;
