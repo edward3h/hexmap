@@ -5,13 +5,26 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint:fix": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix --ignore-path ./.gitignore",
+    "lint:format": "prettier  --loglevel warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
+    "lint": "npm run lint:format && npm run lint:fix "
   },
   "devDependencies": {
     "@types/earcut": "^2.1.1",
     "@types/luxon": "^2.3.1",
-    "typescript": "^4.5.4",
-    "vite": "^2.9.0"
+    "@typescript-eslint/eslint-plugin": "^5.22.0",
+    "@typescript-eslint/parser": "^5.22.0",
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "pre-commit": "^1.2.2",
+    "prettier": "^2.6.2",
+    "typescript": "^4.6.4",
+    "vite": "^2.9.0",
+    "vite-tsconfig-paths": "^3.4.1"
   },
   "dependencies": {
     "@babylonjs/core": "^5.1.0",
@@ -19,5 +32,6 @@
     "@babylonjs/loaders": "^5.1.0",
     "earcut": "^2.2.3",
     "luxon": "^2.3.2"
-  }
+  },
+  "pre-commit": "lint"
 }

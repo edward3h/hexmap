@@ -1,41 +1,34 @@
 interface Team {
-    name:string
-    spriteUrl:string
-    spriteWidth: number;
-    spriteHeight: number;
+  name: string;
+  spriteUrl: string;
+  spriteWidth: number;
+  spriteHeight: number;
 }
 
 interface TileData {
-    col:number
-    row:number
-    colorOverride?:string
-    team?:string
-    resourceName?:string
-    planet:string
-    coord:string
-    terrainRules?: {name:string, url:string}
-    locationName?:string
+  col: number;
+  row: number;
+  colorOverride?: string;
+  team?: string;
+  resourceName?: string;
+  planet: string;
+  coord: string;
+  terrainRules?: { name: string; url: string };
+  locationName?: string;
 }
 
 interface Planet {
-    code:string
-    display:string
+  code: string;
+  display: string;
 }
 interface MapData {
-    teams: Team[]
-    map: TileData[]
-    planets: Planet[]
+  teams: Team[];
+  map: TileData[];
+  planets: Planet[];
 }
 
 const fetchMapData = (): Promise<MapData> => {
-    return fetch("data.json")
-    .then(response => response.json());
-}
+  return fetch('data.json').then((response) => response.json() as Promise<MapData>);
+};
 
-export {
-    fetchMapData,
-    TileData,
-    Team,
-    MapData,
-    Planet,
-}
+export { fetchMapData, MapData, Planet, Team, TileData };

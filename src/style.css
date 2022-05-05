@@ -33,7 +33,7 @@ footer a {
 
 #label {
   width: 50%;
-  margin:0;
+  margin: 0;
 }
 
 #bar button {
@@ -45,7 +45,7 @@ footer a {
   border: solid 2px limegreen;
   color: white;
   position: absolute;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0, 0, 0, 0.75);
 }
 
 #overlay h2 {
@@ -53,10 +53,24 @@ footer a {
   text-align: center;
   margin-bottom: 0.5rem;
 }
-span.red { color: #FF3333 }
-span.yellow { color: #FFFF33 }
-span.blue { color: #3333FF }
-span.green { color: #33FF33 }
+span.red {
+  color: #ff3333;
+}
+span.yellow {
+  color: #ffff33;
+}
+span.blue {
+  color: #3333ff;
+}
+span.green {
+  color: #33ff33;
+}
 
-#overlay .blue, #overlay a { background-color: rgba(255, 255, 255, 0.75); }
-blockquote { font-style: italic; margin: 0.5rem;}
+#overlay .blue,
+#overlay a {
+  background-color: rgba(255, 255, 255, 0.75);
+}
+blockquote {
+  font-style: italic;
+  margin: 0.5rem;
+}
