@@ -15,32 +15,25 @@ import earcut from 'earcut';
 import { MeshBuilder, PolygonMeshBuilder } from '@babylonjs/core';
 import { AdvancedDynamicTexture, TextBlock } from '@babylonjs/gui';
 import { resources } from './resourceMeshes';
+import { Overlay } from './infoOverlay';
+import { quotation } from './quotations';
 
 interface Tile {
-
+  baseMesh: AbstractMesh
+  centre: Vector3
+  content: string
 }
 
-// interface ObjectDef {
-//     type: 'tile' | 'resource'
-//     name: string
-//     root: Mesh
-//     options?: TileOptions
-// }
-
-// interface TileDefs {
-//     [index:string]: ObjectDef
-// }
-// const tileDefs: TileDefs = {
-// };
-// const resourceDefs: TileDefs = {
-// };
+let overlay: Overlay;
 
 let highlighted: AbstractMesh | null;
-const _tileClick = (baseMesh: AbstractMesh) => {
+const _tileClick = (tile: Tile) => {
+  const baseMesh = tile.baseMesh;
     return () => {
         if (highlighted === baseMesh) {
             baseMesh.disableEdgesRendering();
             highlighted = null;
+            if (overlay) overlay.hide();
             return;
         }
       highlighted && highlighted.disableEdgesRendering();
@@ -49,18 +42,35 @@ const _tileClick = (baseMesh: AbstractMesh) => {
         highlighted.enableEdgesRendering();
         highlighted.edgesColor = new Color4(0, 1, 0, 1);
         highlighted.edgesWidth = 10;
+        if (overlay) {
+          overlay.show(tile.centre, tile.content);
+        }
       }
 
     };
   }
 
+  const _clearHighlight = () => {
+    if (highlighted) {
+      highlighted.disableEdgesRendering();
+      highlighted = null;
+    }
+    if (overlay) overlay.hide();
+  };
+
+  const _content = (data:TileData) => {
+    let lines = [
+      `<h2>${data.locationName || data.coord}</h2>`
+    ];
+    if (data.resourceName) lines.push(`<div>Resource: ${data.resourceName}</div>`);
+    if (data.team) lines.push(`<div>Controlled by <span class="${data.team}">${data.team}</span></div>`);
+    if (data.terrainRules) lines.push(`<div>Terrain: <a target="_blank" href="${data.terrainRules.url}">${data.terrainRules.name}</a></div>`);
+
+    if (lines.length == 1) lines.push(`<blockquote>${quotation(data.coord)}</blockquote>`)
+    return lines.join("");
+  };
 
 type TileFactory = (d:TileData) => Tile
-// type TileOptions = {
-//     offset?: Vector3
-//     rotation?: Vector3
-//     scaling?: Vector3
-// }
 
 const color = (color:Color3|string) => (scene:Scene) => {
   let color3:Color3;
@@ -74,7 +84,6 @@ const color = (color:Color3|string) => (scene:Scene) => {
     return mat;
 };
 const codexGrey = color(Color3.Gray());
-// const desertYellow = color(Color3.FromHexString('#cccc99'));
 
 
 const _simpleTile = (scene:Scene, colorOverride?:string, teamColor?:string) => {
@@ -105,15 +114,13 @@ const _teamColor: Record<string, string> = {
   green: "#33FF33",
 };
 
-
-const _createTile = (scene:Scene, resourceFactory:(name:string) => Mesh) => (data:TileData):Tile => {
-    const [col, row, colorOverride, team, resourceName, planet, coord] = data;
+const _createTile = (scene:Scene, resourceFactory:(name:string) => Mesh | undefined) => (data:TileData):Tile => {
+    const {col, row, colorOverride, team, resourceName, planet, coord} = data;
     const m = _simpleTile(scene, colorOverride, team && _teamColor[team]);
     scene.addMesh(m);
     m.position = tileCoordsTo3d(col, row, planet);
     const p = MeshBuilder.CreatePlane("label", {width:3, height:2}, scene);
     p.position = m.position.add(new Vector3(3,0.1,-3));
-    // p.addRotation(Math.PI/2,0,0);
     p.billboardMode = Mesh.BILLBOARDMODE_ALL;
     var t = AdvancedDynamicTexture.CreateForMesh(p, 180,70,false);
     var label = new TextBlock();
@@ -126,18 +133,20 @@ const _createTile = (scene:Scene, resourceFactory:(name:string) => Mesh) => (dat
     t.addControl(label);
 
     if (resourceName) {
-      // console.log(resourceName);
       const rm = resourceFactory(resourceName);
-      rm.parent = m;
-      rm.material = color("#44403c")(scene);
-      // console.log(rm);
+      if (rm) {
+        rm.parent = m;
+        rm.material = color("#44403c")(scene);
+      }
     }
+
+    const tile = {baseMesh: m, centre: m.position, content: _content(data) };
 
     m.actionManager = new ActionManager(scene);
     m.actionManager.registerAction(
         new ExecuteCodeAction(
         ActionManager.OnPickTrigger,
-        _tileClick(m)
+        _tileClick(tile)
         )
     );
     m.getChildMeshes().forEach(c => {
@@ -145,18 +154,20 @@ const _createTile = (scene:Scene, resourceFactory:(name:string) => Mesh) => (dat
                     c.actionManager.registerAction(
                       new ExecuteCodeAction(
                         ActionManager.OnPickTrigger,
-                        _tileClick(m)
+                        _tileClick(tile)
                       )
                     );
                       });
-    return {};
+    return tile;
 }
 
-const loadTileFactory = (scene: Scene): Promise<TileFactory> => {
+const loadTileFactory = (scene: Scene, overlayIn: Overlay): Promise<TileFactory> => {
+    overlay = overlayIn;
     return Promise.resolve(_createTile(scene, resources(scene)));
 };
 
 export {
     loadTileFactory,
     Tile,
+    _clearHighlight as clearHighlight,
 };

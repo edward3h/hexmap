@@ -25,11 +25,7 @@ const showMapIcons = (scene:Scene, mapData: MapData): void => {
     console.log(spriteManagers);
 
     mapData.map.forEach(arr => {
-        if (arr.length < 4) {
-            // console.log(arr);
-            return;
-        }
-        const [col, row, _a, teamName, _b, planet] = arr;
+        const {col, row, team: teamName, planet} = arr;
         if (!teamName) {
             // console.log(arr);
             return;
@@ -39,7 +35,7 @@ const showMapIcons = (scene:Scene, mapData: MapData): void => {
             throw `Missing sprite manager for ${teamName}`;
         }
         spriteManager.renderingGroupId = 1;
-        const sprite = new Sprite(arr.join("_"), spriteManager);
+        const sprite = new Sprite("", spriteManager);
         sprite.width = baseSize;
         sprite.height = baseSize * spriteManager.cellHeight / spriteManager.cellWidth;
         sprite.position = new Vector3(0, sprite.height / 2 + 1, 0).add(tileCoordsTo3d(col, row, planet));

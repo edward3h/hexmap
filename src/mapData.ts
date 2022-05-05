@@ -5,7 +5,18 @@ interface Team {
     spriteHeight: number;
 }
 
-type TileData = [number, number, string, string?, string?, string?, string?];
+interface TileData {
+    col:number
+    row:number
+    colorOverride?:string
+    team?:string
+    resourceName?:string
+    planet:string
+    coord:string
+    terrainRules?: {name:string, url:string}
+    locationName?:string
+}
+
 interface Planet {
     code:string
     display:string

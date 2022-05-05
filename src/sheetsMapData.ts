@@ -2,11 +2,12 @@
 import type { MapData } from "./mapData";
 
 type TeamRow = [string, string, number, number];
+type TileRow = [number, number, string?, string?, string?, string?, string?, string?, string?, string?];
 
 // let lastResponseTime:DateTime;
 const K = import.meta.env.VITE_API_KEY;
 const I = import.meta.env.VITE_SHEET_ID;
-const URL = `https://sheets.googleapis.com/v4/spreadsheets/${I}/values:batchGet?key=${K}&ranges=Teams!A1%3AD12&ranges=Territories!A1%3AG100&ranges=Planets!A1%3AB4`;
+const URL = `https://sheets.googleapis.com/v4/spreadsheets/${I}/values:batchGet?key=${K}&ranges=Teams!A1%3AD12&ranges=Territories!A1%3AJ100&ranges=Planets!A1%3AB4`;
 // const timeout = 5 * 1000;
 
 const fetchMapData = (): Promise<MapData> => {
@@ -22,7 +23,11 @@ const fetchMapData = (): Promise<MapData> => {
             const [name, spriteUrl, spriteWidth, spriteHeight] = row;
             return {name, spriteUrl, spriteWidth, spriteHeight};
         });
-        const map = data.valueRanges[1].values.slice(1);
+        const map = data.valueRanges[1].values.slice(1).map((teamRow: TileRow) => {
+            const [col, row, colorOverride, team, resourceName, planet, coord, terrainRulesName, terrainRulesUrl, locationName] = teamRow;
+            const terrainRules = (terrainRulesName && terrainRulesUrl) ? {name: terrainRulesName, url: terrainRulesUrl} : null;
+            return {col, row, colorOverride, team, resourceName, planet, coord, terrainRules, locationName};
+        });
         const planets = data.valueRanges[2].values.slice(1).map((row:string[]) => {
             const [code, display] = row;
             return {code, display};

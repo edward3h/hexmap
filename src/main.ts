@@ -4,14 +4,14 @@ import '@babylonjs/loaders';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
-import { Color3, Vector3 } from '@babylonjs/core/Maths';
+import { Color3, Matrix, Vector2, Vector3 } from '@babylonjs/core/Maths';
 import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { CubeTexture, Texture } from '@babylonjs/core/Materials/Textures';
 import { MeshBuilder } from '@babylonjs/core/Meshes';
 import { DefaultLoadingScreen } from '@babylonjs/core/Loading';
 import '@babylonjs/core/Rendering/edgesRenderer';
-import { loadTileFactory } from './tileDefs';
+import { clearHighlight, loadTileFactory } from './tileDefs';
 import { fetchMapData } from './sheetsMapData';
 import { showMapIcons } from './teamSprites';
 import earcut from 'earcut';
@@ -19,6 +19,9 @@ import { tileCoordsTo3d } from './hexUtil';
 import { Animation, EasingFunction, QuadraticEase } from '@babylonjs/core/Animations';
 import { Planet } from './mapData';
 import { createKeyScene } from './keyScene';
+import { overlay, PositionFn } from './infoOverlay';
+import { ActionManager } from '@babylonjs/core/Actions/actionManager';
+import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
 
 
 var createScene = function (engine: Engine) {
@@ -33,6 +36,17 @@ var createScene = function (engine: Engine) {
   camera.attachControl(canvas, true);
   camera.panningSensibility = 0;
   const DEFAULT_CAMERA_OFFSET = camera.position.subtract(camera.target);
+
+  const screenPosition: PositionFn = (vector: Vector3): Vector2 => {
+    var v =  Vector3.Project(vector,
+    Matrix.Identity(),
+    scene.getTransformMatrix(),
+    camera.viewport.toGlobal(
+    engine.getRenderWidth(),
+    engine.getRenderHeight(),
+    ));
+    return new Vector2(v.x, v.y);
+  };
 
   const light = new DirectionalLight("dir01", new Vector3(0, -1, 1), scene);
   light.position = new Vector3(0, 15, -30);
@@ -60,6 +74,31 @@ var createScene = function (engine: Engine) {
   //   const axes = new AxesViewer(scene, diameter);
   // }
 
+
+    if (!scene.actionManager) {
+      scene.actionManager = new ActionManager(scene);
+    }
+    scene.actionManager.registerAction(
+      new ExecuteCodeAction({
+        trigger: ActionManager.OnKeyUpTrigger
+      }, 
+        function(e) {
+          if (e.sourceEvent.key == "Escape" || e.sourceEvent.key == "Esc") {
+            clearHighlight();
+          }
+        })
+      );
+
+      skybox.actionManager = new ActionManager(scene);
+      skybox.actionManager.registerAction(
+        new ExecuteCodeAction(
+        ActionManager.OnPickTrigger,
+        clearHighlight
+        )
+    );
+  
+
+
   const planetName = (index:number) => {
     if (!planets) return;
     const p = planets[index];
@@ -69,8 +108,13 @@ var createScene = function (engine: Engine) {
     el.innerText = p.display;
   }
 
+  const ol = overlay(screenPosition);
+  scene.registerBeforeRender(() => {
+    ol.tick();
+  });
+
   Promise.all([
-    loadTileFactory(scene),
+    loadTileFactory(scene, ol),
     fetchMapData()
   ])
     .then(v => {
