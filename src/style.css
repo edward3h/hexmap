@@ -1,11 +1,16 @@
 #app {
-  width: calc(100% - 24px);
-  height: calc(100% - 24px);
-  border: 12px greenyellow double;
+  /* width: 100%; */
+
+  /* height: calc(100% - 2rem); */
+  /* height: calc(100% - 24px); */
+  /* border: 12px greenyellow double; */
 }
 
 body {
   background-color: black;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 footer {
@@ -15,4 +20,57 @@ footer {
 
 footer a {
   color: #8a8;
+}
+
+#bar {
+  display: flex;
+  justify-content: center;
+  color: limegreen;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  flex: 0 0 auto;
+}
+
+#label {
+  width: 50%;
+  margin: 0;
+}
+
+#bar button {
+  width: 10rem;
+}
+
+#overlay {
+  padding: 1.5rem;
+  border: solid 2px limegreen;
+  color: white;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+#overlay h2 {
+  margin: 0;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+span.red {
+  color: #ff3333;
+}
+span.yellow {
+  color: #ffff33;
+}
+span.blue {
+  color: #3333ff;
+}
+span.green {
+  color: #33ff33;
+}
+
+#overlay .blue,
+#overlay a {
+  background-color: rgba(255, 255, 255, 0.75);
+}
+blockquote {
+  font-style: italic;
+  margin: 0.5rem;
 }
