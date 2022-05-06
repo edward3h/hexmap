@@ -4,7 +4,6 @@ import '@babylonjs/core/Rendering/edgesRenderer';
 import { MeshBuilder, PolygonMeshBuilder } from '@babylonjs/core';
 import { ActionManager } from '@babylonjs/core/Actions/actionManager';
 import { ExecuteCodeAction } from '@babylonjs/core/Actions/directActions';
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color';
 import { Vector2, Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh';
@@ -13,9 +12,9 @@ import { Scene } from '@babylonjs/core/scene';
 import { AdvancedDynamicTexture, TextBlock } from '@babylonjs/gui';
 import earcut from 'earcut';
 
-import { diameter, tileCoordsTo3d } from './hexUtil';
+import { color, diameter, tileCoordsTo3d } from './hexUtil';
 import { Overlay } from './infoOverlay';
-import { TileData } from './mapData';
+import { teamColor, TileData } from './mapData';
 import { quotation } from './quotations';
 import { resources } from './resourceMeshes';
 
@@ -74,17 +73,6 @@ const _content = (data: TileData) => {
 
 type TileFactory = (d: TileData) => Tile;
 
-const color = (color: Color3 | string) => (scene: Scene) => {
-  let color3: Color3;
-  if (typeof color === 'string') {
-    color3 = Color3.FromHexString(color);
-  } else {
-    color3 = color;
-  }
-  const mat = new StandardMaterial('mat', scene);
-  mat.diffuseColor = color3;
-  return mat;
-};
 const codexGrey = color(Color3.Gray());
 
 const _simpleTile = (scene: Scene, colorOverride?: string, teamColor?: string) => {
@@ -108,18 +96,11 @@ const _simpleTile = (scene: Scene, colorOverride?: string, teamColor?: string) =
   return rim;
 };
 
-const _teamColor: Record<string, string> = {
-  red: '#FF3333',
-  yellow: '#FFFF33',
-  blue: '#3333FF',
-  green: '#33FF33',
-};
-
 const _createTile =
   (scene: Scene, resourceFactory: (name: string) => Mesh | undefined) =>
   (data: TileData): Tile => {
     const { col, row, colorOverride, team, resourceName, planet, coord } = data;
-    const m = _simpleTile(scene, colorOverride, team && _teamColor[team]);
+    const m = _simpleTile(scene, colorOverride, team && teamColor[team]);
     scene.addMesh(m);
     m.position = tileCoordsTo3d(col, row, planet);
     const p = MeshBuilder.CreatePlane('label', { width: 3, height: 2 }, scene);

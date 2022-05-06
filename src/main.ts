@@ -15,6 +15,7 @@ import { Color3, Matrix, Vector2, Vector3 } from '@babylonjs/core/Maths';
 import { MeshBuilder } from '@babylonjs/core/Meshes';
 import { Scene } from '@babylonjs/core/scene';
 
+import { showAttackArrows } from './attackArrows';
 import { tileCoordsTo3d } from './hexUtil';
 import { overlay, PositionFn } from './infoOverlay';
 import { createKeyScene } from './keyScene';
@@ -122,6 +123,7 @@ const createScene = function (engine: Engine) {
     engine.hideLoadingUI();
     planets = mapData.planets;
     planetName(0);
+    showAttackArrows(scene, mapData);
   });
 
   const changePlanet = (delta: number) => () => {

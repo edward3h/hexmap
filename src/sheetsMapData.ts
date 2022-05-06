@@ -22,7 +22,7 @@ type TileRow = [
 const K = import.meta.env.VITE_API_KEY;
 const I = import.meta.env.VITE_SHEET_ID;
 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-const URL = `https://sheets.googleapis.com/v4/spreadsheets/${I}/values:batchGet?key=${K}&ranges=Teams!A1%3AD12&ranges=Territories!A1%3AJ100&ranges=Planets!A1%3AB4`;
+const URL = `https://sheets.googleapis.com/v4/spreadsheets/${I}/values:batchGet?key=${K}&ranges=Teams!A1%3AD12&ranges=Territories!A1%3AJ100&ranges=Planets!A1%3AB4&ranges=Attacks!A1%3AC100`;
 // const timeout = 5 * 1000;
 
 const fetchMapData = (): Promise<MapData> => {
@@ -71,8 +71,12 @@ const fetchMapData = (): Promise<MapData> => {
         const [code, display] = row;
         return { code, display };
       });
+      const attacks = data.valueRanges[3].values.slice(1).map((row: string[]) => {
+        const [team, from, to] = row;
+        return { team, from, to };
+      });
       // setTimeout(checkForUpdate, timeout);
-      return { teams, map, planets };
+      return { teams, map, planets, attacks };
     });
 };
 
