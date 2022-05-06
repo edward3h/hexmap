@@ -1,5 +1,5 @@
 import {
-    AbstractMesh,
+  AbstractMesh,
   Color3,
   Curve3,
   Mesh,
