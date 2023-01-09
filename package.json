@@ -31,7 +31,7 @@
     "@babylonjs/gui": "^5.4.0",
     "@babylonjs/loaders": "^5.1.0",
     "earcut": "^2.2.3",
-    "luxon": "^2.3.2"
+    "luxon": "^2.5.2"
   },
   "pre-commit": "lint"
 }
