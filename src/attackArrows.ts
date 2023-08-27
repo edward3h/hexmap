@@ -10,7 +10,7 @@ import {
 } from '@babylonjs/core';
 
 import { color as colorMat, diameter, tileCoordsTo3d } from './hexUtil';
-import { MapData, teamColor } from './mapData';
+import { MapData, teamRef } from './mapData';
 
 const _drawArrow = (scene: Scene) => {
   const d = diameter / 2;
@@ -95,7 +95,7 @@ const showAttackArrows = (scene: Scene, mapData: MapData) => {
   mapData.attacks.forEach(({ team, from, to }) => {
     _arrow(
       baseArrow,
-      colorMat(teamColor[team])(scene),
+      colorMat(teamRef[team])(scene),
       lookupCoords.get(from),
       lookupCoords.get(to),
     );

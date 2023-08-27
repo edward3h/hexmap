@@ -24,10 +24,10 @@ const showMapIcons = (scene: Scene, mapData: MapData): void => {
     ]),
   );
 
-  console.log(spriteManagers);
+  // console.log(spriteManagers);
 
   mapData.map.forEach((arr) => {
-    const { col, row, team: teamName, planet } = arr;
+    const { col, row, team: teamName } = arr;
     if (!teamName) {
       // console.log(arr);
       return;
@@ -41,7 +41,7 @@ const showMapIcons = (scene: Scene, mapData: MapData): void => {
     sprite.width = baseSize;
     sprite.height = (baseSize * spriteManager.cellHeight) / spriteManager.cellWidth;
     sprite.position = new Vector3(0, sprite.height / 2 + 1, 0).add(
-      tileCoordsTo3d(col, row, planet),
+      tileCoordsTo3d(col, row),
     );
     sprites.push(sprite);
     // console.log(sprite);

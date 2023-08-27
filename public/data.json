@@ -1,24 +1,26 @@
 {
   "teams": [
     {
-      "name": "fist",
+      "name": "yellow",
       "spriteUrl": "yellow_fist.png",
       "spriteWidth": 450,
-      "spriteHeight": 612
+      "spriteHeight": 612,
+      "color": "#FFFF33"
     },
-    { "name": "wing", "spriteUrl": "wing.svg", "spriteWidth": 726, "spriteHeight": 971 }
+    { "name": "red", "spriteUrl": "wing.svg", "spriteWidth": 726, "spriteHeight": 971, "color":"#FF3333" }
   ],
   "map": [
-    [0, 0, "plain", "fist"],
-    [1, 0, "hills"],
-    [0, 1, "alien", "wing"],
-    [1, 1, "guard_base", "wing"],
-    [2, 1, "plateau"],
-    [0, -1, "craggy1"],
-    [-1, 0, "craggy2"],
-    [-1, -1, "desert"],
-    [-2, -1, "mountains1"],
-    [0, -2, "mountains2"],
-    [0, 2, "mountains3"]
-  ]
+    {"col":0, "row": 0},
+    {"col":1, "row": 0},
+    {"col":0, "row": 1},
+    {"col":1, "row": 1, "team": "yellow"},
+    {"col":2, "row": 1},
+    {"col":0, "row": -1},
+    {"col":-1, "row": 0, "team": "red"},
+    {"col":-1, "row": -1},
+    {"col":-2, "row": -1, "colorOverride": "#CC9933"},
+    {"col":0, "row": -2},
+    {"col":0, "row": 2}
+  ],
+  "attacks": []
 }

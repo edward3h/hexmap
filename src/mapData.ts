@@ -3,6 +3,8 @@ interface Team {
   spriteUrl: string;
   spriteWidth: number;
   spriteHeight: number;
+  color: string;
+  displayName: string;
 }
 
 interface TileData {
@@ -11,15 +13,9 @@ interface TileData {
   colorOverride?: string;
   team?: string;
   resourceName?: string;
-  planet: string;
   coord: string;
   terrainRules?: { name: string; url: string };
   locationName?: string;
-}
-
-interface Planet {
-  code: string;
-  display: string;
 }
 
 interface Attack {
@@ -31,19 +27,20 @@ interface Attack {
 interface MapData {
   teams: Team[];
   map: TileData[];
-  planets: Planet[];
   attacks: Attack[];
 }
 
-const teamColor: Record<string, string> = {
-  red: '#FF3333',
-  yellow: '#FFFF33',
-  blue: '#3333FF',
-  green: '#33FF33',
-};
+const teamRef: Record<string, Team> = {};
 
 const fetchMapData = (): Promise<MapData> => {
-  return fetch('data.json').then((response) => response.json() as Promise<MapData>);
+  return fetch('data.json')
+    .then((response) => response.json() as Promise<MapData>)
+    .then((mapData) => {
+      for (const team of mapData.teams) {
+        teamRef[team.name] = team;
+      }
+      return mapData;
+    });
 };
 
-export { fetchMapData, MapData, Planet, Team, teamColor, TileData };
+export { fetchMapData, MapData, Team, teamRef, TileData };
