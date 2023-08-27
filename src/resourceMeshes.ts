@@ -60,7 +60,7 @@ const resources = (scene: Scene) => {
   manu.visibility = 0;
 
   const names: Record<string, Nullable<Mesh>> = {
-    hive: hive,
+    HiveCity: hive,
     SpacePort: port,
     CommandBastion: command,
     ShieldGenerator: shield,
@@ -75,4 +75,16 @@ const resources = (scene: Scene) => {
   return factory;
 };
 
-export { resources };
+const upper = /[A-Z]/;
+const displayResource = (resourceName: string) => {
+  let r = '';
+  for (const c of resourceName) {
+    if (c.match(upper)) {
+      r += ' ';
+    }
+    r += c;
+  }
+  return r.trim();
+};
+
+export { displayResource, resources };

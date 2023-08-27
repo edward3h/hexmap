@@ -128,7 +128,7 @@ keyScenes.push(createKeyScene(engine, camera, 'ShieldGenerator', { row: 1, scale
 keyScenes.push(createKeyScene(engine, camera, 'PowerStation', { row: 2 }));
 keyScenes.push(createKeyScene(engine, camera, 'Manufactorum', { row: 3, scale: 0.8 }));
 keyScenes.push(createKeyScene(engine, camera, 'SpacePort', { row: 4, scale: 0.7 }));
-keyScenes.push(createKeyScene(engine, camera, 'hive', { row: 5, scale: 0.5 }));
+keyScenes.push(createKeyScene(engine, camera, 'HiveCity', { row: 5, scale: 0.5 }));
 
 engine.runRenderLoop(() => {
   scene.render();

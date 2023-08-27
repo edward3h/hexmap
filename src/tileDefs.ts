@@ -16,7 +16,7 @@ import { color, diameter, tileCoordsTo3d } from './hexUtil';
 import { Overlay } from './infoOverlay';
 import { teamRef, TileData } from './mapData';
 import { quotation } from './quotations';
-import { resources } from './resourceMeshes';
+import { displayResource, resources } from './resourceMeshes';
 
 interface Tile {
   baseMesh: AbstractMesh;
@@ -59,9 +59,17 @@ const _clearHighlight = () => {
 
 const _content = (data: TileData) => {
   const lines = [`<h2>${data.locationName || data.coord || 'Unknown'}</h2>`];
-  if (data.resourceName) lines.push(`<div>Resource: ${data.resourceName}</div>`);
-  if (data.team)
-    lines.push(`<div>Controlled by <span class="${data.team}">${data.team}</span></div>`);
+  if (data.resourceName)
+    lines.push(`<div>Resource: ${displayResource(data.resourceName)}</div>`);
+  if (data.team) {
+    let displayName = data.team;
+    if (teamRef[data.team] && teamRef[data.team].displayName) {
+      displayName = teamRef[data.team].displayName;
+    }
+    lines.push(
+      `<div>Controlled by <span class="${data.team}">${displayName}</span></div>`,
+    );
+  }
   if (data.terrainRules)
     lines.push(
       `<div>Terrain: <a target="_blank" href="${data.terrainRules.url}">${data.terrainRules.name}</a></div>`,

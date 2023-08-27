@@ -1,0 +1,173 @@
+teams:
+  - name: green
+    spriteUrl: leaf-solid.png
+    spriteWidth: 512
+    spriteHeight: 512
+    color: "#33FF33"
+    displayName: Confederacy of Dunces
+  - name: red
+    spriteUrl: birb.png
+    spriteWidth: 96
+    spriteHeight: 96
+    color: "#FF3333"
+    displayName: Crimson Scallywags
+  - name: blue
+    spriteUrl: square-solid.png
+    spriteWidth: 448
+    spriteHeight: 512
+    color: "#3333FF"
+    displayName: The Loathsome Empire
+map:
+  - col: -4
+    row: -2
+    team: green
+    resourceName: SpacePort
+  - col: -4
+    row: -1
+    team: green
+  - col: -4
+    row: 0
+  - col: -4
+    row: 1
+    team: red
+  - col: -4
+    row: 2
+    team: red
+    resourceName: SpacePort
+  - col: -3
+    row: -2
+    team: green
+  - col: -3
+    row: -1
+    team: green
+  - col: -3
+    row: 0
+    colorOverride: "#333333"
+    locationName: Interdictus Maximus
+  - col: -3
+    row: 1
+    team: red
+  - col: -3
+    row: 2
+    team: red
+  - col: -3
+    row: 3
+    team: red
+  - col: -2 
+    row: -2
+    team: green
+  - col: -2
+    row: -1
+    team: green
+  - col: -2
+    row: 0
+    resourceName: SpacePort
+  - col: -2
+    row: 1
+    team: red
+  - col: -2
+    row: 2
+    team: red
+  - col: -2
+    row: 3
+    team: red
+  - col: -1
+    row: -2
+    team: green
+  - col: -1
+    row: -1
+    team: green
+  - col: -1
+    row: 0
+  - col: -1
+    row: 1
+  - col: -1
+    row: 2
+    team: red
+  - col: -1
+    row: 3
+    team: red
+  - col: 0
+    row: -3
+    team: green
+  - col: 0
+    row: -2
+    team: green
+  - col: 0
+    row: -1
+  - col: 0
+    row: 0
+    resourceName: HiveCity
+    locationName: Cor Gratus
+  - col: 0
+    row: 1
+  - col: 0
+    row: 2
+    locationName: Balronas Rad-Wastes
+    colorOverride: "#333333"
+  - col: 0
+    row: 3
+    team: red
+  - col: 1
+    row: -2
+    team: green
+  - col: 1
+    row: -1
+  - col: 1
+    row: 0
+  - col: 1
+    row: 1
+  - col: 1
+    row: 2
+    team: blue
+  - col: 1
+    row: 3
+    resourceName: SpacePort
+  - col: 2
+    row: -3
+  - col: 2
+    row: -2
+    resourceName: SpacePort
+  - col: 2
+    row: -1
+  - col: 2
+    row: 0
+  - col: 2
+    row: 1
+    team: blue
+  - col: 2
+    row: 2
+    team: blue
+  - col: 3
+    row: -2
+  - col: 3
+    row: -1
+    team: blue
+  - col: 3
+    row: 0   
+    colorOverride: "#333333"
+    locationName: Death-Zone Epsilon
+  - col: 3
+    row: 1
+    team: blue
+  - col: 3
+    row: 2
+    team: blue
+  - col: 3
+    row: 3
+    team: blue
+  - col: 4
+    row: -1
+    team: blue
+  - col: 4
+    row: 0
+    team: blue
+  - col: 4
+    row: 1
+    team: blue
+  - col: 4
+    row: 2
+    team: blue
+    resourceName: SpacePort
+
+attacks: []

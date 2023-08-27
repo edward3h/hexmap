@@ -10,7 +10,7 @@ import { Scene } from '@babylonjs/core/scene';
 import { Control, TextBlock } from '@babylonjs/gui';
 import { AdvancedDynamicTexture } from '@babylonjs/gui/2D/advancedDynamicTexture';
 
-import { resources } from './resourceMeshes';
+import { displayResource, resources } from './resourceMeshes';
 
 const createKeyScene = (
   engine: Engine,
@@ -53,7 +53,7 @@ const createKeyScene = (
     }
   }
   const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI('myUI');
-  const label = new TextBlock('label', resourceName);
+  const label = new TextBlock('label', displayResource(resourceName));
   label.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
   label.color = '#a3e635';
   label.fontSize = 100;
