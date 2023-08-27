@@ -22,24 +22,31 @@ map:
     row: -2
     team: green
     resourceName: SpacePort
+    locationName: Port Celestine
   - col: -4
     row: -1
     team: green
+    locationName: Keeler
   - col: -4
     row: 0
+    locationName: Gheradon
   - col: -4
     row: 1
     team: red
+    locationName: Purgatus
   - col: -4
     row: 2
     team: red
     resourceName: SpacePort
+    locationName: Dantorum Gate
   - col: -3
     row: -2
     team: green
+    locationName: Gherick's Rapture
   - col: -3
     row: -1
     team: green
+    locationName: Mamucium Cluster
   - col: -3
     row: 0
     colorOverride: "#333333"
@@ -47,60 +54,79 @@ map:
   - col: -3
     row: 1
     team: red
+    locationName: Gerstahl's Beacon
   - col: -3
     row: 2
     team: red
+    locationName: Castiga
   - col: -3
     row: 3
     team: red
+    locationName: Arabella Secondus
   - col: -2 
     row: -2
     team: green
+    locationName: Pyrar Tertius
   - col: -2
     row: -1
     team: green
+    locationName: Cyclopos
   - col: -2
     row: 0
     resourceName: SpacePort
+    locationName: Curia Station
   - col: -2
     row: 1
     team: red
+    locationName: Beladon
   - col: -2
     row: 2
     team: red
+    locationName: Nephtheradon
   - col: -2
     row: 3
     team: red
+    locationName: Praxedes Cluster
   - col: -1
     row: -2
     team: green
+    locationName: Requiem Tertius
   - col: -1
     row: -1
     team: green
+    locationName: Alphorum
   - col: -1
     row: 0
+    locationName: Sacellum Tertius
   - col: -1
     row: 1
+    locationName: Noxar
   - col: -1
     row: 2
     team: red
+    locationName: Coraxum Secondus
   - col: -1
     row: 3
     team: red
+    locationName: Maleradon Primus
   - col: 0
     row: -3
     team: green
+    locationName: Cryptos Hive
   - col: 0
     row: -2
     team: green
+    locationName: Arkhi
   - col: 0
     row: -1
+    locationName: Repentance
   - col: 0
     row: 0
     resourceName: HiveCity
     locationName: Cor Gratus
   - col: 0
     row: 1
+    locationName: Volcanum
   - col: 0
     row: 2
     locationName: Balronas Rad-Wastes
@@ -108,41 +134,56 @@ map:
   - col: 0
     row: 3
     team: red
+    locationName: Vinovia
   - col: 1
     row: -2
     team: green
+    locationName: Zephadon
   - col: 1
     row: -1
+    locationName: Valerius
   - col: 1
     row: 0
+    locationName: Guayota
   - col: 1
     row: 1
+    locationName: Alexia's Mourning
   - col: 1
     row: 2
     team: blue
+    locationName: Volcus Secondus
   - col: 1
     row: 3
     resourceName: SpacePort
+    locationName: Communion Crossing
   - col: 2
     row: -3
+    locationName: Saint's Eyrie
   - col: 2
     row: -2
     resourceName: SpacePort
+    locationName: Port Mortium
   - col: 2
     row: -1
+    locationName: Lorrin's Sanctuary
   - col: 2
     row: 0
+    locationName: Marduk's Watch
   - col: 2
     row: 1
     team: blue
+    locationName: Raveni
   - col: 2
     row: 2
     team: blue
+    locationName: Eboracum
   - col: 3
     row: -2
+    locationName: Warrior's Haven
   - col: 3
     row: -1
     team: blue
+    locationName: Mari
   - col: 3
     row: 0   
     colorOverride: "#333333"
@@ -150,24 +191,31 @@ map:
   - col: 3
     row: 1
     team: blue
+    locationName: Achallor
   - col: 3
     row: 2
     team: blue
+    locationName: Glevensium
   - col: 3
     row: 3
     team: blue
+    locationName: Burghalus
   - col: 4
     row: -1
     team: blue
+    locationName: Naraka
   - col: 4
     row: 0
     team: blue
+    locationName: Castra Secondus
   - col: 4
     row: 1
     team: blue
+    locationName: Diabolar Tertius
   - col: 4
     row: 2
     team: blue
     resourceName: SpacePort
+    locationName: Port Kasanaan
 
 attacks: []
