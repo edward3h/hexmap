@@ -20,8 +20,8 @@ interface TileData {
 
 interface Attack {
   team: string;
-  from: string;
-  to: string;
+  from: { col: number; row: number };
+  to: { col: number; row: number };
 }
 
 interface MapData {

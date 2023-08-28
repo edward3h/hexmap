@@ -82,22 +82,19 @@ const rate = 240;
 let counter = 0;
 const _animate = () => {
   arrows.forEach((a) => {
-    a.visibility = Math.sin((counter * Math.PI) / rate);
+    a.visibility = Math.sin((counter * Math.PI) / rate) / 2 + 0.5;
   });
   counter = (counter + 1) % rate;
 };
 
 const showAttackArrows = (scene: Scene, mapData: MapData) => {
-  const lookupCoords = new Map<string, Vector3>(
-    mapData.map.map((t) => [t.coord, tileCoordsTo3d(t.col, t.row, t.planet)]),
-  );
   const baseArrow = _drawArrow(scene);
   mapData.attacks.forEach(({ team, from, to }) => {
     _arrow(
       baseArrow,
-      colorMat(teamRef[team])(scene),
-      lookupCoords.get(from),
-      lookupCoords.get(to),
+      colorMat(teamRef[team].color)(scene),
+      tileCoordsTo3d(from.col, from.row),
+      tileCoordsTo3d(to.col, to.row),
     );
   });
   scene.registerBeforeRender(_animate);

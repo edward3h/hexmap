@@ -23,6 +23,7 @@ map:
     team: green
     resourceName: SpacePort
     locationName: Port Celestine
+    colorOverride: '#33FF33'
   - col: -4
     row: -1
     team: green
@@ -39,6 +40,7 @@ map:
     team: red
     resourceName: SpacePort
     locationName: Dantorum Gate
+    colorOverride: '#FF3333'
   - col: -3
     row: -2
     team: green
@@ -46,7 +48,7 @@ map:
   - col: -3
     row: -1
     team: green
-    locationName: Mamucium Cluster
+    locationName: Mancunian Cluster
   - col: -3
     row: 0
     colorOverride: "#333333"
@@ -215,7 +217,22 @@ map:
   - col: 4
     row: 2
     team: blue
+    colorOverride: '#3333FF'
     resourceName: SpacePort
     locationName: Port Kasanaan
 
-attacks: []
+attacks:
+  - team: blue
+    from:
+      col: 2
+      row: 1
+    to: 
+      col: 2
+      row: 0
+  - team: green
+    from: 
+      col: -4
+      row: -2
+    to:
+      col: -1
+      row: 0
