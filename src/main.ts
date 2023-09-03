@@ -30,7 +30,7 @@ const createScene = function (engine: Engine) {
     'Camera',
     (-5 * Math.PI) / 8,
     Math.PI / 3,
-    70,
+    85,
     tileCoordsTo3d(0, 0),
     scene,
   );
@@ -123,12 +123,13 @@ const { scene, camera } = createScene(engine);
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 // Inspector.Show(scene, {});
 const keyScenes: Scene[] = [];
-keyScenes.push(createKeyScene(engine, camera, 'CommandBastion'));
-keyScenes.push(createKeyScene(engine, camera, 'ShieldGenerator', { row: 1, scale: 0.8 }));
-keyScenes.push(createKeyScene(engine, camera, 'PowerStation', { row: 2 }));
-keyScenes.push(createKeyScene(engine, camera, 'Manufactorum', { row: 3, scale: 0.8 }));
-keyScenes.push(createKeyScene(engine, camera, 'SpacePort', { row: 4, scale: 0.7 }));
-keyScenes.push(createKeyScene(engine, camera, 'HiveCity', { row: 5, scale: 0.5 }));
+keyScenes.push(createKeyScene(engine, camera, 'HQ', { scale: 0.7 }));
+keyScenes.push(createKeyScene(engine, camera, 'CommandBastion', { row: 1 }));
+keyScenes.push(createKeyScene(engine, camera, 'ShieldGenerator', { row: 2, scale: 0.8 }));
+keyScenes.push(createKeyScene(engine, camera, 'PowerStation', { row: 3 }));
+keyScenes.push(createKeyScene(engine, camera, 'Manufactorum', { row: 4, scale: 0.8 }));
+keyScenes.push(createKeyScene(engine, camera, 'SpacePort', { row: 5, scale: 0.7 }));
+keyScenes.push(createKeyScene(engine, camera, 'HiveCity', { row: 6, scale: 0.5 }));
 
 engine.runRenderLoop(() => {
   scene.render();

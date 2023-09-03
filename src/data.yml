@@ -21,7 +21,7 @@ map:
   - col: -4
     row: -2
     team: green
-    resourceName: SpacePort
+    resourceName: HQ
     locationName: Port Celestine
     colorOverride: '#33FF33'
   - col: -4
@@ -38,7 +38,7 @@ map:
   - col: -4
     row: 2
     team: red
-    resourceName: SpacePort
+    resourceName: HQ
     locationName: Dantorum Gate
     colorOverride: '#FF3333'
   - col: -3
@@ -125,7 +125,7 @@ map:
   - col: 0
     row: 0
     resourceName: HiveCity
-    locationName: Cor Gratus
+    locationName: Cor Gratus (Outskirts)
   - col: 0
     row: 1
     locationName: Volcanum
@@ -218,21 +218,7 @@ map:
     row: 2
     team: blue
     colorOverride: '#3333FF'
-    resourceName: SpacePort
+    resourceName: HQ
     locationName: Port Kasanaan
 
 attacks:
-  - team: blue
-    from:
-      col: 2
-      row: 1
-    to: 
-      col: 2
-      row: 0
-  - team: green
-    from: 
-      col: -4
-      row: -2
-    to:
-      col: -1
-      row: 0
