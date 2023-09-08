@@ -46,14 +46,11 @@ export function showScores(mapData: MapData) {
   //   (acc: Record<string, Row[]>, t) => ((acc[t.name] = prepareRows(t, mapData)), acc),
   //   {},
   // );
-
   // const maxRows = Object.values(data)
   // .map((rs) => rs.length)
   // .reduce(Math.max, 0);
-  
   // const headings = Object.keys(data)
   //   .map((t) =>`<th class="${t}>${teamRef[t].displayName}</th>`)
   //   .join();
-
   // const element = document.getElementById('scores') as HTMLDivElement;
 }

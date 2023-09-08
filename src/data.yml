@@ -222,3 +222,19 @@ map:
     locationName: Port Kasanaan
 
 attacks:
+# Examples. Uncomment and edit or copy.
+  # - team: blue
+  #   from:
+  #     col: 2
+  #     row: 1
+  #   to: 
+  #     col: 2
+  #     row: 0
+  # - team: green
+  #   from: 
+  #     col: -4
+  #     row: -2
+  #   to:
+  #     col: -1
+  #     row: 0
+  

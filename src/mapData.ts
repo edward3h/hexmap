@@ -59,4 +59,4 @@ const fetchMapData = (): Promise<MapData> => {
   //   });
 };
 
-export { fetchMapData, MapData, Team, teamRef, TileData, Resource };
+export { fetchMapData, MapData, Resource, Team, teamRef, TileData };
