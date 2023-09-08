@@ -20,6 +20,7 @@ import { tileCoordsTo3d } from './hexUtil';
 import { overlay, PositionFn } from './infoOverlay';
 import { createKeyScene } from './keyScene';
 import { fetchMapData } from './mapData';
+import { showScores } from './scores';
 import { showMapIcons } from './teamSprites';
 import { clearHighlight, loadTileFactory } from './tileDefs';
 
@@ -109,6 +110,7 @@ const createScene = function (engine: Engine) {
     showMapIcons(scene, mapData);
     engine.hideLoadingUI();
     showAttackArrows(scene, mapData);
+    showScores(mapData);
   });
 
   return { scene, camera };

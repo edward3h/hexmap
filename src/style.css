@@ -53,16 +53,16 @@ footer a {
   text-align: center;
   margin-bottom: 0.5rem;
 }
-span.red {
+span.red, th.red {
   color: #ff3333;
 }
-span.yellow {
+span.yellow, th.yellow {
   color: #ffff33;
 }
-span.blue {
+span.blue, th.blue {
   color: #3333ff;
 }
-span.green {
+span.green, th.green {
   color: #33ff33;
 }
 
@@ -73,4 +73,18 @@ span.green {
 blockquote {
   font-style: italic;
   margin: 0.5rem;
+}
+
+#scores {
+  color: lightgrey;
+  margin: auto;
+}
+
+th, td {
+  padding: 0.25rem;
+}
+
+.total td {
+  font-style: italic;
+  border-top: lightgrey 0.1rem solid;
 }

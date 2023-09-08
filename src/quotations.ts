@@ -45,7 +45,7 @@ const quotations = [
   'To Question is to doubt.',
   'He who keeps silent consents.',
   'Prayer cleanses the soul, Pain cleanses the body.',
-  'Death by thy Compass.',
+  'Death be thy Compass.',
   'Zeal is its own Excuse.',
   'Work earns Salvation.',
   'Without him there is nothing.',

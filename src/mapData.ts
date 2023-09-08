@@ -1,3 +1,12 @@
+type Resource =
+  | 'HiveCity'
+  | 'SpacePort'
+  | 'CommandBastion'
+  | 'ShieldGenerator'
+  | 'PowerStation'
+  | 'Manufactorum'
+  | 'HQ';
+
 interface Team {
   name: string;
   spriteUrl: string;
@@ -5,6 +14,7 @@ interface Team {
   spriteHeight: number;
   color: string;
   displayName: string;
+  assets: Record<string, number>; // asset name, score
 }
 
 interface TileData {
@@ -12,7 +22,7 @@ interface TileData {
   row: number;
   colorOverride?: string;
   team?: string;
-  resourceName?: string;
+  resourceName?: Resource;
   coord: string;
   terrainRules?: { name: string; url: string };
   locationName?: string;
@@ -49,4 +59,4 @@ const fetchMapData = (): Promise<MapData> => {
   //   });
 };
 
-export { fetchMapData, MapData, Team, teamRef, TileData };
+export { fetchMapData, MapData, Team, teamRef, TileData, Resource };

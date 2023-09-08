@@ -3,6 +3,8 @@ import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { Scene } from '@babylonjs/core/scene';
 import earcut from 'earcut';
 
+import { Resource } from './mapData';
+
 const a150 = (Math.PI * 5) / 6;
 const v150 = new Vector3(Math.sin(a150), 0, Math.cos(a150));
 
@@ -88,7 +90,7 @@ const resources = (scene: Scene) => {
   hq.position.addInPlace(new Vector3(0, 1, 0));
   hq.visibility = 0;
 
-  const names: Record<string, Nullable<Mesh>> = {
+  const names: Record<Resource, Nullable<Mesh>> = {
     HiveCity: hive,
     SpacePort: port,
     CommandBastion: command,
@@ -97,7 +99,7 @@ const resources = (scene: Scene) => {
     Manufactorum: manu,
     HQ: hq,
   };
-  const factory = (name: string): Mesh | undefined => {
+  const factory = (name: Resource): Mesh | undefined => {
     const m = names[name]?.clone();
     if (m) m.visibility = 1;
     return m;
@@ -107,6 +109,7 @@ const resources = (scene: Scene) => {
 
 const upper = /[A-Z]/;
 const displayResource = (resourceName: string) => {
+  if (resourceName === 'HQ') return resourceName;
   let r = '';
   for (const c of resourceName) {
     if (c.match(upper)) {
