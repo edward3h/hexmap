@@ -26,6 +26,7 @@ map:
     colorOverride: '#33FF33'
   - col: -4
     row: -1
+    resourceName: ShieldGenerator
     team: green
     locationName: Keeler
   - col: -4
@@ -34,6 +35,7 @@ map:
   - col: -4
     row: 1
     team: red
+    resourceName: ShieldGenerator
     locationName: Purgatus
   - col: -4
     row: 2
@@ -44,6 +46,7 @@ map:
   - col: -3
     row: -2
     team: green
+    resourceName: Manufactorum
     locationName: Gherick's Rapture
   - col: -3
     row: -1
@@ -60,6 +63,7 @@ map:
   - col: -3
     row: 2
     team: red
+    resourceName: Manufactorum
     locationName: Castiga
   - col: -3
     row: 3
@@ -72,6 +76,7 @@ map:
   - col: -2
     row: -1
     team: green
+    resourceName: CommandBastion
     locationName: Cyclopos
   - col: -2
     row: 0
@@ -80,10 +85,12 @@ map:
   - col: -2
     row: 1
     team: red
+    resourceName: CommandBastion
     locationName: Beladon
   - col: -2
     row: 2
     team: red
+    resourceName: PowerStation
     locationName: Nephtheradon
   - col: -2
     row: 3
@@ -96,6 +103,7 @@ map:
   - col: -1
     row: -1
     team: green
+    resourceName: PowerStation
     locationName: Alphorum
   - col: -1
     row: 0
@@ -153,6 +161,7 @@ map:
   - col: 1
     row: 2
     team: blue
+    resourceName: CommandBastion
     locationName: Volcus Secondus
   - col: 1
     row: 3
@@ -174,10 +183,12 @@ map:
   - col: 2
     row: 1
     team: blue
+    resourceName: PowerStation
     locationName: Raveni
   - col: 2
     row: 2
     team: blue
+    resourceName: ShieldGenerator
     locationName: Eboracum
   - col: 3
     row: -2
@@ -197,6 +208,7 @@ map:
   - col: 3
     row: 2
     team: blue
+    resourceName: Manufactorum
     locationName: Glevensium
   - col: 3
     row: 3
