@@ -35,7 +35,7 @@ map:
   - col: -4
     row: 1
     team: red
-    resourceName: ShieldGenerator
+    resourceName: CommandBastion
     locationName: Purgatus
   - col: -4
     row: 2
@@ -85,7 +85,7 @@ map:
   - col: -2
     row: 1
     team: red
-    resourceName: CommandBastion
+    resourceName: ShieldGenerator
     locationName: Beladon
   - col: -2
     row: 2
