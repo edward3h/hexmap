@@ -17,6 +17,10 @@ teams:
     spriteHeight: 512
     color: "#3333FF"
     displayName: The Loathsome Empire
+    # example assets. <name>: <SVP score>
+    # assets:
+    #   Bag of Holding: 2
+    #   Enchanted Diamond Sword: 1
 map:
   - col: -4
     row: -2

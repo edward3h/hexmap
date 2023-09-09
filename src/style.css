@@ -89,6 +89,15 @@ td {
   padding: 0.25rem;
 }
 
+th span {
+  vertical-align: 20%;
+}
+
+th img {
+  max-height: 1.25rem;
+  margin-right: 0.25rem;
+}
+
 .total td {
   font-style: italic;
   border-top: lightgrey 0.1rem solid;

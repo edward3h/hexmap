@@ -88,16 +88,18 @@ const _animate = () => {
 };
 
 const showAttackArrows = (scene: Scene, mapData: MapData) => {
-  const baseArrow = _drawArrow(scene);
-  mapData.attacks.forEach(({ team, from, to }) => {
-    _arrow(
-      baseArrow,
-      colorMat(teamRef[team].color)(scene),
-      tileCoordsTo3d(from.col, from.row),
-      tileCoordsTo3d(to.col, to.row),
-    );
-  });
-  scene.registerBeforeRender(_animate);
+  if (mapData.attacks) {
+    const baseArrow = _drawArrow(scene);
+    mapData.attacks.forEach(({ team, from, to }) => {
+      _arrow(
+        baseArrow,
+        colorMat(teamRef[team].color)(scene),
+        tileCoordsTo3d(from.col, from.row),
+        tileCoordsTo3d(to.col, to.row),
+      );
+    });
+    scene.registerBeforeRender(_animate);
+  }
 };
 
 export { showAttackArrows };
