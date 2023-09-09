@@ -69,9 +69,9 @@ const resources = (scene: Scene) => {
   const points = 5;
   for (let i = 0; i < points; i++) {
     const polar1 = new Polar(r1, (i * 2 * Math.PI) / points);
-    console.log(polar1);
+    // console.log(polar1);
     const { x: x1, y: z1 } = polar1.toVector2();
-    console.log(x1, z1);
+    // console.log(x1, z1);
     shape.push(new Vector3(x1, 0, z1));
     const polar2 = new Polar(r2, ((i + 0.5) * 2 * Math.PI) / points);
     const { x: x2, y: z2 } = polar2.toVector2();
