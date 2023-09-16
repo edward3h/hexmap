@@ -323,7 +323,7 @@ attacks:
     col: -2
     row: -1
   to: 
-    col: 1
+    col: -1
     row: 0
 # Examples. Uncomment and edit or copy.
   # - team: blue
