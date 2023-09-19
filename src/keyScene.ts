@@ -10,12 +10,13 @@ import { Scene } from '@babylonjs/core/scene';
 import { Control, TextBlock } from '@babylonjs/gui';
 import { AdvancedDynamicTexture } from '@babylonjs/gui/2D/advancedDynamicTexture';
 
+import { Resource } from './mapData';
 import { displayResource, resources } from './resourceMeshes';
 
 const createKeyScene = (
   engine: Engine,
   mainCamera: ArcRotateCamera,
-  resourceName: string,
+  resourceName: Resource,
   options?: { row?: number; scale?: number },
 ): Scene => {
   const scene = new Scene(engine);
