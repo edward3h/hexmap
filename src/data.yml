@@ -5,6 +5,8 @@ teams:
     spriteHeight: 512
     color: "#33FF33"
     displayName: Confederacy of Dunces
+    assets:
+      Artificer Relic: 1
   - name: red
     spriteUrl: birb.png
     spriteWidth: 96
