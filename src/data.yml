@@ -5,6 +5,8 @@ teams:
     spriteHeight: 512
     color: "#33FF33"
     displayName: Confederacy of Dunces
+    assets:
+      Artificer Relic: 1
   - name: red
     spriteUrl: birb.png
     spriteWidth: 96
@@ -35,6 +37,7 @@ map:
     locationName: Keeler
   - col: -4
     row: 0
+    team: red
     locationName: Gheradon
   - col: -4
     row: 1
@@ -85,6 +88,7 @@ map:
     locationName: Cyclopos
   - col: -2
     row: 0
+    team: red
     resourceName: SpacePort
     locationName: Curia Station
   - col: -2
@@ -112,9 +116,11 @@ map:
     locationName: Alphorum
   - col: -1
     row: 0
+    team: green
     locationName: Sacellum Tertius
   - col: -1
     row: 1
+    team: red
     locationName: Noxar
   - col: -1
     row: 2
@@ -135,6 +141,7 @@ map:
     locationName: Arkhi
   - col: 0
     row: -1
+    team: green
     locationName: Repentance
   - col: 0
     row: 0
@@ -157,12 +164,14 @@ map:
     locationName: Zephadon
   - col: 1
     row: -1
+    team: green
     locationName: Valerius
   - col: 1
     row: 0
     locationName: Guayota
   - col: 1
     row: 1
+    team: blue
     locationName: Alexia's Mourning
   - col: 1
     row: 2
@@ -171,6 +180,7 @@ map:
     locationName: Volcus Secondus
   - col: 1
     row: 3
+    team: blue
     resourceName: SpacePort
     locationName: Communion Crossing
   - col: 2
@@ -241,90 +251,6 @@ map:
     locationName: Port Kasanaan
 
 attacks:
-- team: blue
-  from:
-    col: 1
-    row: 2
-  to: 
-    col: 1
-    row: 3
-- team: blue
-  from:
-    col: 1
-    row: 2
-  to: 
-    col: 1
-    row: 1
-- team: blue
-  from:
-    col: 2
-    row: 2
-  to: 
-    col: 1
-    row: 3
-- team: blue
-  from:
-    col: 3
-    row: -1
-  to: 
-    col: 2
-    row: -2
-- team: red
-  from:
-    col: -1
-    row: 2
-  to: 
-    col: -1
-    row: 1
-- team: red
-  from:
-    col: -2
-    row: 1
-  to: 
-    col: -2
-    row: 0
-- team: red
-  from:
-    col: -3
-    row: 1
-  to: 
-    col: -2
-    row: 0
-- team: red
-  from:
-    col: -4
-    row: 1
-  to: 
-    col: -4
-    row: 0
-- team: green
-  from:
-    col: 1
-    row: -2
-  to: 
-    col: 2
-    row: -2
-- team: green
-  from:
-    col: 0
-    row: -2
-  to: 
-    col: 1
-    row: -1
-- team: green
-  from:
-    col: -1
-    row: -1
-  to: 
-    col: 0
-    row: -1
-- team: green
-  from:
-    col: -2
-    row: -1
-  to: 
-    col: -1
-    row: 0
 # Examples. Uncomment and edit or copy.
   # - team: blue
   #   from:
