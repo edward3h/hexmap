@@ -117,14 +117,17 @@ map:
   - col: -1
     row: 0
     team: green
+    resourceName: ShieldGenerator
     locationName: Sacellum Tertius
   - col: -1
     row: 1
     team: red
+    resourceName: CommandBastion
     locationName: Noxar
   - col: -1
     row: 2
     team: red
+    resourceName: PowerStation
     locationName: Coraxum Secondus
   - col: -1
     row: 3
@@ -142,6 +145,7 @@ map:
   - col: 0
     row: -1
     team: green
+    resourceName: CommandBastion
     locationName: Repentance
   - col: 0
     row: 0
@@ -172,6 +176,7 @@ map:
   - col: 1
     row: 1
     team: blue
+    resourceName: CommandBastion
     locationName: Alexia's Mourning
   - col: 1
     row: 2
@@ -242,6 +247,7 @@ map:
   - col: 4
     row: 1
     team: blue
+    resourceName: Manufactorum
     locationName: Diabolar Tertius
   - col: 4
     row: 2
@@ -251,6 +257,105 @@ map:
     locationName: Port Kasanaan
 
 attacks:
+  - team: red
+    from:
+      col: -2
+      row: 0
+    to:
+      col: -1
+      row: 0
+  - team: red
+    from:
+      col: -1
+      row: 1
+    to:
+      col: -1
+      row: 0
+  - team: red
+    from:
+      col: -1
+      row: 2
+    to:
+      col: 0
+      row: 1
+  - team: red
+    from:
+      col: 0
+      row: 3
+    to:
+      col: 1
+      row: 3
+  - team: red
+    from:
+      col: -1
+      row: 1
+    to:
+      col: -2
+      row: 0
+  - team: red
+    from:
+      col: -3
+      row: 1
+    to:
+      col: -2
+      row: 0
+  - team: red
+    from:
+      col: -3
+      row: 0
+    to:
+      col: -2
+      row: 0
+  - team: blue
+    from:
+      col: 1
+      row: 3
+    to:
+      col: 0
+      row: 3
+  - team: blue
+    from:
+      col: 1
+      row: 1
+    to:
+      col: 2
+      row: 0
+  - team: blue
+    from:
+      col: 3
+      row: -1
+    to:
+      col: 2
+      row: -1
+  - team: green
+    from:
+      col: -2
+      row: -1
+    to:
+      col: -2
+      row: 0
+  - team: green
+    from:
+      col: -1
+      row: 0
+    to:
+      col: -1
+      row: 1
+  - team: green
+    from:
+      col: 1
+      row: -2
+    to:
+      col: 2
+      row: -2
+  - team: green
+    from:
+      col: 1
+      row: -1
+    to:
+      col: 2
+      row: -2
+
 # Examples. Uncomment and edit or copy.
   # - team: blue
   #   from:
