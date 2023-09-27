@@ -39,7 +39,7 @@ jobs:
           # Used to specify the path to a dependency file: package-lock.json, yarn.lock, etc. Supports wildcards or a list of file names for caching multiple dependencies.
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - run: npm exec vite build
+      - run: npm exec vite build --base=/hexmap
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
