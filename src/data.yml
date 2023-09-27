@@ -161,7 +161,7 @@ map:
     colorOverride: "#333333"
   - col: 0
     row: 3
-    team: blue
+    team: red
     locationName: Vinovia
   - col: 1
     row: -2
