@@ -26,6 +26,7 @@ interface TileData {
   coord: string;
   terrainRules?: { name: string; url: string };
   locationName?: string;
+  defence?: number;
 }
 
 interface Attack {
