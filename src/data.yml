@@ -13,6 +13,8 @@ teams:
     spriteHeight: 96
     color: "#FF3333"
     displayName: Crimson Scallywags
+    assets:
+      Artificer Relic: 1
   - name: blue
     spriteUrl: square-solid.png
     spriteWidth: 448
@@ -76,6 +78,7 @@ map:
   - col: -3
     row: 3
     team: red
+    resourceName: Manufactorum
     locationName: Arabella Secondus
   - col: -2 
     row: -2
@@ -91,6 +94,7 @@ map:
     team: red
     resourceName: SpacePort
     locationName: Curia Station
+    defence: 2
   - col: -2
     row: 1
     team: red
@@ -104,6 +108,7 @@ map:
   - col: -2
     row: 3
     team: red
+    resourceName: Manufactorum
     locationName: Praxedes Cluster
   - col: -1
     row: -2
@@ -119,7 +124,6 @@ map:
     team: red
     resourceName: ShieldGenerator
     locationName: Sacellum Tertius
-    defence: 2
   - col: -1
     row: 1
     team: red
@@ -133,7 +137,7 @@ map:
   - col: -1
     row: 3
     team: red
-    resourceName: Manufactorum
+    resourceName: PowerStation
     locationName: Maleradon Primus
   - col: 0
     row: -3
@@ -148,7 +152,6 @@ map:
     team: green
     resourceName: CommandBastion
     locationName: Repentance
-    defence: 1
   - col: 0
     row: 0
     resourceName: HiveCity
@@ -164,6 +167,7 @@ map:
   - col: 0
     row: 3
     team: red
+    resourceName: ShieldGenerator
     locationName: Vinovia
   - col: 1
     row: -2
@@ -173,7 +177,6 @@ map:
     row: -1
     team: green
     locationName: Valerius
-    defence: 3
   - col: 1
     row: 0
     locationName: Guayota
@@ -264,7 +267,27 @@ map:
     locationName: Port Kasanaan
 
 attacks:
-  
+  - team: red
+     from:
+       col: -2
+       row: 0
+     to: 
+       col: -1
+       row: -1
+  - team: red
+     from:
+       col: -3
+       row: 1
+     to: 
+       col: -1
+       row: -1
+  - team: red
+     from:
+       col: -1
+       row: 0
+     to: 
+       col: -2
+       row: 1
 
 # Examples. Uncomment and edit or copy.
   # - team: blue
