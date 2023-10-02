@@ -186,12 +186,12 @@ map:
   - col: 1
     row: 1
     team: blue
-    resourceName: CommandBastion
+    resourceName: ShieldGenerator
     locationName: Alexia's Mourning
   - col: 1
     row: 2
     team: blue
-    resourceName: CommandBastion
+    resourceName: ShieldGenerator
     locationName: Volcus Secondus
   - col: 1
     row: 3
@@ -213,6 +213,7 @@ map:
   - col: 2
     row: 0
     team: blue
+    resourceName: ShieldGenerator
     locationName: Marduk's Watch
   - col: 2
     row: 1
@@ -307,7 +308,7 @@ attacks:
       row: -3
   - team: green
     from:
-      col: -1
+      col: 1
       row: -1
     to: 
       col: 2
@@ -319,6 +320,20 @@ attacks:
     to: 
       col: 3
       row: -1
+  - team: blue
+    from:
+      col: 1
+      row: 3
+    to: 
+      col: 0
+      row: 3
+  - team: blue
+    from:
+      col: 3
+      row: -1
+    to: 
+      col: 2
+      row: -2
 
 # Examples. Uncomment and edit or copy.
   # - team: blue
