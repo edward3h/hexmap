@@ -266,28 +266,28 @@ map:
     resourceName: HQ
     locationName: Port Kasanaan
 
-attacks:
+attacks: 
   - team: red
-     from:
-       col: -2
-       row: 0
-     to: 
-       col: -1
-       row: -1
+    from:
+      col: -2
+      row: 0
+    to: 
+      col: -1
+      row: -1
   - team: red
-     from:
-       col: -3
-       row: 1
-     to: 
-       col: -1
-       row: -1
+    from:
+      col: -3
+      row: 1
+    to: 
+      col: -1
+      row: -1
   - team: red
-     from:
-       col: -1
-       row: 0
-     to: 
-       col: -2
-       row: 1
+    from:
+      col: -1
+      row: 0
+    to: 
+      col: -2
+      row: 1
 
 # Examples. Uncomment and edit or copy.
   # - team: blue
