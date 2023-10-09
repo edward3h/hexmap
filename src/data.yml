@@ -6,7 +6,7 @@ teams:
     color: "#33FF33"
     displayName: Confederacy of Dunces
     assets:
-      Artificer Relic: 2
+      2 Artificer Relics: 2
   - name: red
     spriteUrl: birb.png
     spriteWidth: 96
@@ -14,7 +14,7 @@ teams:
     color: "#FF3333"
     displayName: Crimson Scallywags
     assets:
-      Artificer Relic: 1
+      Antiquity Relic: 2
   - name: blue
     spriteUrl: square-solid.png
     spriteWidth: 448
