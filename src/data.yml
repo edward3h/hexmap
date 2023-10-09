@@ -178,7 +178,7 @@ map:
     colorOverride: "#333333"
   - col: 0
     row: 3
-    team: blue
+    team: red
     resourceName: ShieldGenerator
     defence: 1
     locationName: Vinovia
