@@ -129,6 +129,7 @@ map:
     team: red
     resourceName: PowerStation
     locationName: Alphorum
+    defence: 2
   - col: -1
     row: 0
     team: red
@@ -224,6 +225,7 @@ map:
   - col: 2
     row: -1
     team: green
+    resourceName: ShieldGenerator
     locationName: Lorrin's Sanctuary
   - col: 2
     row: 0
