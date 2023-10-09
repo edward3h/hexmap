@@ -30,26 +30,30 @@ map:
     row: -2
     team: green
     resourceName: HQ
+    defence: 1
     locationName: Port Celestine
     colorOverride: '#33FF33'
   - col: -4
     row: -1
     resourceName: ShieldGenerator
+    defence: 1
     team: green
     locationName: Keeler
   - col: -4
     row: 0
-    team: red
+    team: green
     locationName: Gheradon
   - col: -4
     row: 1
     team: red
-    resourceName: CommandBastion
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Purgatus
   - col: -4
     row: 2
     team: red
     resourceName: HQ
+    defence: 1
     locationName: Dantorum Gate
     colorOverride: '#FF3333'
   - col: -3
@@ -69,6 +73,8 @@ map:
   - col: -3
     row: 1
     team: red
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Gerstahl's Beacon
   - col: -3
     row: 2
@@ -87,19 +93,20 @@ map:
     locationName: Pyrar Tertius
   - col: -2
     row: -1
-    team: green
-    resourceName: CommandBastion
+    team: red
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Cyclopos
   - col: -2
     row: 0
     team: red
     resourceName: SpacePort
     locationName: Curia Station
-    defence: 2
   - col: -2
     row: 1
     team: red
     resourceName: ShieldGenerator
+    defence: 1
     locationName: Beladon
   - col: -2
     row: 2
@@ -114,17 +121,19 @@ map:
   - col: -1
     row: -2
     team: green
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Requiem Tertius
   - col: -1
     row: -1
-    team: green
+    team: red
     resourceName: PowerStation
     locationName: Alphorum
-    defence: 1
   - col: -1
     row: 0
     team: red
     resourceName: ShieldGenerator
+    defence: 1
     locationName: Sacellum Tertius
   - col: -1
     row: 1
@@ -144,6 +153,7 @@ map:
   - col: 0
     row: -3
     team: green
+    resourceName: PowerStation
     locationName: Cryptos Hive
   - col: 0
     row: -2
@@ -168,8 +178,9 @@ map:
     colorOverride: "#333333"
   - col: 0
     row: 3
-    team: red
+    team: blue
     resourceName: ShieldGenerator
+    defence: 1
     locationName: Vinovia
   - col: 1
     row: -2
@@ -179,6 +190,7 @@ map:
     row: -1
     team: green
     resourceName: ShieldGenerator
+    defence: 1
     locationName: Valerius
   - col: 1
     row: 0
@@ -187,11 +199,13 @@ map:
     row: 1
     team: blue
     resourceName: ShieldGenerator
+    defence: 1
     locationName: Alexia's Mourning
   - col: 1
     row: 2
     team: blue
     resourceName: ShieldGenerator
+    defence: 1
     locationName: Volcus Secondus
   - col: 1
     row: 3
@@ -200,6 +214,7 @@ map:
     locationName: Communion Crossing
   - col: 2
     row: -3
+    team: green
     locationName: Saint's Eyrie
   - col: 2
     row: -2
@@ -208,12 +223,13 @@ map:
     locationName: Port Mortium
   - col: 2
     row: -1
-    team: blue
+    team: green
     locationName: Lorrin's Sanctuary
   - col: 2
     row: 0
     team: blue
     resourceName: ShieldGenerator
+    defence: 1
     locationName: Marduk's Watch
   - col: 2
     row: 1
@@ -224,6 +240,7 @@ map:
     row: 2
     team: blue
     resourceName: ShieldGenerator
+    defence: 1
     locationName: Eboracum
   - col: 3
     row: -2
@@ -231,6 +248,8 @@ map:
   - col: 3
     row: -1
     team: blue
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Mari
   - col: 3
     row: 0   
@@ -252,11 +271,13 @@ map:
     locationName: Burghalus
   - col: 4
     row: -1
+    resourceName: PowerStation
     team: blue
     locationName: Naraka
   - col: 4
     row: 0
     team: blue
+    resourceName: Manufactorum
     locationName: Castra Secondus
   - col: 4
     row: 1
@@ -268,72 +289,80 @@ map:
     team: blue
     colorOverride: '#3333FF'
     resourceName: HQ
+    defence: 1
     locationName: Port Kasanaan
 
 attacks: 
   - team: red
     from:
-      col: -2
-      row: 0
-    to: 
-      col: -1
-      row: -1
-  - team: red
-    from:
       col: -3
       row: 1
     to: 
-      col: -1
-      row: -1
+      col: -4
+      row: -0
   - team: red
     from:
-      col: -1
-      row: 0
+      col: -2
+      row: -1
+    to: 
+      col: -3
+      row: -1
+  - team: green
+    from:
+      col: 2
+      row: -2
     to: 
       col: -2
       row: -1
   - team: green
     from:
-      col: -4
-      row: -1
-    to: 
-      col: -4
-      row: 0
-  - team: green
-    from:
-      col: 1
+      col: -2
       row: -2
     to: 
-      col: 2
-      row: -3
-  - team: green
-    from:
-      col: 1
-      row: -1
-    to: 
-      col: 2
+      col: -1
       row: -1
   - team: green
     from:
-      col: 2
+      col: -1
       row: -2
     to: 
-      col: 3
+      col: -1
       row: -1
   - team: blue
     from:
       col: 1
       row: 3
+    to: 
+      col: -1
+      row: -2
+  - team: blue
+    from:
+      col: 3
+      row: -1
+    to: 
+      col: 2
+      row: -2
+  - team: blue
+    from:
+      col: 2
+      row: 0
+    to: 
+      col: 2
+      row: -1
+  - team: blue
+    from:
+      col: 1
+      row: 1
+    to: 
+      col: 1
+      row: 0
+  - team: blue
+    from:
+      col: 1
+      row: 2
     to: 
       col: 0
-      row: 3
-  - team: blue
-    from:
-      col: 3
-      row: -1
-    to: 
-      col: 2
-      row: -2
+      row: 1
 
 # Examples. Uncomment and edit or copy.
   # - team: blue
