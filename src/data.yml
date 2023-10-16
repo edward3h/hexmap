@@ -158,6 +158,8 @@ map:
   - col: 0
     row: -2
     team: green
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Arkhi
   - col: 0
     row: -1
@@ -295,13 +297,41 @@ map:
     locationName: Port Kasanaan
 
 attacks: 
-  - team: red
+  - team: green
     from:
-      col: -3
-      row: 1
+      col: 2
+      row: -2
     to: 
+      col: -2
+      row: 0
+  - team: green
+    from:
       col: -4
-      row: -0
+      row: -2
+    to: 
+      col: -3
+      row: -1
+  - team: green
+    from:
+      col: -2
+      row: -2
+    to: 
+      col: -3
+      row: -1
+  - team: green
+    from:
+      col: -1
+      row: -2
+    to: 
+      col: -1
+      row: -1
+  - team: green
+    from:
+      col: 0
+      row: -1
+    to: 
+      col: -1
+      row: -1
 
 
 # Examples. Uncomment and edit or copy.
