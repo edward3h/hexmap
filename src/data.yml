@@ -42,6 +42,8 @@ map:
   - col: -4
     row: 0
     team: red
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Gheradon
   - col: -4
     row: 1
@@ -64,7 +66,7 @@ map:
   - col: -3
     row: -1
     team: red
-    resourceName: Manufactorum
+    resourceName: PowerStation
     locationName: Mancunian Cluster
   - col: -3
     row: 0
@@ -73,8 +75,7 @@ map:
   - col: -3
     row: 1
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: PowerStation
     locationName: Gerstahl's Beacon
   - col: -3
     row: 2
@@ -359,6 +360,27 @@ attacks:
     to: 
       col: 3
       row: -2
+  - team: red
+    from:
+      col: -2
+      row: -1
+    to: 
+      col: -2
+      row: -2
+  - team: red
+    from:
+      col: -1
+      row: -1
+    to: 
+      col: -2
+      row: -2
+  - team: red
+    from:
+      col: 0
+      row: 3
+    to: 
+      col: 1
+      row: 3
 
 
 # Examples. Uncomment and edit or copy.
