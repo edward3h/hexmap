@@ -41,7 +41,7 @@ map:
     locationName: Keeler
   - col: -4
     row: 0
-    team: green
+    team: red
     locationName: Gheradon
   - col: -4
     row: 1
@@ -63,7 +63,7 @@ map:
     locationName: Gherick's Rapture
   - col: -3
     row: -1
-    team: green
+    team: red
     resourceName: Manufactorum
     locationName: Mancunian Cluster
   - col: -3
@@ -129,7 +129,6 @@ map:
     team: red
     resourceName: PowerStation
     locationName: Alphorum
-    defence: 2
   - col: -1
     row: 0
     team: red
@@ -171,7 +170,7 @@ map:
     locationName: Cor Gratus (Outskirts)
   - col: 0
     row: 1
-    team: red
+    team: blue
     locationName: Volcanum
   - col: 0
     row: 2
@@ -226,6 +225,7 @@ map:
     row: -1
     team: green
     resourceName: ShieldGenerator
+    defence: 1
     locationName: Lorrin's Sanctuary
   - col: 2
     row: 0
@@ -302,69 +302,7 @@ attacks:
     to: 
       col: -4
       row: -0
-  - team: red
-    from:
-      col: -2
-      row: -1
-    to: 
-      col: -3
-      row: -1
-  - team: green
-    from:
-      col: 2
-      row: -2
-    to: 
-      col: -2
-      row: -1
-  - team: green
-    from:
-      col: -2
-      row: -2
-    to: 
-      col: -1
-      row: -1
-  - team: green
-    from:
-      col: -1
-      row: -2
-    to: 
-      col: -1
-      row: -1
-  - team: blue
-    from:
-      col: 1
-      row: 3
-    to: 
-      col: -1
-      row: -2
-  - team: blue
-    from:
-      col: 3
-      row: -1
-    to: 
-      col: 2
-      row: -2
-  - team: blue
-    from:
-      col: 2
-      row: 0
-    to: 
-      col: 2
-      row: -1
-  - team: blue
-    from:
-      col: 1
-      row: 1
-    to: 
-      col: 1
-      row: 0
-  - team: blue
-    from:
-      col: 1
-      row: 2
-    to: 
-      col: 0
-      row: 1
+
 
 # Examples. Uncomment and edit or copy.
   # - team: blue
