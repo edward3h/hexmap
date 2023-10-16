@@ -207,7 +207,7 @@ map:
   - col: 1
     row: 1
     team: blue
-    resourceName: PowerGenerator
+    resourceName: PowerStation
     locationName: Alexia's Mourning
   - col: 1
     row: 2
