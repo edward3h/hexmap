@@ -361,14 +361,14 @@ attacks:
       row: -1
     to: 
       col: 2
-      row: -1
+      row: -2
   - team: blue
     from:
       col: 3
       row: -2
     to: 
       col: 2
-      row: -1
+      row: -2
   - team: blue
     from:
       col: 1
