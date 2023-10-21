@@ -66,7 +66,7 @@ map:
     locationName: Gherick's Rapture
   - col: -3
     row: -1
-    team: red
+    team: green
     resourceName: PowerStation
     locationName: Mancunian Cluster
   - col: -3
@@ -101,7 +101,7 @@ map:
     locationName: Cyclopos
   - col: -2
     row: 0
-    team: red
+    team: green
     resourceName: SpacePort
     locationName: Curia Station
   - col: -2
@@ -128,7 +128,7 @@ map:
     locationName: Requiem Tertius
   - col: -1
     row: -1
-    team: red
+    team: green
     resourceName: PowerStation
     locationName: Alphorum
   - col: -1
@@ -144,7 +144,7 @@ map:
     locationName: Noxar
   - col: -1
     row: 2
-    team: red
+    team: blue
     resourceName: ShieldGenerator
     defence: 1
     locationName: Coraxum Secondus
@@ -260,6 +260,7 @@ map:
     locationName: Eboracum
   - col: 3
     row: -2
+    team: blue
     resourceName: ShieldGenerator
     defence: 1
     locationName: Warrior's Haven
