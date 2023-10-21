@@ -330,10 +330,10 @@ attacks:
   - team: red
     from:
       col: -1
-      row: 0
+      row: 1
     to: 
       col: -1
-      row: -2
+      row: 2
   - team: green
     from:
       col: 2
@@ -341,14 +341,14 @@ attacks:
     to: 
       col: -3
       row: 1
-  - team: red
+  - team: green
     from:
       col: 0
-      row: 1
+      row: -1
     to: 
       col: -1
       row: 0
-  - team: red
+  - team: green
     from:
       col: -2
       row: -2
