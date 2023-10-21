@@ -167,7 +167,8 @@ map:
   - col: 0
     row: -1
     team: green
-    resourceName: CommandBastion
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Repentance
   - col: 0
     row: 0
@@ -192,6 +193,8 @@ map:
   - col: 1
     row: -2
     team: green
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Zephadon
   - col: 1
     row: -1
@@ -224,6 +227,8 @@ map:
   - col: 2
     row: -3
     team: green
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Saint's Eyrie
   - col: 2
     row: -2
@@ -327,6 +332,27 @@ attacks:
     to: 
       col: -1
       row: -2
+  - team: green
+    from:
+      col: 2
+      row: -2
+    to: 
+      col: -3
+      row: 1
+  - team: red
+    from:
+      col: 0
+      row: 1
+    to: 
+      col: -1
+      row: 0
+  - team: red
+    from:
+      col: -2
+      row: -2
+    to: 
+      col: -2
+      row: -1
 
 
 # Examples. Uncomment and edit or copy.
