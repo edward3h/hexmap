@@ -145,7 +145,8 @@ map:
   - col: -1
     row: 2
     team: red
-    resourceName: PowerStation
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Coraxum Secondus
   - col: -1
     row: 3
@@ -177,8 +178,7 @@ map:
   - col: 0
     row: 1
     team: blue
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: PowerStation
     locationName: Volcanum
   - col: 0
     row: 2
@@ -260,12 +260,13 @@ map:
     locationName: Eboracum
   - col: 3
     row: -2
+    resourceName: ShieldGenerator
+    defence: 1
     locationName: Warrior's Haven
   - col: 3
     row: -1
     team: blue
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: PowerStation
     locationName: Mari
   - col: 3
     row: 0   
@@ -353,6 +354,34 @@ attacks:
     to: 
       col: -2
       row: -1
+  - team: blue
+    from:
+      col: 3
+      row: -1
+    to: 
+      col: 2
+      row: -1
+  - team: blue
+    from:
+      col: 3
+      row: -2
+    to: 
+      col: 2
+      row: -1
+  - team: blue
+    from:
+      col: 1
+      row: 3
+    to: 
+      col: -1
+      row: 1
+  - team: blue
+    from:
+      col: 0
+      row: 1
+    to: 
+      col: -1
+      row: 1
 
 
 # Examples. Uncomment and edit or copy.
