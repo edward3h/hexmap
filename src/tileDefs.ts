@@ -14,9 +14,9 @@ import earcut from 'earcut';
 
 import { color, diameter, tileCoordsTo3d } from './hexUtil';
 import { Overlay } from './infoOverlay';
-import { teamColor, TileData } from './mapData';
+import { teamRef, TileData } from './mapData';
 import { quotation } from './quotations';
-import { resources } from './resourceMeshes';
+import { displayResource, resources } from './resourceMeshes';
 
 interface Tile {
   baseMesh: AbstractMesh;
@@ -58,10 +58,18 @@ const _clearHighlight = () => {
 };
 
 const _content = (data: TileData) => {
-  const lines = [`<h2>${data.locationName || data.coord}</h2>`];
-  if (data.resourceName) lines.push(`<div>Resource: ${data.resourceName}</div>`);
-  if (data.team)
-    lines.push(`<div>Controlled by <span class="${data.team}">${data.team}</span></div>`);
+  const lines = [`<h2>${data.locationName || data.coord || 'Unknown'}</h2>`];
+  if (data.resourceName)
+    lines.push(`<div>Resource: ${displayResource(data.resourceName)}</div>`);
+  if (data.team) {
+    let displayName = data.team;
+    if (teamRef[data.team] && teamRef[data.team].displayName) {
+      displayName = teamRef[data.team].displayName;
+    }
+    lines.push(
+      `<div>Controlled by <span class="${data.team}">${displayName}</span></div>`,
+    );
+  }
   if (data.terrainRules)
     lines.push(
       `<div>Terrain: <a target="_blank" href="${data.terrainRules.url}">${data.terrainRules.name}</a></div>`,
@@ -96,13 +104,17 @@ const _simpleTile = (scene: Scene, colorOverride?: string, teamColor?: string) =
   return rim;
 };
 
+const _teamColor = (teamName: string | undefined) =>
+  teamName && teamRef[teamName] && teamRef[teamName].color;
+
 const _createTile =
   (scene: Scene, resourceFactory: (name: string) => Mesh | undefined) =>
   (data: TileData): Tile => {
-    const { col, row, colorOverride, team, resourceName, planet, coord } = data;
-    const m = _simpleTile(scene, colorOverride, team && teamColor[team]);
+    const { col, row, colorOverride, team, resourceName, coord } = data;
+
+    const m = _simpleTile(scene, colorOverride, _teamColor(team));
     scene.addMesh(m);
-    m.position = tileCoordsTo3d(col, row, planet);
+    m.position = tileCoordsTo3d(col, row);
     const p = MeshBuilder.CreatePlane('label', { width: 3, height: 2 }, scene);
     p.position = m.position.add(new Vector3(3, 0.1, -3));
     p.billboardMode = Mesh.BILLBOARDMODE_ALL;

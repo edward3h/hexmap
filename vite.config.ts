@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import content from '@originjs/vite-plugin-content';
 
 export default defineConfig({
-  base: '/map_prototype/',
+  base: '/',
   build: {
     rollupOptions: {
       output: {
@@ -14,5 +15,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [tsconfigPaths()],
+  plugins: [tsconfigPaths(), content()],
 });

@@ -10,12 +10,13 @@ import { Scene } from '@babylonjs/core/scene';
 import { Control, TextBlock } from '@babylonjs/gui';
 import { AdvancedDynamicTexture } from '@babylonjs/gui/2D/advancedDynamicTexture';
 
-import { resources } from './resourceMeshes';
+import { Resource } from './mapData';
+import { displayResource, resources } from './resourceMeshes';
 
 const createKeyScene = (
   engine: Engine,
   mainCamera: ArcRotateCamera,
-  resourceName: string,
+  resourceName: Resource,
   options?: { row?: number; scale?: number },
 ): Scene => {
   const scene = new Scene(engine);
@@ -32,7 +33,7 @@ const createKeyScene = (
   if (options?.row) {
     viewportY -= options.row * 0.12;
   }
-  camera.viewport = new Viewport(0.88, viewportY, 0.12, 0.12);
+  camera.viewport = new Viewport(0.9, viewportY, 0.12, 0.12);
 
   mainCamera.onViewMatrixChangedObservable.add(() => {
     camera.alpha = mainCamera.alpha;
@@ -53,14 +54,15 @@ const createKeyScene = (
     }
   }
   const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI('myUI');
-  const label = new TextBlock('label', resourceName);
-  label.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+  const label = new TextBlock('label', displayResource(resourceName));
+  // label.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
   label.color = '#a3e635';
   label.fontSize = 100;
   label.fontWeight = 'bold';
   label.outlineWidth = 15;
   label.outlineColor = 'black';
-  label.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+  label.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+  label.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
   advancedTexture.addControl(label);
   return scene;
 };

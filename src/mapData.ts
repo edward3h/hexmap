@@ -1,8 +1,20 @@
+type Resource =
+  | 'HiveCity'
+  | 'SpacePort'
+  | 'CommandBastion'
+  | 'ShieldGenerator'
+  | 'PowerStation'
+  | 'Manufactorum'
+  | 'HQ';
+
 interface Team {
   name: string;
   spriteUrl: string;
   spriteWidth: number;
   spriteHeight: number;
+  color: string;
+  displayName: string;
+  assets: Record<string, number>; // asset name, score
 }
 
 interface TileData {
@@ -10,40 +22,42 @@ interface TileData {
   row: number;
   colorOverride?: string;
   team?: string;
-  resourceName?: string;
-  planet: string;
+  resourceName?: Resource;
   coord: string;
   terrainRules?: { name: string; url: string };
   locationName?: string;
-}
-
-interface Planet {
-  code: string;
-  display: string;
+  defence?: number;
 }
 
 interface Attack {
   team: string;
-  from: string;
-  to: string;
+  from: { col: number; row: number };
+  to: { col: number; row: number };
 }
 
 interface MapData {
   teams: Team[];
   map: TileData[];
-  planets: Planet[];
   attacks: Attack[];
 }
 
-const teamColor: Record<string, string> = {
-  red: '#FF3333',
-  yellow: '#FFFF33',
-  blue: '#3333FF',
-  green: '#33FF33',
-};
+const teamRef: Record<string, Team> = {};
 
+import data from './data.yml';
 const fetchMapData = (): Promise<MapData> => {
-  return fetch('data.json').then((response) => response.json() as Promise<MapData>);
+  const mapData = data as MapData;
+  for (const team of mapData.teams) {
+    teamRef[team.name] = team;
+  }
+  return Promise.resolve(mapData);
+  // return fetch('data.json')
+  //   .then((response) => response.json() as Promise<MapData>)
+  //   .then((mapData) => {
+  //     for (const team of mapData.teams) {
+  //       teamRef[team.name] = team;
+  //     }
+  //     return mapData;
+  //   });
 };
 
-export { fetchMapData, MapData, Planet, Team, teamColor, TileData };
+export { fetchMapData, MapData, Resource, Team, teamRef, TileData };

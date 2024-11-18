@@ -15,5 +15,6 @@
     "noImplicitReturns": true,
     "types": ["vite/client", "@babylonjs/core"]
   },
-  "include": ["src"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/**/*"]
 }
