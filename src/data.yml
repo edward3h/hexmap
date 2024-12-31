@@ -160,8 +160,7 @@ map:
   - col: 0
     row: -2
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
+    defence: 0
     locationName: Arkhi
   - col: 0
     row: -1
