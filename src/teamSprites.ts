@@ -39,7 +39,7 @@ const showMapIcons = (scene: Scene, mapData: MapData): void => {
   // console.log(spriteManagers);
 
   mapData.map.forEach((arr) => {
-    const { col, row, team: teamName, defence } = arr;
+    const { col, row, team: teamName, defence, resourceName } = arr;
     if (!teamName) {
       // console.log(arr);
       return;
@@ -47,7 +47,7 @@ const showMapIcons = (scene: Scene, mapData: MapData): void => {
     if (defence) {
       addShields(shieldManagers, teamName, col, row, defence);
     } else {
-      addSprite(spriteManagers, teamName, col, row);
+      addSprite(spriteManagers, teamName, col, row, resourceName === 'HQ');
     }
     // console.log(sprite);
   });
@@ -92,6 +92,7 @@ function addSprite(
   teamName: string,
   col: number,
   row: number,
+  isHQ: boolean
 ) {
   const spriteManager = spriteManagers[teamName];
   if (!spriteManager) {
@@ -104,7 +105,9 @@ function addSprite(
   sprite.position = new Vector3(0, sprite.height / 2 + 1, 0).add(
     tileCoordsTo3d(col, row),
   );
-  sprites.push(sprite);
+  if (isHQ) {
+    sprites.push(sprite);
+  }
 }
 
 export { showMapIcons };
