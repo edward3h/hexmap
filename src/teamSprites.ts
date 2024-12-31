@@ -92,7 +92,7 @@ function addSprite(
   teamName: string,
   col: number,
   row: number,
-  isHQ: boolean
+  isHQ: boolean,
 ) {
   const spriteManager = spriteManagers[teamName];
   if (!spriteManager) {
