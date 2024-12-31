@@ -133,8 +133,6 @@ map:
     locationName: Alphorum
   - col: -1
     row: 0
-    team: red
-    resourceName: PowerStation
     locationName: Sacellum Tertius
   - col: -1
     row: 1
