@@ -165,8 +165,6 @@ map:
   - col: 0
     row: -1
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Repentance
   - col: 0
     row: 0
