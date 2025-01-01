@@ -4,19 +4,19 @@ teams:
     spriteWidth: 512
     spriteHeight: 512
     color: "#33FF33"
-    displayName: Confederacy of Dunces
+    displayName: Green Team
   - name: red
     spriteUrl: birb.png
     spriteWidth: 96
     spriteHeight: 96
     color: "#FF3333"
-    displayName: Crimson Scallywags
+    displayName: Red Team
   - name: blue
     spriteUrl: square-solid.png
     spriteWidth: 448
     spriteHeight: 512
     color: "#3333FF"
-    displayName: The Loathsome Empire
+    displayName: Blue Team
     # example assets. <name>: <SVP score>
     # assets:
     #   Bag of Holding: 2
