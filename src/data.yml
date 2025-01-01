@@ -30,44 +30,33 @@ map:
   - col: -4
     row: -2
     team: green
-    resourceName: HQ
-    defence: 1
     locationName: Port Celestine
     colorOverride: '#33FF33'
   - col: -4
     row: -1
-    resourceName: ShieldGenerator
-    defence: 1
     team: green
     locationName: Keeler
   - col: -4
     row: 0
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Gheradon
   - col: -4
     row: 1
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Purgatus
   - col: -4
     row: 2
     team: red
     resourceName: HQ
-    defence: 1
     locationName: Dantorum Gate
     colorOverride: '#FF3333'
   - col: -3
     row: -2
     team: green
-    resourceName: Manufactorum
     locationName: Gherick's Rapture
   - col: -3
     row: -1
     team: green
-    resourceName: PowerStation
     locationName: Mancunian Cluster
   - col: -3
     row: 0
@@ -76,86 +65,69 @@ map:
   - col: -3
     row: 1
     team: red
-    resourceName: PowerStation
     locationName: Gerstahl's Beacon
   - col: -3
     row: 2
     team: red
-    resourceName: Manufactorum
     locationName: Castiga
   - col: -3
     row: 3
     team: red
-    resourceName: Manufactorum
     locationName: Arabella Secondus
   - col: -2 
     row: -2
     team: green
-    resourceName: Manufactorum
     locationName: Pyrar Tertius
   - col: -2
     row: -1
-    team: red
-    resourceName: ShieldGenerator
+    team: green
     defence: 1
     locationName: Cyclopos
   - col: -2
     row: 0
-    team: green
+    team: red
     resourceName: SpacePort
     locationName: Curia Station
   - col: -2
     row: 1
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Beladon
   - col: -2
     row: 2
     team: red
-    resourceName: PowerStation
     locationName: Nephtheradon
   - col: -2
     row: 3
     team: red
-    resourceName: Manufactorum
     locationName: Praxedes Cluster
   - col: -1
     row: -2
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Requiem Tertius
   - col: -1
     row: -1
     team: green
-    resourceName: PowerStation
     locationName: Alphorum
   - col: -1
     row: 0
+    team: red
     locationName: Sacellum Tertius
   - col: -1
     row: 1
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Noxar
   - col: -1
     row: 2
     team: blue
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Coraxum Secondus
   - col: -1
     row: 3
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Maleradon Primus
   - col: 0
     row: -3
     team: green
-    resourceName: PowerStation
+    resourceName: HQ
     locationName: Cryptos Hive
   - col: 0
     row: -2
@@ -173,7 +145,6 @@ map:
   - col: 0
     row: 1
     team: blue
-    resourceName: PowerStation
     locationName: Volcanum
   - col: 0
     row: 2
@@ -182,37 +153,26 @@ map:
   - col: 0
     row: 3
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Vinovia
   - col: 1
     row: -2
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Zephadon
   - col: 1
     row: -1
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Valerius
   - col: 1
     row: 0
-    team: blue
-    resourceName: ShieldGenerator
-    defence: 1
+    team: green
     locationName: Guayota
   - col: 1
     row: 1
     team: blue
-    resourceName: PowerStation
     locationName: Alexia's Mourning
   - col: 1
     row: 2
     team: blue
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Volcus Secondus
   - col: 1
     row: 3
@@ -222,8 +182,6 @@ map:
   - col: 2
     row: -3
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Saint's Eyrie
   - col: 2
     row: -2
@@ -233,36 +191,26 @@ map:
   - col: 2
     row: -1
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Lorrin's Sanctuary
   - col: 2
     row: 0
     team: blue
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Marduk's Watch
   - col: 2
     row: 1
     team: blue
-    resourceName: PowerStation
     locationName: Raveni
   - col: 2
     row: 2
     team: blue
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Eboracum
   - col: 3
     row: -2
     team: blue
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Warrior's Haven
   - col: 3
     row: -1
     team: blue
-    resourceName: PowerStation
     locationName: Mari
   - col: 3
     row: 0   
@@ -271,33 +219,26 @@ map:
   - col: 3
     row: 1
     team: blue
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Achallor
   - col: 3
     row: 2
     team: blue
-    resourceName: Manufactorum
     locationName: Glevensium
   - col: 3
     row: 3
     team: blue
-    resourceName: Manufactorum
     locationName: Burghalus
   - col: 4
     row: -1
-    resourceName: PowerStation
     team: blue
     locationName: Naraka
   - col: 4
     row: 0
     team: blue
-    resourceName: Manufactorum
     locationName: Castra Secondus
   - col: 4
     row: 1
     team: blue
-    resourceName: Manufactorum
     locationName: Diabolar Tertius
   - col: 4
     row: 2
