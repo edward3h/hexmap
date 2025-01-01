@@ -5,17 +5,12 @@ teams:
     spriteHeight: 512
     color: "#33FF33"
     displayName: Confederacy of Dunces
-    assets:
-      4 Artificer Relics: 4
   - name: red
     spriteUrl: birb.png
     spriteWidth: 96
     spriteHeight: 96
     color: "#FF3333"
     displayName: Crimson Scallywags
-    assets:
-      2 Antiquity Relic: 4
-      2 Legendary Relic: 6
   - name: blue
     spriteUrl: square-solid.png
     spriteWidth: 448
@@ -81,7 +76,6 @@ map:
   - col: -2
     row: -1
     team: green
-    defence: 1
     locationName: Cyclopos
   - col: -2
     row: 0
@@ -245,7 +239,6 @@ map:
     team: blue
     colorOverride: '#3333FF'
     resourceName: HQ
-    defence: 1
     locationName: Port Kasanaan
 
 attacks: 
