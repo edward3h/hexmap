@@ -4,7 +4,7 @@ teams:
     spriteWidth: 512
     spriteHeight: 512
     color: "#33FF33"
-    displayName: Green Team
+    displayName: The Green Grotmas Gratus Gang
   - name: red
     spriteUrl: birb.png
     spriteWidth: 96
