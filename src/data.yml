@@ -199,7 +199,7 @@ map:
   - col: 2
     row: 1
     team: blue
-    resourceName: PowerGenerator
+    resourceName: PowerStation
     locationName: Raveni
   - col: 2
     row: 2
