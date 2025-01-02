@@ -167,10 +167,12 @@ map:
   - col: 1
     row: 1
     team: blue
+    resourceName: CommandBastion
     locationName: Alexia's Mourning
   - col: 1
     row: 2
     team: blue
+    resourceName: ShieldGenerator
     locationName: Volcus Secondus
   - col: 1
     row: 3
@@ -197,6 +199,7 @@ map:
   - col: 2
     row: 1
     team: blue
+    resourceName: PowerGenerator
     locationName: Raveni
   - col: 2
     row: 2
@@ -225,6 +228,7 @@ map:
   - col: 3
     row: 3
     team: blue
+    resourceName: Manufactorum
     locationName: Burghalus
   - col: 4
     row: -1
