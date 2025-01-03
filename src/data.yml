@@ -26,7 +26,6 @@ map:
     row: -2
     team: green
     locationName: Port Celestine
-    colorOverride: '#33FF33'
   - col: -4
     row: -1
     team: green
@@ -130,6 +129,7 @@ map:
     team: green
     resourceName: HQ
     locationName: Cryptos Hive
+    colorOverride: '#33FF33'
   - col: 0
     row: -2
     team: green
