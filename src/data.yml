@@ -284,6 +284,13 @@ attacks:
   to: 
     col: -1
     row: 0
+- team: green
+  from:
+    col: -2
+    row: -1
+  to: 
+    col: -1
+    row: 0
 - team: blue
   from:
     col: 1
@@ -295,6 +302,13 @@ attacks:
   from:
     col: -1
     row: 1
+  to: 
+    col: 0
+    row: 0
+- team: red
+  from:
+    col: -1
+    row: 0
   to: 
     col: 0
     row: 0
