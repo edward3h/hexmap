@@ -10,8 +10,8 @@ teams:
     spriteWidth: 96
     spriteHeight: 96
     color: "#FF3333"
-    displayName: Red 
-    Teamassets:
+    displayName: Red Team
+    assets:
       Seized Ground: 1
       Relics: 1
   - name: blue
