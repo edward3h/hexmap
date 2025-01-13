@@ -277,36 +277,36 @@ attacks:
   #     col: -1
   #     row: 0
 
-  - team: green
-    from:
-      col: -2
-      row: -1
-    to: 
-      col: -1
-      row: 0
-  - team: blue
-    from:
-      col: 1
-      row: 3
-    to: 
-      col: 2
-      row: -2
-  - team: red
-    from:
-      col: -1
-      row: 1
-    to: 
-      col: 0
-      row: 0
-    from:
-      col: -1
-      row: 0
-    to: 
-      col: 0
-      row: 0
-    from:
-      col: -2
-      row: 1
-    to: 
-      col: -1
-      row: 2
+- team: green
+  from:
+    col: -2
+    row: -1
+  to: 
+    col: -1
+    row: 0
+- team: blue
+  from:
+    col: 1
+    row: 3
+  to: 
+    col: 2
+    row: -2
+- team: red
+  from:
+    col: -1
+    row: 1
+  to: 
+    col: 0
+    row: 0
+  from:
+    col: -1
+    row: 0
+  to: 
+    col: 0
+    row: 0
+  from:
+    col: -2
+    row: 1
+  to: 
+    col: -1
+    row: 2
