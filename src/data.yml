@@ -298,12 +298,14 @@ attacks:
   to: 
     col: 0
     row: 0
+- team: red
   from:
     col: -1
     row: 0
   to: 
     col: 0
     row: 0
+- team: red
   from:
     col: -2
     row: 1
