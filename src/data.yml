@@ -198,12 +198,12 @@ map:
   - col: 2
     row: -2
     team: green
+    defence: 1
     resourceName: SpacePort
     locationName: Port Mortium
   - col: 2
     row: -1
     team: green
-    defence: 1
     locationName: Lorrin's Sanctuary
   - col: 2
     row: 0
