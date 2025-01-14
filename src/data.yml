@@ -126,7 +126,7 @@ map:
     locationName: Noxar
   - col: -1
     row: 2
-    team: blue
+    team: red
     colorOverride: '#FF3333'
     locationName: Coraxum Secondus
   - col: -1
@@ -151,6 +151,7 @@ map:
     locationName: Repentance
   - col: 0
     row: 0
+    team: red
     resourceName: HiveCity
     colorOverride: '#FF3333'
     locationName: Cor Gratus (Outskirts)
