@@ -203,7 +203,7 @@ map:
   - col: 2
     row: -1
     team: green
-    defense: 1
+    defence: 1
     locationName: Lorrin's Sanctuary
   - col: 2
     row: 0
