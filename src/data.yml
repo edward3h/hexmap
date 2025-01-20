@@ -83,11 +83,12 @@ map:
     row: -1
     team: green
     resourceName: CommandBastion
-    defense: 1
+    defence: 1
     locationName: Cyclopos
   - col: -2
     row: 0
     team: red
+    defence: 1
     resourceName: SpacePort
     colorOverride: "#33FF33"
     locationName: Curia Station
@@ -118,7 +119,7 @@ map:
     row: 0
     team: red
     resourceName: CommandBastion
-    defense: 1
+    defence: 1
     locationName: Sacellum Tertius
   - col: -1
     row: 1
@@ -152,7 +153,7 @@ map:
     row: 0
     team: red
     resourceName: HiveCity
-    defense: 2
+    defence: 2
     colorOverride: "#3333FF"
     locationName: Cor Gratus (Outskirts)
   - col: 0
@@ -184,7 +185,7 @@ map:
   - col: 1
     row: 1
     team: blue
-    defense: 2
+    defence: 2
     resourceName: CommandBastion
     locationName: Alexia's Mourning
   - col: 1
@@ -322,13 +323,6 @@ attacks:
   to: 
     col: 0
     row: 0
-- team: red
-  from:
-    col: -2
-    row: 0
-  to: 
-    col: -2
-    row: -1
 - team: red
   from:
     col: -1
