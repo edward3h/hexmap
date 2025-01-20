@@ -36,7 +36,7 @@ map:
   - col: -4
     row: 0
     team: red
-    defence: 1
+    resourceName: CommandBastion
     locationName: Gheradon
   - col: -4
     row: 1
@@ -87,7 +87,6 @@ map:
   - col: -2
     row: 0
     team: red
-    defence: 1
     resourceName: SpacePort
     locationName: Curia Station
   - col: -2
@@ -111,7 +110,6 @@ map:
   - col: -1
     row: -1
     team: green
-    defence: 1
     resourceName: PowerStation
     locationName: Alphorum
   - col: -1
@@ -142,7 +140,6 @@ map:
   - col: 0
     row: -2
     team: green
-    defence: 0
     locationName: Arkhi
   - col: 0
     row: -1
@@ -174,6 +171,7 @@ map:
   - col: 1
     row: -1
     team: green
+    resourceName: PowerStation
     locationName: Valerius
   - col: 1
     row: 0
@@ -201,7 +199,6 @@ map:
   - col: 2
     row: -2
     team: green
-    defence: 1
     resourceName: SpacePort
     locationName: Port Mortium
   - col: 2
@@ -236,6 +233,7 @@ map:
   - col: 3
     row: 1
     team: blue
+    resourceName: ShieldGenerator
     locationName: Achallor
   - col: 3
     row: 2
@@ -289,47 +287,89 @@ attacks:
     col: -2
     row: -1
   to: 
+    col: -2
+    row: 0
+- team: green
+  from:
+    col: -3
+    row: -1
+  to: 
+    col: -2
+    row: 0
+- team: green
+  from:
+    col: -1
+    row: -1
+  to: 
     col: -1
     row: 0
 - team: green
   from:
-    col: -2
-    row: -1
+    col: 2
+    row: -2
   to: 
-    col: -1
+    col: -2
+    row: 0
+- team: blue
+  from:
+    col: 1
+    row: 1
+  to: 
+    col: 0
+    row: 0
+- team: blue
+  from:
+    col: 2
+    row: 1
+  to: 
+    col: 0
+    row: 0
+- team: blue
+  from:
+    col: 3
+    row: 2
+  to: 
+    col: 0
     row: 0
 - team: blue
   from:
     col: 1
     row: 3
   to: 
-    col: 2
-    row: -2
-- team: red
-  from:
-    col: -1
-    row: 1
-  to: 
-    col: 0
-    row: 0
-- team: red
-  from:
-    col: -1
-    row: 0
-  to: 
-    col: 0
-    row: 0
-- team: red
-  from:
-    col: -1
-    row: 0
-  to: 
     col: 0
     row: 0
 - team: red
   from:
     col: -2
+    row: 0
+  to: 
+    col: -2
+    row: -1
+- team: red
+  from:
+    col: -1
+    row: 0
+  to: 
+    col: -2
+    row: -1
+- team: red
+  from:
+    col: -1
     row: 1
   to: 
+    col: -2
+    row: -1
+- team: red
+  from:
+    col: 0
+    row: 0
+  to: 
+    col: 1
+    row: 1
+- team: red
+  from:
     col: -1
-    row: 2
+    row: 0
+  to: 
+    col: 1
+    row: 1
