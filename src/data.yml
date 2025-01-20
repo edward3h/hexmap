@@ -166,6 +166,7 @@ map:
   - col: 0
     row: 3
     team: red
+    resourceName: CommandBastion
     locationName: Vinovia
   - col: 1
     row: -2
