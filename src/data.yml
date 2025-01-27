@@ -156,9 +156,7 @@ map:
     locationName: Repentance
   - col: 0
     row: 0
-    team: red
     resourceName: HiveCity
-    defence: 2
     team: blue
     locationName: Cor Gratus (Outskirts)
   - col: 0
