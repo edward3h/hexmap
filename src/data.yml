@@ -90,10 +90,8 @@ map:
     locationName: Cyclopos
   - col: -2
     row: 0
-    team: red
-    defence: 1
+    team: green
     resourceName: SpacePort
-    colorOverride: "#33FF33"
     locationName: Curia Station
   - col: -2
     row: 1
@@ -120,10 +118,9 @@ map:
     locationName: Alphorum
   - col: -1
     row: 0
-    team: red
+    team: green
     resourceName: CommandBastion
     colorOverride: '#33FF33'
-    defence: 1
     locationName: Sacellum Tertius
   - col: -1
     row: 1
@@ -184,13 +181,12 @@ map:
     locationName: Valerius
   - col: 1
     row: 0
-    team: green
+    team: blue
     colorOverride: '#3333FF'
     locationName: Guayota
   - col: 1
     row: 1
     team: blue
-    defence: 2
     resourceName: CommandBastion
     locationName: Alexia's Mourning
   - col: 1
@@ -210,7 +206,7 @@ map:
   - col: 2
     row: -2
     team: green
-    defense: 1
+    defence: 1
     resourceName: SpacePort
     locationName: Port Mortium
   - col: 2
