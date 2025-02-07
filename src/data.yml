@@ -90,7 +90,7 @@ map:
   - col: -2
     row: 0
     team: red
-    color: "#FF3333"
+    colorOverride: "#FF3333"
     resourceName: SpacePort
     locationName: Curia Station
   - col: -2
@@ -196,7 +196,7 @@ map:
   - col: 1
     row: 3
     team: red
-    color: "#FF3333"
+    colorOverride: "#FF3333"
     resourceName: SpacePort
     locationName: Communion Crossing
   - col: 2
