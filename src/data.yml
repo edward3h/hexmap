@@ -68,7 +68,6 @@ map:
   - col: -3
     row: 1
     team: red
-    resourceName: PowerStation
     locationName: Gerstahl's Beacon
   - col: -3
     row: 2
@@ -90,7 +89,7 @@ map:
     locationName: Cyclopos
   - col: -2
     row: 0
-    team: green
+    team: red
     resourceName: SpacePort
     locationName: Curia Station
   - col: -2
@@ -119,7 +118,6 @@ map:
   - col: -1
     row: 0
     team: green
-    resourceName: CommandBastion
     colorOverride: '#33FF33'
     locationName: Sacellum Tertius
   - col: -1
@@ -130,6 +128,7 @@ map:
   - col: -1
     row: 2
     team: red
+    resourceName: CommandBastion
     locationName: Coraxum Secondus
   - col: -1
     row: 3
@@ -145,11 +144,11 @@ map:
   - col: 0
     row: -2
     team: green
+    resourceName: PowerStation
     locationName: Arkhi
   - col: 0
     row: -1
-    team: green
-    resourceName: ShieldGenerator
+    team: blue
     locationName: Repentance
   - col: 0
     row: 0
@@ -196,7 +195,7 @@ map:
     locationName: Volcus Secondus
   - col: 1
     row: 3
-    team: blue
+    team: red
     resourceName: SpacePort
     locationName: Communion Crossing
   - col: 2
@@ -257,10 +256,12 @@ map:
   - col: 4
     row: -1
     team: blue
+    resourceName: ShieldGenerator
     locationName: Naraka
   - col: 4
     row: 0
     team: blue
+    resourceName: PowerStation
     locationName: Castra Secondus
   - col: 4
     row: 1
@@ -268,6 +269,7 @@ map:
     locationName: Diabolar Tertius
   - col: 4
     row: 2
+    defence: 1
     team: blue
     colorOverride: '#3333FF'
     resourceName: HQ
@@ -300,56 +302,14 @@ attacks:
     row: 2
 - team: green
   from:
-    col: -2
-    row: -1
-  to: 
-    col: -1
-    row: 0
-- team: green
-  from:
-    col: -1
-    row: -1
-  to: 
-    col: -1
-    row: 0
-- team: green
-  from:
     col: 2
     row: -2
   to: 
-    col: -4
+    col: 4
     row: 2
-- team: blue
-  from:
-    col: 1
-    row: 1
-  to: 
-    col: 1
-    row: 0
-- team: blue
-  from:
-    col: 2
-    row: 0
-  to: 
-    col: 1
-    row: 0
-- team: blue
-  from:
-    col: 3
-    row: -1
-  to: 
-    col: 2
-    row: -2
-- team: blue
-  from:
-    col: 3
-    row: -2
-  to: 
-    col: 2
-    row: -2
 - team: red
   from:
-    col: -2
+    col: 3
     row: 1
   to: 
     col: -2
@@ -357,7 +317,29 @@ attacks:
 - team: red
   from:
     col: -1
-    row: 0
+    row: 1
   to: 
     col: -2
+    row: 0
+- team: red
+  from:
+    col: 0
+    row: 3
+  to: 
+    col: 1
+    row: 3
+- team: blue
+  from:
+    col: 0
+    row: 0
+  to: 
+    col: 0
     row: -1
+- team: blue
+  from:
+    col: 3
+    row: -2
+  to: 
+    col: 2
+    row: -2
+
