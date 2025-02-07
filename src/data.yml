@@ -7,6 +7,7 @@ teams:
     displayName: Green Grotmas Gratus Gang
     assets:
       Daggers and Olive Branches: 1
+      Sap Their Lines: 1
   - name: red
     spriteUrl: birb.png
     spriteWidth: 96
@@ -17,6 +18,7 @@ teams:
       Seized Ground: 1
       Daggers and Olive Branches: 1
       Hearts and Minds: 1
+      Sap Their Lines: 1
       Relics: 1
   - name: blue
     spriteUrl: square-solid.png
@@ -24,6 +26,8 @@ teams:
     spriteHeight: 512
     color: "#3333FF"
     displayName: Blue Team
+    assets:
+      Sap Their Lines: 1
     # example assets. <name>: <SVP score>
     # assets:
     #   Bag of Holding: 2
@@ -109,7 +113,6 @@ map:
   - col: -1
     row: -2
     team: green
-    resourceName: Manufactorum
     locationName: Requiem Tertius
   - col: -1
     row: -1
