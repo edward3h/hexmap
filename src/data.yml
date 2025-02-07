@@ -90,6 +90,7 @@ map:
   - col: -2
     row: 0
     team: red
+    color: "#FF3333"
     resourceName: SpacePort
     locationName: Curia Station
   - col: -2
@@ -118,7 +119,6 @@ map:
   - col: -1
     row: 0
     team: green
-    colorOverride: '#33FF33'
     locationName: Sacellum Tertius
   - col: -1
     row: 1
@@ -149,6 +149,7 @@ map:
   - col: 0
     row: -1
     team: blue
+    colorOverride: '#3333FF'
     locationName: Repentance
   - col: 0
     row: 0
@@ -181,7 +182,6 @@ map:
   - col: 1
     row: 0
     team: blue
-    colorOverride: '#3333FF'
     locationName: Guayota
   - col: 1
     row: 1
@@ -196,6 +196,7 @@ map:
   - col: 1
     row: 3
     team: red
+    color: "#FF3333"
     resourceName: SpacePort
     locationName: Communion Crossing
   - col: 2
@@ -309,7 +310,7 @@ attacks:
     row: 2
 - team: red
   from:
-    col: 3
+    col: -3
     row: 1
   to: 
     col: -2
