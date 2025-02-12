@@ -6,8 +6,10 @@ teams:
     color: "#33FF33"
     displayName: Green Grotmas Gratus Gang
     assets:
+      Vital Intel: 6
       Daggers and Olive Branches: 1
       Sap Their Lines: 1
+      Encirclement: 1
   - name: red
     spriteUrl: birb.png
     spriteWidth: 96
@@ -94,7 +96,6 @@ map:
   - col: -2
     row: 0
     team: red
-    colorOverride: "#FF3333"
     resourceName: SpacePort
     locationName: Curia Station
   - col: -2
@@ -152,7 +153,6 @@ map:
   - col: 0
     row: -1
     team: blue
-    colorOverride: '#3333FF'
     locationName: Repentance
   - col: 0
     row: 0
@@ -161,7 +161,8 @@ map:
     locationName: Cor Gratus (Outskirts)
   - col: 0
     row: 1
-    team: blue
+    team: red
+    colorOverride: "#FF3333"
     locationName: Volcanum
   - col: 0
     row: 2
@@ -198,8 +199,8 @@ map:
     locationName: Volcus Secondus
   - col: 1
     row: 3
-    team: red
-    colorOverride: "#FF3333"
+    team: blue
+    colorOverride: '#3333FF'
     resourceName: SpacePort
     locationName: Communion Crossing
   - col: 2
@@ -209,7 +210,6 @@ map:
   - col: 2
     row: -2
     team: green
-    defence: 1
     resourceName: SpacePort
     locationName: Port Mortium
   - col: 2
@@ -299,13 +299,6 @@ attacks:
 
 - team: green
   from:
-    col: -2
-    row: -0
-  to: 
-    col: -4
-    row: 2
-- team: green
-  from:
     col: 2
     row: -2
   to: 
@@ -313,37 +306,30 @@ attacks:
     row: 2
 - team: red
   from:
-    col: -3
+    col: -1
     row: 1
   to: 
-    col: -2
+    col: 0
     row: 0
 - team: red
   from:
     col: -1
-    row: 1
+    row: 2
   to: 
-    col: -2
-    row: 0
-- team: red
+    col: 0
+    row: 1
+- team: blue
   from:
     col: 0
-    row: 3
+    row: 0
+  to: 
+    col: -1
+    row: 1
+- team: blue
+  from:
+    col: 2
+    row: 2
   to: 
     col: 1
     row: 3
-- team: blue
-  from:
-    col: 0
-    row: 0
-  to: 
-    col: 0
-    row: -1
-- team: blue
-  from:
-    col: 3
-    row: -2
-  to: 
-    col: 2
-    row: -2
 
