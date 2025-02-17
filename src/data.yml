@@ -202,7 +202,6 @@ map:
   - col: 1
     row: 3
     team: blue
-    colorOverride: '#3333FF'
     resourceName: SpacePort
     locationName: Communion Crossing
   - col: 2
