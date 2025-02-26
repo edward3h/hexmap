@@ -249,6 +249,7 @@ map:
   - col: 3
     row: -1
     team: blue
+    resourceName: PowerStation
     locationName: Mari
   - col: 3
     row: 0   
