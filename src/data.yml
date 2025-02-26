@@ -23,6 +23,7 @@ teams:
       Sap Their Lines: 1
       Winter supplies: 1
       Total War: 2
+      Vital Intel: 2
   - name: blue
     spriteUrl: square-solid.png
     spriteWidth: 448
