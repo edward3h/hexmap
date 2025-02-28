@@ -134,7 +134,8 @@ map:
     locationName: Sacellum Tertius
   - col: -1
     row: 1
-    team: red
+    team: blue
+    colorOverride: '#3333FF'
     resourceName: ShieldGenerator
     locationName: Noxar
   - col: -1
@@ -165,6 +166,7 @@ map:
     locationName: Repentance
   - col: 0
     row: 0
+    defense: 2
     resourceName: HiveCity
     team: blue
     locationName: Cor Gratus (Outskirts)
