@@ -4,24 +4,37 @@ teams:
     spriteWidth: 512
     spriteHeight: 512
     color: "#33FF33"
-    displayName: Confederacy of Dunces
+    displayName: Green Grotmas Gratus Gang
     assets:
-      4 Artificer Relics: 4
+      Vital Intel: 6
+      Daggers and Olive Branches: 1
+      Sap Their Lines: 1
+      Encirclement: 1
   - name: red
     spriteUrl: birb.png
     spriteWidth: 96
     spriteHeight: 96
     color: "#FF3333"
-    displayName: Crimson Scallywags
+    displayName: Red Team
     assets:
-      2 Antiquity Relic: 4
-      2 Legendary Relic: 6
+      Seized Ground: 1
+      Daggers and Olive Branches: 1
+      Hearts and Minds: 1
+      Sap Their Lines: 1
+      Winter supplies: 1
+      Total War: 2
+      Vital Intel: 2
   - name: blue
     spriteUrl: square-solid.png
     spriteWidth: 448
     spriteHeight: 512
     color: "#3333FF"
-    displayName: The Loathsome Empire
+    displayName: Blue Team
+    assets:
+      Sap Their Lines: 1
+      Vital Intel: 4
+      Relics: 1
+      Total War: 1
     # example assets. <name>: <SVP score>
     # assets:
     #   Bag of Holding: 2
@@ -30,44 +43,34 @@ map:
   - col: -4
     row: -2
     team: green
-    resourceName: HQ
-    defence: 1
     locationName: Port Celestine
-    colorOverride: '#33FF33'
   - col: -4
     row: -1
-    resourceName: ShieldGenerator
-    defence: 1
     team: green
     locationName: Keeler
   - col: -4
     row: 0
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: CommandBastion
     locationName: Gheradon
   - col: -4
     row: 1
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: Manufactorum
     locationName: Purgatus
   - col: -4
     row: 2
     team: red
     resourceName: HQ
-    defence: 1
     locationName: Dantorum Gate
     colorOverride: '#FF3333'
   - col: -3
     row: -2
     team: green
-    resourceName: Manufactorum
     locationName: Gherick's Rapture
   - col: -3
     row: -1
     team: green
-    resourceName: PowerStation
     locationName: Mancunian Cluster
   - col: -3
     row: 0
@@ -76,55 +79,49 @@ map:
   - col: -3
     row: 1
     team: red
-    resourceName: PowerStation
     locationName: Gerstahl's Beacon
   - col: -3
     row: 2
     team: red
-    resourceName: Manufactorum
     locationName: Castiga
   - col: -3
     row: 3
     team: red
-    resourceName: Manufactorum
+    resourceName: ShieldGenerator
     locationName: Arabella Secondus
   - col: -2 
     row: -2
     team: green
-    resourceName: Manufactorum
+    resourceName: ShieldGenerator
     locationName: Pyrar Tertius
   - col: -2
     row: -1
-    team: red
-    resourceName: ShieldGenerator
-    defence: 1
+    team: green
+    resourceName: CommandBastion
     locationName: Cyclopos
   - col: -2
     row: 0
     team: green
+    colorOverride: '#33FF33'
     resourceName: SpacePort
     locationName: Curia Station
   - col: -2
     row: 1
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: PowerStation
     locationName: Beladon
   - col: -2
     row: 2
     team: red
-    resourceName: PowerStation
+    resourceName: CommandBastion
     locationName: Nephtheradon
   - col: -2
     row: 3
     team: red
-    resourceName: Manufactorum
     locationName: Praxedes Cluster
   - col: -1
     row: -2
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Requiem Tertius
   - col: -1
     row: -1
@@ -133,51 +130,50 @@ map:
     locationName: Alphorum
   - col: -1
     row: 0
-    team: red
-    resourceName: PowerStation
+    team: green
     locationName: Sacellum Tertius
   - col: -1
     row: 1
-    team: red
+    team: blue
+    colorOverride: '#3333FF'
     resourceName: ShieldGenerator
-    defence: 1
     locationName: Noxar
   - col: -1
     row: 2
-    team: blue
-    resourceName: ShieldGenerator
-    defence: 1
+    team: red
+    resourceName: CommandBastion
     locationName: Coraxum Secondus
   - col: -1
     row: 3
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: PowerStation
     locationName: Maleradon Primus
   - col: 0
     row: -3
     team: green
-    resourceName: PowerStation
+    resourceName: HQ
     locationName: Cryptos Hive
+    colorOverride: '#33FF33'
   - col: 0
     row: -2
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: PowerStation
     locationName: Arkhi
   - col: 0
     row: -1
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
+    colorOverride: '#33FF33'
     locationName: Repentance
   - col: 0
     row: 0
+    defense: 2
     resourceName: HiveCity
+    team: blue
     locationName: Cor Gratus (Outskirts)
   - col: 0
     row: 1
     team: blue
+    colorOverride: '#3333FF'
     resourceName: PowerStation
     locationName: Volcanum
   - col: 0
@@ -187,48 +183,43 @@ map:
   - col: 0
     row: 3
     team: red
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: CommandBastion
     locationName: Vinovia
   - col: 1
     row: -2
     team: green
     resourceName: ShieldGenerator
-    defence: 1
     locationName: Zephadon
   - col: 1
     row: -1
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: PowerStation
     locationName: Valerius
   - col: 1
     row: 0
-    team: blue
+    team: green
+    colorOverride: '#33FF33'
     resourceName: ShieldGenerator
-    defence: 1
     locationName: Guayota
   - col: 1
     row: 1
     team: blue
-    resourceName: PowerStation
+    resourceName: CommandBastion
     locationName: Alexia's Mourning
   - col: 1
     row: 2
     team: blue
     resourceName: ShieldGenerator
-    defence: 1
     locationName: Volcus Secondus
   - col: 1
     row: 3
-    team: blue
+    team: red
+    colorOverride: '#FF3333'
     resourceName: SpacePort
     locationName: Communion Crossing
   - col: 2
     row: -3
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Saint's Eyrie
   - col: 2
     row: -2
@@ -238,14 +229,11 @@ map:
   - col: 2
     row: -1
     team: green
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Lorrin's Sanctuary
   - col: 2
     row: 0
     team: blue
     resourceName: ShieldGenerator
-    defence: 1
     locationName: Marduk's Watch
   - col: 2
     row: 1
@@ -255,14 +243,11 @@ map:
   - col: 2
     row: 2
     team: blue
-    resourceName: ShieldGenerator
-    defence: 1
+    resourceName: CommandBastion
     locationName: Eboracum
   - col: 3
     row: -2
     team: blue
-    resourceName: ShieldGenerator
-    defence: 1
     locationName: Warrior's Haven
   - col: 3
     row: -1
@@ -277,12 +262,11 @@ map:
     row: 1
     team: blue
     resourceName: ShieldGenerator
-    defence: 1
     locationName: Achallor
   - col: 3
     row: 2
     team: blue
-    resourceName: Manufactorum
+    resourceName: CommandBastion
     locationName: Glevensium
   - col: 3
     row: 3
@@ -291,99 +275,27 @@ map:
     locationName: Burghalus
   - col: 4
     row: -1
-    resourceName: PowerStation
     team: blue
+    resourceName: ShieldGenerator
     locationName: Naraka
   - col: 4
     row: 0
     team: blue
-    resourceName: Manufactorum
+    resourceName: PowerStation
     locationName: Castra Secondus
   - col: 4
     row: 1
     team: blue
-    resourceName: Manufactorum
+    resourceName: CommandBastion
     locationName: Diabolar Tertius
   - col: 4
     row: 2
     team: blue
     colorOverride: '#3333FF'
     resourceName: HQ
-    defence: 1
     locationName: Port Kasanaan
 
 attacks: 
-  - team: red
-    from:
-      col: -2
-      row: -1
-    to: 
-      col: -2
-      row: -2
-  - team: red
-    from:
-      col: -1
-      row: 0
-    to: 
-      col: -1
-      row: -1
-  - team: red
-    from:
-      col: -1
-      row: 1
-    to: 
-      col: -1
-      row: 2
-  - team: green
-    from:
-      col: 2
-      row: -2
-    to: 
-      col: -3
-      row: 1
-  - team: green
-    from:
-      col: 0
-      row: -1
-    to: 
-      col: -1
-      row: 0
-  - team: green
-    from:
-      col: -2
-      row: -2
-    to: 
-      col: -2
-      row: -1
-  - team: blue
-    from:
-      col: 3
-      row: -1
-    to: 
-      col: 2
-      row: -2
-  - team: blue
-    from:
-      col: 3
-      row: -2
-    to: 
-      col: 2
-      row: -2
-  - team: blue
-    from:
-      col: 1
-      row: 3
-    to: 
-      col: -1
-      row: 1
-  - team: blue
-    from:
-      col: 0
-      row: 1
-    to: 
-      col: -1
-      row: 1
-
 
 # Examples. Uncomment and edit or copy.
   # - team: blue
@@ -400,4 +312,82 @@ attacks:
   #   to:
   #     col: -1
   #     row: 0
-  
+
+- team: green
+  from:
+    col: 2
+    row: -2
+  to: 
+    col: -4
+    row: 2
+- team: green
+  from:
+    col: -2
+    row: -1
+  to: 
+    col: -2
+    row: 0
+- team: green
+  from:
+    col: -1
+    row: 0
+  to: 
+    col: 0
+    row: 0
+- team: green
+  from:
+    col: 0
+    row: -2
+  to: 
+    col: 0
+    row: -1
+- team: green
+  from:
+    col: 1
+    row: -1
+  to: 
+    col: 1
+    row: 0
+- team: red
+  from:
+    col: -2
+    row: 0
+  to: 
+    col: 0
+    row: -3
+- team: red
+  from:
+    col: -1
+    row: 1
+  to: 
+    col: 0
+    row: 0
+- team: red
+  from:
+    col: 0
+    row: 1
+  to: 
+    col: 0
+    row: 0
+- team: red
+  from:
+    col: 0
+    row: 3
+  to: 
+    col: 1
+    row: 3
+- team: blue
+  from:
+    col: 0
+    row: 0
+  to: 
+    col: -1
+    row: 1
+- team: blue
+  from:
+    col: 1
+    row: 1
+  to: 
+    col: 0
+    row: 1
+

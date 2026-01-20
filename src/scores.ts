@@ -53,7 +53,7 @@ function prepareRows(team: Team, mapData: MapData): Row[] {
       r.push({
         description: displayResource(resourceName),
         count: resourceCounts[resourceName],
-        svp: resourceName === 'HQ' ? 3 : 1,
+        svp: resourceName === 'HQ' || resourceName === 'HiveCity' ? 3 : 1,
       });
     });
 
