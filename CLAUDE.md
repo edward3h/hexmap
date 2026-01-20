@@ -17,6 +17,7 @@ npm run lint         # Format (Prettier) + lint fix (ESLint)
 ```
 
 For GitHub Pages deployment, build with base path:
+
 ```bash
 npm exec -- vite build --base=/hexmap
 ```
@@ -24,16 +25,19 @@ npm exec -- vite build --base=/hexmap
 ## Architecture
 
 ### Data Flow
+
 - Game state is defined in `src/data.yml` (teams, tiles, attacks)
 - `mapData.ts` loads YAML and exports typed data structures (`MapData`, `Team`, `TileData`, `Attack`)
 - `main.ts` initializes Babylon.js scene and orchestrates loading
 
 ### Hex Grid System
+
 - Uses axial hex coordinates with odd-q offset
 - `hexUtil.ts` converts hex coords to 3D world positions
 - Tile diameter is 12 units
 
 ### Key Modules
+
 - `tileDefs.ts` - Hex tile mesh creation and click interaction
 - `attackArrows.ts` - 3D curved arrows showing attacks between tiles
 - `resourceMeshes.ts` - 3D models for strategic objectives (HQ, bases, etc.)
@@ -43,6 +47,7 @@ npm exec -- vite build --base=/hexmap
 - `infoOverlay.ts` - Click-triggered info popover UI
 
 ### Babylon.js Setup
+
 - ArcRotateCamera with constrained rotation/zoom
 - Multiple scenes: main map + separate key scenes for objectives
 - Scene action manager handles Escape key to clear selection
