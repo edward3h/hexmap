@@ -14,7 +14,7 @@ import earcut from 'earcut';
 
 import { color, diameter, tileCoordsTo3d } from './hexUtil';
 import { Overlay } from './infoOverlay';
-import { teamRef, TileData } from './mapData';
+import { Resource, teamRef, TileData } from './mapData';
 import { quotation } from './quotations';
 import { displayResource, resources } from './resourceMeshes';
 
@@ -108,7 +108,7 @@ const _teamColor = (teamName: string | undefined) =>
   teamName && teamRef[teamName] && teamRef[teamName].color;
 
 const _createTile =
-  (scene: Scene, resourceFactory: (name: string) => Mesh | undefined) =>
+  (scene: Scene, resourceFactory: (name: Resource) => Mesh | undefined) =>
   (data: TileData): Tile => {
     const { col, row, colorOverride, team, resourceName, coord } = data;
 
