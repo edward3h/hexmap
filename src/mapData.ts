@@ -43,21 +43,15 @@ interface MapData {
 
 const teamRef: Record<string, Team> = {};
 
-import data from './data.yml';
 const fetchMapData = (): Promise<MapData> => {
-  const mapData = data as MapData;
-  for (const team of mapData.teams) {
-    teamRef[team.name] = team;
-  }
-  return Promise.resolve(mapData);
-  // return fetch('data.json')
-  //   .then((response) => response.json() as Promise<MapData>)
-  //   .then((mapData) => {
-  //     for (const team of mapData.teams) {
-  //       teamRef[team.name] = team;
-  //     }
-  //     return mapData;
-  //   });
+  return fetch('/api/campaigns/1/map-data')
+    .then((response) => response.json() as Promise<MapData>)
+    .then((mapData) => {
+      for (const team of mapData.teams) {
+        teamRef[team.name] = team;
+      }
+      return mapData;
+    });
 };
 
 export { fetchMapData, MapData, Resource, Team, teamRef, TileData };
