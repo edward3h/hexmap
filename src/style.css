@@ -1,3 +1,23 @@
+#back-nav {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+}
+
+#back-nav a {
+  color: #33ff33;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+#back-nav a:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
 #app {
   /* width: 100%; */
 

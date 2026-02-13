@@ -11,6 +11,7 @@ services:
     volumes:
       - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - ./seed-campaign2.sql:/docker-entrypoint-initdb.d/03-seed-campaign2.sql:ro
       - mysqldata:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uhexmap", "-phexmap"]
