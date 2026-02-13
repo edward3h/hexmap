@@ -16,10 +16,11 @@ import { Scene } from '@babylonjs/core/scene';
 
 // import { Inspector } from '@babylonjs/inspector';
 import { showAttackArrows } from './attackArrows';
+import { Campaign } from './campaignTypes';
 import { tileCoordsTo3d } from './hexUtil';
 import { overlay, PositionFn } from './infoOverlay';
 import { createKeyScene } from './keyScene';
-import { fetchMapData } from './mapData';
+import { campaignId, fetchMapData } from './mapData';
 import { showScores } from './scores';
 import { showMapIcons } from './teamSprites';
 import { clearHighlight, loadTileFactory } from './tileDefs';
@@ -61,12 +62,12 @@ const createScene = function (engine: Engine) {
   const skyboxMaterial = new StandardMaterial('skyBox', scene);
   skyboxMaterial.backFaceCulling = false;
   const files = [
-    'textures/Space/space_left.jpg',
-    'textures/Space/space_up.jpg',
-    'textures/Space/space_front.jpg',
-    'textures/Space/space_right.jpg',
-    'textures/Space/space_down.jpg',
-    'textures/Space/space_back.jpg',
+    '/textures/Space/space_left.jpg',
+    '/textures/Space/space_up.jpg',
+    '/textures/Space/space_front.jpg',
+    '/textures/Space/space_right.jpg',
+    '/textures/Space/space_down.jpg',
+    '/textures/Space/space_back.jpg',
   ];
   skyboxMaterial.reflectionTexture = CubeTexture.CreateFromImages(files, scene);
   skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
@@ -117,13 +118,17 @@ const createScene = function (engine: Engine) {
 };
 
 const canvas = document.getElementById('app') as HTMLCanvasElement;
-DefaultLoadingScreen.DefaultLogoUrl = 'ardboyz.png';
+DefaultLoadingScreen.DefaultLogoUrl = '/ardboyz.png';
 const engine = new Engine(canvas, true, { stencil: true });
 engine.displayLoadingUI();
 
 const { scene, camera } = createScene(engine);
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-// Inspector.Show(scene, {});
+
+void fetch(`/api/campaigns/${campaignId}`)
+  .then((res) => (res.ok ? (res.json() as Promise<Campaign>) : null))
+  .then((c) => {
+    if (c) document.title = c.name;
+  });
 const keyScenes: Scene[] = [];
 keyScenes.push(createKeyScene(engine, camera, 'HQ', { scale: 0.7 }));
 keyScenes.push(createKeyScene(engine, camera, 'CommandBastion', { row: 1 }));

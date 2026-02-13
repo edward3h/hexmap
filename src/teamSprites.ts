@@ -16,7 +16,7 @@ const showMapIcons = (scene: Scene, mapData: MapData): void => {
       team.name,
       new SpriteManager(
         `${team.name}Manager`,
-        team.spriteUrl,
+        `/${team.spriteUrl}`,
         100,
         { width: team.spriteWidth, height: team.spriteHeight },
         scene,
@@ -29,7 +29,7 @@ const showMapIcons = (scene: Scene, mapData: MapData): void => {
       team.name,
       new SpriteManager(
         `${team.name}SM`,
-        `shield_${team.name}.png`,
+        `/shield_${team.name}.png`,
         100,
         { width: 72, height: 72 },
         scene,

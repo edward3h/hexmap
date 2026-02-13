@@ -5,5 +5,8 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
+# Route /map/N paths to the map page
+RewriteRule ^map/\d+ map/index.html [L]
+
 # Route /api/* requests to api.php
 RewriteRule ^api(/.*)?$ api.php [L,QSA]
