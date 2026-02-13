@@ -7,7 +7,7 @@ function getDb(): PDO
     static $pdo = null;
 
     if ($pdo === null) {
-        $configFile = __DIR__ . '/../../config.php';
+        $configFile = __DIR__ . '/../config.php';
         if (file_exists($configFile)) {
             require $configFile;
             $host = $DB_HOST;
