@@ -25,3 +25,4 @@ dist-ssr
 
 .env
 /deploy.sh
+.worktrees/
