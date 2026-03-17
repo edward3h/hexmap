@@ -21,6 +21,22 @@ function mapPathRewrite(): Plugin {
   };
 }
 
+function adminPathRewrite(): Plugin {
+  return {
+    name: 'admin-path-rewrite',
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        // Rewrite all /admin/* paths to admin/index.html for SPA routing.
+        // Hash fragments are not sent over HTTP so `#` need not be matched here.
+        if (req.url && /^\/admin(\/|$|\?)/.test(req.url)) {
+          req.url = '/admin/index.html';
+        }
+        next();
+      });
+    },
+  };
+}
+
 export default defineConfig({
   base: '/',
   build: {
@@ -28,6 +44,7 @@ export default defineConfig({
       input: {
         main: path.resolve(__dirname, 'index.html'),
         map: path.resolve(__dirname, 'map/index.html'),
+        admin: path.resolve(__dirname, 'admin/index.html'),
       },
       output: {
         manualChunks: {
@@ -46,5 +63,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [mapPathRewrite(), tsconfigPaths(), content()],
+  plugins: [mapPathRewrite(), adminPathRewrite(), tsconfigPaths(), content()],
 });
