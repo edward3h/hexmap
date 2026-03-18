@@ -17,7 +17,8 @@ function getOAuthConfig(): array
         // Use global so config variables defined in config.php land in global scope
         // and are accessible here. require_once inside a function would scope them locally.
         global $GOOGLE_CLIENT_ID, $GOOGLE_CLIENT_SECRET, $GOOGLE_REDIRECT_URI,
-               $DISCORD_CLIENT_ID, $DISCORD_CLIENT_SECRET, $DISCORD_REDIRECT_URI;
+               $DISCORD_CLIENT_ID, $DISCORD_CLIENT_SECRET, $DISCORD_REDIRECT_URI,
+               $APP_URL;
         require_once $configFile;
         $cfg = [
             'google' => [
