@@ -4,10 +4,7 @@
 import { getToken, redirectToLogin } from './auth';
 
 export class ApiError extends Error {
-  constructor(
-    public readonly status: number,
-    message: string,
-  ) {
+  constructor(public readonly status: number, message: string) {
     super(message);
     this.name = 'ApiError';
   }
@@ -44,5 +41,7 @@ export const api = {
     apiFetch<T>(path, { method: 'POST', body: JSON.stringify(body) }),
   put: <T>(path: string, body: unknown) =>
     apiFetch<T>(path, { method: 'PUT', body: JSON.stringify(body) }),
+  patch: <T>(path: string, body: unknown) =>
+    apiFetch<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
   delete: <T>(path: string) => apiFetch<T>(path, { method: 'DELETE' }),
 };

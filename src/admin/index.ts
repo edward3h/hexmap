@@ -4,15 +4,7 @@
 import { api, ApiError } from './api';
 import { captureTokenFromHash, clearToken, isLoggedIn, redirectToLogin } from './auth';
 import { renderLogin } from './login';
-
-/** Escape user-supplied strings before injecting into innerHTML. */
-function esc(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+import { esc } from './utils';
 
 interface UserRole {
   role_type: string;
