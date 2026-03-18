@@ -88,6 +88,7 @@ All campaign management handlers live here, keeping `admin.php` focused on in-ga
 | `POST`  | `/api/campaigns/:id/end`    | GM or superuser | Transition: any non-ended → Ended   |
 
 **`POST /api/campaigns`** body: `{ "name": "...", "description": "..." }`
+
 - `name` is required (non-empty string); returns 400 if missing or empty.
 - `description` is optional (defaults to empty string).
 - Duplicate campaign names are permitted (no uniqueness constraint on `campaigns.name`).
@@ -100,11 +101,11 @@ Each lifecycle endpoint takes no body. Returns 409 if the current state does not
 
 ### Team endpoints
 
-| Method   | Path                               | Auth            | Description  |
-| -------- | ---------------------------------- | --------------- | ------------ |
-| `POST`   | `/api/campaigns/:id/teams`         | GM or superuser | Create team  |
-| `PATCH`  | `/api/campaigns/:id/teams/:teamId` | GM or superuser | Edit team    |
-| `DELETE` | `/api/campaigns/:id/teams/:teamId` | GM or superuser | Delete team  |
+| Method   | Path                               | Auth            | Description |
+| -------- | ---------------------------------- | --------------- | ----------- |
+| `POST`   | `/api/campaigns/:id/teams`         | GM or superuser | Create team |
+| `PATCH`  | `/api/campaigns/:id/teams/:teamId` | GM or superuser | Edit team   |
+| `DELETE` | `/api/campaigns/:id/teams/:teamId` | GM or superuser | Delete team |
 
 All team endpoints verify that the team's `campaign_id` matches `:id`, returning 404 if not.
 
