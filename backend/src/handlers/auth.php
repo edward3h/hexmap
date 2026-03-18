@@ -31,6 +31,8 @@ function handleAuthCallback(string $provider): never
 {
     if (session_status() === PHP_SESSION_NONE) session_start();
 
+    // Load config (populates $APP_URL and OAuth credentials into global scope)
+    getOAuthConfig();
     global $APP_URL;
     $loginUrl = rtrim($APP_URL ?? '', '/') . '/admin/login';
 
