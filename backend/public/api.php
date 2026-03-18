@@ -44,6 +44,10 @@ if ($method === 'GET' && $path === '/api/auth/login') {
     require_once __DIR__ . '/../src/handlers/campaigns.php';
     handleMapData((int)$m[1]);
 
+} elseif ($method === 'GET' && preg_match('#^/api/campaigns/(\d+)/teams$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaigns.php';
+    handleListTeams((int)$m[1]);
+
 } elseif ($method === 'GET' && preg_match('#^/api/campaigns/(\d+)$#', $path, $m)) {
     require_once __DIR__ . '/../src/handlers/campaigns.php';
     handleGetCampaign((int)$m[1]);

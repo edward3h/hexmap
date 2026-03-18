@@ -170,3 +170,28 @@ function handleMapData(int $campaignId): void
 
     jsonResponse(['teams' => $teams, 'map' => $map, 'attacks' => $attacks]);
 }
+
+function handleListTeams(int $campaignId): void
+{
+    $db   = getDb();
+    $stmt = $db->prepare('SELECT id FROM campaigns WHERE id = ?');
+    $stmt->execute([$campaignId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['error' => 'Campaign not found'], 404);
+    }
+
+    $stmt = $db->prepare(
+        'SELECT id, name, display_name, color
+           FROM teams
+          WHERE campaign_id = ?
+          ORDER BY name'
+    );
+    $stmt->execute([$campaignId]);
+    $rows = $stmt->fetchAll();
+
+    foreach ($rows as &$row) {
+        $row['id'] = (int)$row['id'];
+    }
+
+    jsonResponse($rows);
+}
