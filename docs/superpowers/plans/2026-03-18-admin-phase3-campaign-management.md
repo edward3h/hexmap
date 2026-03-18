@@ -24,11 +24,13 @@
 ## File Map
 
 **New files:**
+
 - `backend/src/handlers/campaign-management.php` — campaign CRUD + lifecycle, team CRUD, user/role handlers
 - `src/admin/campaign-form.ts` — create-campaign form page at `/admin/campaigns/new`
 - `src/admin/users.ts` — user management page at `/admin/users`
 
 **Modified files:**
+
 - `backend/public/api.php` — add 14 new routes
 - `src/admin/types.ts` — add `AdminGm` interface
 - `src/admin/campaign.ts` — extend `loadData()`, add lifecycle/settings/team/GM sections
@@ -41,6 +43,7 @@
 ### Task 1: Campaign handlers (create, update, lifecycle)
 
 **Files:**
+
 - Create: `backend/src/handlers/campaign-management.php`
 
 - [ ] **Step 1: Create the file with campaign create, update, and lifecycle handlers**
@@ -271,6 +274,7 @@ git commit -m "feat: add campaign CRUD and lifecycle handlers"
 ### Task 2: Team handlers (create, update, delete)
 
 **Files:**
+
 - Modify: `backend/src/handlers/campaign-management.php` (append)
 
 - [ ] **Step 1: Append team handlers to campaign-management.php**
@@ -432,6 +436,7 @@ git commit -m "feat: add team CRUD handlers"
 ### Task 3: User and role handlers
 
 **Files:**
+
 - Modify: `backend/src/handlers/campaign-management.php` (append)
 
 - [ ] **Step 1: Append user and role handlers to campaign-management.php**
@@ -641,6 +646,7 @@ git commit -m "feat: add user list, search, and GM role handlers"
 ### Task 4: Wire routes in api.php + smoke test
 
 **Files:**
+
 - Modify: `backend/public/api.php`
 
 - [ ] **Step 1: Add 14 new routes to api.php**
@@ -788,6 +794,7 @@ git commit -m "feat: wire campaign management routes into api.php router"
 ### Task 5: Add AdminGm to types.ts
 
 **Files:**
+
 - Modify: `src/admin/types.ts`
 
 - [ ] **Step 1: Append AdminGm interface to types.ts**
@@ -824,6 +831,7 @@ git commit -m "feat: add AdminGm type to admin types"
 ### Task 6: Create campaign-form.ts
 
 **Files:**
+
 - Create: `src/admin/campaign-form.ts`
 
 - [ ] **Step 1: Create the file**
@@ -884,9 +892,7 @@ export function renderCampaignForm(container: HTMLElement): void {
         window.location.href = `/admin/campaigns/${id}`;
       })
       .catch((err: unknown) => {
-        errorEl.textContent = esc(
-          err instanceof ApiError ? err.message : String(err),
-        );
+        errorEl.textContent = esc(err instanceof ApiError ? err.message : String(err));
         submitBtn.disabled = false;
       });
   });
@@ -914,6 +920,7 @@ git commit -m "feat: add create-campaign form page"
 ### Task 7: Extend campaign.ts — loadData, lifecycle section, campaign settings
 
 **Files:**
+
 - Modify: `src/admin/campaign.ts`
 
 This task extends `loadData()` to fetch the current user and GMs list, adds `getCampaignState()`, adds `renderLifecycle()`, adds `renderCampaignSettings()`, and wires them into `render()`.
@@ -921,10 +928,13 @@ This task extends `loadData()` to fetch the current user and GMs list, adds `get
 - [ ] **Step 1: Update the imports at the top of campaign.ts**
 
 Replace the existing import line:
+
 ```typescript
 import { AdminAttack, AdminCampaign, AdminMapData } from './types';
 ```
+
 with:
+
 ```typescript
 import { AdminAttack, AdminCampaign, AdminGm, AdminMapData, AdminUser } from './types';
 ```
@@ -996,7 +1006,8 @@ function renderLifecycle(
     bg: string;
   }
   const buttons: ActionButton[] = [];
-  if (state === 'not_started') buttons.push({ label: 'Start', action: 'start', bg: '#166534' });
+  if (state === 'not_started')
+    buttons.push({ label: 'Start', action: 'start', bg: '#166534' });
   if (state === 'active') {
     buttons.push({ label: 'Pause', action: 'pause', bg: '#92400e' });
     buttons.push({ label: 'End Campaign', action: 'end', bg: '#7f1d1d' });
@@ -1014,7 +1025,9 @@ function renderLifecycle(
         .map(
           (b) =>
             `<button data-action="${b.action}"
-               style="padding:6px 14px;color:white;border:none;border-radius:3px;cursor:pointer;background:${b.bg}">
+               style="padding:6px 14px;color:white;border:none;border-radius:3px;cursor:pointer;background:${
+                 b.bg
+               }">
                ${esc(b.label)}
              </button>`,
         )
@@ -1034,9 +1047,7 @@ function renderLifecycle(
         .then(() => reload())
         .catch((err: unknown) => {
           if (errEl)
-            errEl.textContent = esc(
-              err instanceof ApiError ? err.message : String(err),
-            );
+            errEl.textContent = esc(err instanceof ApiError ? err.message : String(err));
           btn.disabled = false;
         });
     });
@@ -1060,7 +1071,9 @@ function renderCampaignSettings(
       <label style="display:flex;flex-direction:column;gap:4px;font-size:0.9em">
         Description
         <textarea id="cs-desc" rows="3"
-          style="padding:6px 8px;background:#2a2a2a;color:#eee;border:1px solid #555;border-radius:3px;resize:vertical">${esc(campaign.description ?? '')}</textarea>
+          style="padding:6px 8px;background:#2a2a2a;color:#eee;border:1px solid #555;border-radius:3px;resize:vertical">${esc(
+            campaign.description ?? '',
+          )}</textarea>
       </label>
       <div style="display:flex;align-items:center;gap:12px">
         <button id="cs-save"
@@ -1102,78 +1115,103 @@ function renderCampaignSettings(
 - [ ] **Step 4: Update render() in renderCampaignDetail to use new data and add new sections**
 
 In `renderCampaignDetail`, update the `render()` closure. Replace the destructuring line:
+
 ```typescript
-      const { campaign, mapData, teams } = await loadData(campaignId);
+const { campaign, mapData, teams } = await loadData(campaignId);
 ```
+
 with:
+
 ```typescript
-      const { campaign, mapData, teams, gms, currentUser } = await loadData(campaignId);
+const { campaign, mapData, teams, gms, currentUser } = await loadData(campaignId);
 ```
 
 Replace the header status span (the `campaign.is_active ? 'Active' : 'Inactive'` part) with the state label. Replace:
+
 ```typescript
-          <span style="font-size:0.85em;color:${
+<span
+  style="font-size:0.85em;color:${
             campaign.is_active ? '#4ade80' : '#888'
-          }">${campaign.is_active ? 'Active' : 'Inactive'}</span>
+          }"
+>
+  ${campaign.is_active ? 'Active' : 'Inactive'}
+</span>
 ```
+
 with:
+
 ```typescript
-          <span style="font-size:0.85em;color:${
+<span
+  style="font-size:0.85em;color:${
             campaign.ended_at ? '#888' : campaign.started_at && campaign.is_active ? '#4ade80' : campaign.started_at ? '#fbbf24' : '#888'
-          }">${campaign.ended_at ? 'Ended' : campaign.started_at && campaign.is_active ? 'Active' : campaign.started_at ? 'Paused' : 'Not Started'}</span>
+          }"
+>
+  $
+  {campaign.ended_at
+    ? 'Ended'
+    : campaign.started_at && campaign.is_active
+    ? 'Active'
+    : campaign.started_at
+    ? 'Paused'
+    : 'Not Started'}
+</span>
 ```
 
 Add new section placeholders to the main grid. Replace:
+
 ```typescript
-        <main style="padding:24px;max-width:900px;display:grid;gap:32px">
-          <section id="section-tiles"></section>
-          <section id="section-attacks"></section>
-          <section id="section-assets"></section>
-        </main>
+<main style="padding:24px;max-width:900px;display:grid;gap:32px">
+  <section id="section-tiles"></section>
+  <section id="section-attacks"></section>
+  <section id="section-assets"></section>
+</main>
 ```
+
 with:
+
 ```typescript
-        <main style="padding:24px;max-width:900px;display:grid;gap:32px">
-          <section id="section-lifecycle"></section>
-          <section id="section-settings"></section>
-          <section id="section-tiles"></section>
-          <section id="section-attacks"></section>
-          <section id="section-assets"></section>
-          <section id="section-teams"></section>
-          <section id="section-gms"></section>
-        </main>
+<main style="padding:24px;max-width:900px;display:grid;gap:32px">
+  <section id="section-lifecycle"></section>
+  <section id="section-settings"></section>
+  <section id="section-tiles"></section>
+  <section id="section-attacks"></section>
+  <section id="section-assets"></section>
+  <section id="section-teams"></section>
+  <section id="section-gms"></section>
+</main>
 ```
 
 Add calls to render the new sections after the existing `renderAssetEditor(...)` call:
-```typescript
-      const isSuperuser = currentUser.roles.some((r) => r.role_type === 'superuser');
 
-      renderLifecycle(
-        document.getElementById('section-lifecycle')!,
-        campaign,
-        campaignId,
-        () => void render(),
-      );
-      renderCampaignSettings(
-        document.getElementById('section-settings')!,
-        campaign,
-        campaignId,
-        () => void render(),
-      );
-      renderTeamManager(
-        document.getElementById('section-teams')!,
-        teams,
-        campaignId,
-        () => void render(),
-      );
-      if (isSuperuser) {
-        renderGmManager(
-          document.getElementById('section-gms')!,
-          gms,
-          campaignId,
-          () => void render(),
-        );
-      }
+```typescript
+const isSuperuser = currentUser.roles.some((r) => r.role_type === 'superuser');
+
+renderLifecycle(
+  document.getElementById('section-lifecycle')!,
+  campaign,
+  campaignId,
+  () => void render(),
+);
+renderCampaignSettings(
+  document.getElementById('section-settings')!,
+  campaign,
+  campaignId,
+  () => void render(),
+);
+renderTeamManager(
+  document.getElementById('section-teams')!,
+  teams,
+  campaignId,
+  () => void render(),
+);
+if (isSuperuser) {
+  renderGmManager(
+    document.getElementById('section-gms')!,
+    gms,
+    campaignId,
+    () => void render(),
+  );
+}
 ```
 
 Note: `renderTeamManager` and `renderGmManager` will be implemented in Tasks 8 and 9. Add stub implementations now so the code compiles:
@@ -1185,7 +1223,8 @@ function renderTeamManager(
   _campaignId: number,
   _reload: () => void,
 ): void {
-  _container.innerHTML = '<p style="color:#888;font-size:0.9em">Team management coming soon…</p>';
+  _container.innerHTML =
+    '<p style="color:#888;font-size:0.9em">Team management coming soon…</p>';
 }
 
 function renderGmManager(
@@ -1194,7 +1233,8 @@ function renderGmManager(
   _campaignId: number,
   _reload: () => void,
 ): void {
-  _container.innerHTML = '<p style="color:#888;font-size:0.9em">GM management coming soon…</p>';
+  _container.innerHTML =
+    '<p style="color:#888;font-size:0.9em">GM management coming soon…</p>';
 }
 ```
 
@@ -1218,6 +1258,7 @@ git commit -m "feat: extend campaign detail with lifecycle and settings sections
 ### Task 8: Add team management section to campaign.ts
 
 **Files:**
+
 - Modify: `src/admin/campaign.ts`
 
 - [ ] **Step 1: Replace the renderTeamManager stub with the full implementation**
@@ -1247,7 +1288,9 @@ function renderTeamManager(
       </td>
       <td style="padding:6px 8px">
         <span class="team-view" style="display:inline-flex;align-items:center;gap:6px">
-          <span style="display:inline-block;width:16px;height:16px;border-radius:3px;background:${esc(t.color)}"></span>
+          <span style="display:inline-block;width:16px;height:16px;border-radius:3px;background:${esc(
+            t.color,
+          )}"></span>
           ${esc(t.color)}
         </span>
         <input class="team-edit-color" type="color" value="${esc(t.color)}"
@@ -1317,24 +1360,32 @@ function renderTeamManager(
     const showEdit = (): void => {
       viewEls.forEach((el) => (el.style.display = 'none'));
       editingEl.style.display = 'inline';
-      row.querySelectorAll<HTMLInputElement>('.team-edit-name,.team-edit-display,.team-edit-color').forEach(
-        (inp) => (inp.style.display = 'inline-block'),
-      );
+      row
+        .querySelectorAll<HTMLInputElement>(
+          '.team-edit-name,.team-edit-display,.team-edit-color',
+        )
+        .forEach((inp) => (inp.style.display = 'inline-block'));
     };
     const hideEdit = (): void => {
       viewEls.forEach((el) => (el.style.display = ''));
       editingEl.style.display = 'none';
-      row.querySelectorAll<HTMLInputElement>('.team-edit-name,.team-edit-display,.team-edit-color').forEach(
-        (inp) => (inp.style.display = 'none'),
-      );
+      row
+        .querySelectorAll<HTMLInputElement>(
+          '.team-edit-name,.team-edit-display,.team-edit-color',
+        )
+        .forEach((inp) => (inp.style.display = 'none'));
     };
 
     row.querySelector('.team-edit-btn')?.addEventListener('click', showEdit);
     row.querySelector('.team-cancel-btn')?.addEventListener('click', hideEdit);
 
     row.querySelector('.team-save-btn')?.addEventListener('click', () => {
-      const nameVal = (row.querySelector('.team-edit-name') as HTMLInputElement).value.trim();
-      const displayVal = (row.querySelector('.team-edit-display') as HTMLInputElement).value.trim();
+      const nameVal = (
+        row.querySelector('.team-edit-name') as HTMLInputElement
+      ).value.trim();
+      const displayVal = (
+        row.querySelector('.team-edit-display') as HTMLInputElement
+      ).value.trim();
       const colorVal = (row.querySelector('.team-edit-color') as HTMLInputElement).value;
       const errEl = row.querySelector<HTMLElement>('.team-edit-error')!;
       errEl.textContent = '';
@@ -1371,7 +1422,11 @@ function renderTeamManager(
         .catch((err: unknown) => {
           // alert() is intentional here — the confirm-delete row has no inline error span.
           // This mirrors the existing attack editor pattern (which also uses alert() for delete errors).
-          alert(`Failed to delete team: ${err instanceof ApiError ? err.message : String(err)}`);
+          alert(
+            `Failed to delete team: ${
+              err instanceof ApiError ? err.message : String(err)
+            }`,
+          );
           viewEls.forEach((el) => (el.style.display = ''));
           confirmDeleteEl.style.display = 'none';
         });
@@ -1380,9 +1435,14 @@ function renderTeamManager(
 
   // Add team form
   document.getElementById('new-team-submit')?.addEventListener('click', () => {
-    const nameVal = (document.getElementById('new-team-name') as HTMLInputElement).value.trim();
-    const displayVal = (document.getElementById('new-team-display') as HTMLInputElement).value.trim();
-    const colorVal = (document.getElementById('new-team-color') as HTMLInputElement).value;
+    const nameVal = (
+      document.getElementById('new-team-name') as HTMLInputElement
+    ).value.trim();
+    const displayVal = (
+      document.getElementById('new-team-display') as HTMLInputElement
+    ).value.trim();
+    const colorVal = (document.getElementById('new-team-color') as HTMLInputElement)
+      .value;
     const errEl = document.getElementById('new-team-error')!;
     errEl.textContent = '';
 
@@ -1425,6 +1485,7 @@ git commit -m "feat: add team management section to campaign detail page"
 ### Task 9: Add GMs section to campaign.ts
 
 **Files:**
+
 - Modify: `src/admin/campaign.ts`
 
 - [ ] **Step 1: Replace the renderGmManager stub with the full implementation**
@@ -1444,7 +1505,9 @@ function renderGmManager(
     .map(
       (gm) => `
     <li style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #333">
-      <span>${esc(gm.display_name)} <span style="color:#888;font-size:0.85em">${esc(gm.email)}</span></span>
+      <span>${esc(gm.display_name)} <span style="color:#888;font-size:0.85em">${esc(
+        gm.email,
+      )}</span></span>
       <button data-user-id="${gm.user_id}"
         style="padding:2px 8px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px;font-size:0.85em">
         Remove
@@ -1484,7 +1547,9 @@ function renderGmManager(
         .then(() => reload())
         .catch((err: unknown) => {
           // alert() is intentional — the Remove button row has no inline error span.
-          alert(`Failed to remove GM: ${err instanceof ApiError ? err.message : String(err)}`);
+          alert(
+            `Failed to remove GM: ${err instanceof ApiError ? err.message : String(err)}`,
+          );
           btn.disabled = false;
         });
     });
@@ -1515,14 +1580,17 @@ function renderGmManager(
       .get<UserResult[]>(`/users/search?q=${encodeURIComponent(q)}`)
       .then((users) => {
         if (users.length === 0) {
-          searchResults.innerHTML = '<li style="padding:6px 0;color:#888">No users found.</li>';
+          searchResults.innerHTML =
+            '<li style="padding:6px 0;color:#888">No users found.</li>';
           return;
         }
         searchResults.innerHTML = users
           .map(
             (u) => `
           <li style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #333">
-            <span>${esc(u.display_name)} <span style="color:#888;font-size:0.85em">${esc(u.email)}</span></span>
+            <span>${esc(u.display_name)} <span style="color:#888;font-size:0.85em">${esc(
+              u.email,
+            )}</span></span>
             <button data-add-user-id="${u.id}"
               style="padding:2px 8px;cursor:pointer;background:#166534;color:white;border:none;border-radius:3px;font-size:0.85em">
               Add GM
@@ -1531,24 +1599,28 @@ function renderGmManager(
           )
           .join('');
 
-        searchResults.querySelectorAll<HTMLButtonElement>('button[data-add-user-id]').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            const userId = Number(btn.dataset['addUserId']);
-            btn.disabled = true;
-            void api
-              .post(`/campaigns/${campaignId}/gms`, { user_id: userId })
-              .then(() => reload())
-              .catch((err: unknown) => {
-                searchError.textContent = esc(
-                  err instanceof ApiError ? err.message : String(err),
-                );
-                btn.disabled = false;
-              });
+        searchResults
+          .querySelectorAll<HTMLButtonElement>('button[data-add-user-id]')
+          .forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const userId = Number(btn.dataset['addUserId']);
+              btn.disabled = true;
+              void api
+                .post(`/campaigns/${campaignId}/gms`, { user_id: userId })
+                .then(() => reload())
+                .catch((err: unknown) => {
+                  searchError.textContent = esc(
+                    err instanceof ApiError ? err.message : String(err),
+                  );
+                  btn.disabled = false;
+                });
+            });
           });
-        });
       })
       .catch((err: unknown) => {
-        searchError.textContent = esc(err instanceof ApiError ? err.message : String(err));
+        searchError.textContent = esc(
+          err instanceof ApiError ? err.message : String(err),
+        );
       });
   };
 
@@ -1580,6 +1652,7 @@ git commit -m "feat: add GMs management section to campaign detail page"
 ### Task 10: Create users.ts
 
 **Files:**
+
 - Create: `src/admin/users.ts`
 
 - [ ] **Step 1: Create the file**
@@ -1656,7 +1729,9 @@ export async function renderUsersPage(container: HTMLElement): Promise<void> {
           <strong>Users</strong>
         </header>
         <main style="padding:24px;max-width:900px">
-          <p style="color:#888;font-size:0.9em;margin:0 0 16px">${users.length} registered user${users.length === 1 ? '' : 's'}</p>
+          <p style="color:#888;font-size:0.9em;margin:0 0 16px">${
+            users.length
+          } registered user${users.length === 1 ? '' : 's'}</p>
           <table style="width:100%;border-collapse:collapse;font-size:0.9em">
             <thead>
               <tr style="border-bottom:1px solid #444;text-align:left">
@@ -1684,7 +1759,9 @@ export async function renderUsersPage(container: HTMLElement): Promise<void> {
               .catch((err: unknown) => {
                 // alert() is intentional — the user-table row has no inline error span.
                 alert(
-                  `Failed to remove GM: ${err instanceof ApiError ? err.message : String(err)}`,
+                  `Failed to remove GM: ${
+                    err instanceof ApiError ? err.message : String(err)
+                  }`,
                 );
                 btn.disabled = false;
               });
@@ -1692,7 +1769,9 @@ export async function renderUsersPage(container: HTMLElement): Promise<void> {
         });
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) return;
-      container.innerHTML = `<p style="padding:24px;color:#f87171">Error: ${esc(String(err))}</p>`;
+      container.innerHTML = `<p style="padding:24px;color:#f87171">Error: ${esc(
+        String(err),
+      )}</p>`;
     }
   }
 
@@ -1721,6 +1800,7 @@ git commit -m "feat: add users management page"
 ### Task 11: Wire routes in index.ts
 
 **Files:**
+
 - Modify: `src/admin/index.ts`
 
 - [ ] **Step 1: Add imports for new page modules**
@@ -1735,25 +1815,27 @@ import { renderUsersPage } from './users';
 - [ ] **Step 2: Add routes in the route() function**
 
 In the `route()` function, add two new routes. Find the existing campaign route:
+
 ```typescript
-  const campaignMatch = /^\/admin\/campaigns\/(\d+)$/.exec(pathname);
-  if (campaignMatch) {
-    await renderCampaignDetail(app, Number(campaignMatch[1]));
-    return;
-  }
+const campaignMatch = /^\/admin\/campaigns\/(\d+)$/.exec(pathname);
+if (campaignMatch) {
+  await renderCampaignDetail(app, Number(campaignMatch[1]));
+  return;
+}
 ```
 
 Add before it (so `/admin/campaigns/new` is matched before the `\d+` regex which won't match it anyway, but position it here for clarity):
-```typescript
-  if (pathname === '/admin/campaigns/new') {
-    renderCampaignForm(app);
-    return;
-  }
 
-  if (pathname === '/admin/users') {
-    await renderUsersPage(app);
-    return;
-  }
+```typescript
+if (pathname === '/admin/campaigns/new') {
+  renderCampaignForm(app);
+  return;
+}
+
+if (pathname === '/admin/users') {
+  await renderUsersPage(app);
+  return;
+}
 ```
 
 - [ ] **Step 3: Verify TypeScript compiles and lints cleanly**
@@ -1801,6 +1883,7 @@ git commit -m "feat: wire campaign-form and users routes into admin SPA router"
 ## Phase 3 Complete
 
 Phase 3 delivers:
+
 - ✅ Campaign creation (any auth user → auto-GM)
 - ✅ Campaign name/description editing (GM/superuser)
 - ✅ Campaign lifecycle: Start, Pause, Resume, End with state enforcement
