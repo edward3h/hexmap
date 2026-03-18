@@ -2,7 +2,7 @@
 // Campaign detail page: tile editor, attack editor, team asset editor.
 
 import { api, ApiError } from './api';
-import { AdminAttack, AdminCampaign, AdminMapData } from './types';
+import { AdminAttack, AdminCampaign, AdminGm, AdminMapData, AdminUser } from './types';
 import { esc } from './utils';
 
 interface CampaignTeam {
@@ -16,15 +16,179 @@ interface CampaignDetailData {
   campaign: AdminCampaign;
   mapData: AdminMapData;
   teams: CampaignTeam[];
+  gms: AdminGm[];
+  currentUser: AdminUser;
 }
 
 async function loadData(campaignId: number): Promise<CampaignDetailData> {
-  const [campaign, mapData, teams] = await Promise.all([
+  const [campaign, mapData, teams, gms, currentUser] = await Promise.all([
     api.get<AdminCampaign>(`/campaigns/${campaignId}`),
     api.get<AdminMapData>(`/campaigns/${campaignId}/map-data`),
     api.get<CampaignTeam[]>(`/campaigns/${campaignId}/teams`),
+    api.get<AdminGm[]>(`/campaigns/${campaignId}/gms`),
+    api.get<AdminUser>('/auth/me'),
   ]);
-  return { campaign, mapData, teams };
+  return { campaign, mapData, teams, gms, currentUser };
+}
+
+type CampaignState = 'not_started' | 'active' | 'paused' | 'ended';
+
+function getCampaignState(campaign: AdminCampaign): CampaignState {
+  if (campaign.ended_at) return 'ended';
+  if (!campaign.started_at) return 'not_started';
+  if (campaign.is_active) return 'active';
+  return 'paused';
+}
+
+function renderLifecycle(
+  container: HTMLElement,
+  campaign: AdminCampaign,
+  campaignId: number,
+  reload: () => void,
+): void {
+  const state = getCampaignState(campaign);
+  const stateLabel: Record<CampaignState, string> = {
+    not_started: 'Not Started',
+    active: 'Active',
+    paused: 'Paused',
+    ended: 'Ended',
+  };
+  const stateColor: Record<CampaignState, string> = {
+    not_started: '#888',
+    active: '#4ade80',
+    paused: '#fbbf24',
+    ended: '#888',
+  };
+
+  interface ActionButton {
+    label: string;
+    action: string;
+    bg: string;
+  }
+  const buttons: ActionButton[] = [];
+  if (state === 'not_started')
+    buttons.push({ label: 'Start', action: 'start', bg: '#166534' });
+  if (state === 'active') {
+    buttons.push({ label: 'Pause', action: 'pause', bg: '#92400e' });
+    buttons.push({ label: 'End Campaign', action: 'end', bg: '#7f1d1d' });
+  }
+  if (state === 'paused') {
+    buttons.push({ label: 'Resume', action: 'resume', bg: '#1d4ed8' });
+    buttons.push({ label: 'End Campaign', action: 'end', bg: '#7f1d1d' });
+  }
+
+  container.innerHTML = `
+    <h3 style="margin:0 0 12px">Campaign Status</h3>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span style="font-weight:600;color:${stateColor[state]}">${stateLabel[state]}</span>
+      ${buttons
+        .map(
+          (b) =>
+            `<button data-action="${b.action}"
+               style="padding:6px 14px;color:white;border:none;border-radius:3px;cursor:pointer;background:${
+                 b.bg
+               }">
+               ${esc(b.label)}
+             </button>`,
+        )
+        .join('')}
+      <span id="lifecycle-error" style="color:#f87171;font-size:0.9em"></span>
+    </div>
+  `;
+
+  container.querySelectorAll<HTMLButtonElement>('button[data-action]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const action = btn.dataset['action']!;
+      const errEl = document.getElementById('lifecycle-error');
+      if (errEl) errEl.textContent = '';
+      btn.disabled = true;
+      void api
+        .post(`/campaigns/${campaignId}/${action}`, {})
+        .then(() => reload())
+        .catch((err: unknown) => {
+          if (errEl)
+            errEl.textContent = esc(err instanceof ApiError ? err.message : String(err));
+          btn.disabled = false;
+        });
+    });
+  });
+}
+
+function renderCampaignSettings(
+  container: HTMLElement,
+  campaign: AdminCampaign,
+  campaignId: number,
+  reload: () => void,
+): void {
+  container.innerHTML = `
+    <h3 style="margin:0 0 12px">Campaign Settings</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:480px">
+      <label style="display:flex;flex-direction:column;gap:4px;font-size:0.9em">
+        Name
+        <input id="cs-name" type="text" value="${esc(campaign.name)}"
+          style="padding:6px 8px;background:#2a2a2a;color:#eee;border:1px solid #555;border-radius:3px">
+      </label>
+      <label style="display:flex;flex-direction:column;gap:4px;font-size:0.9em">
+        Description
+        <textarea id="cs-desc" rows="3"
+          style="padding:6px 8px;background:#2a2a2a;color:#eee;border:1px solid #555;border-radius:3px;resize:vertical">${esc(
+            campaign.description ?? '',
+          )}</textarea>
+      </label>
+      <div style="display:flex;align-items:center;gap:12px">
+        <button id="cs-save"
+          style="padding:6px 16px;background:#444;color:white;border:none;border-radius:3px;cursor:pointer">
+          Save
+        </button>
+        <span id="cs-feedback" style="font-size:0.9em"></span>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('cs-save')?.addEventListener('click', () => {
+    const nameVal = (document.getElementById('cs-name') as HTMLInputElement).value.trim();
+    const descVal = (document.getElementById('cs-desc') as HTMLTextAreaElement).value;
+    const feedback = document.getElementById('cs-feedback')!;
+    const saveBtn = document.getElementById('cs-save') as HTMLButtonElement;
+
+    if (!nameVal) {
+      feedback.style.color = '#f87171';
+      feedback.textContent = 'Name is required.';
+      return;
+    }
+
+    saveBtn.disabled = true;
+    feedback.textContent = '';
+
+    void api
+      .patch(`/campaigns/${campaignId}`, { name: nameVal, description: descVal })
+      .then(() => reload())
+      .catch((err: unknown) => {
+        feedback.style.color = '#f87171';
+        feedback.textContent = esc(err instanceof ApiError ? err.message : String(err));
+        saveBtn.disabled = false;
+      });
+  });
+}
+
+function renderTeamManager(
+  _container: HTMLElement,
+  _teams: CampaignTeam[],
+  _campaignId: number,
+  _reload: () => void,
+): void {
+  _container.innerHTML =
+    '<p style="color:#888;font-size:0.9em">Team management coming soon…</p>';
+}
+
+function renderGmManager(
+  _container: HTMLElement,
+  _gms: AdminGm[],
+  _campaignId: number,
+  _reload: () => void,
+): void {
+  _container.innerHTML =
+    '<p style="color:#888;font-size:0.9em">GM management coming soon…</p>';
 }
 
 function renderTileEditor(
@@ -322,20 +486,38 @@ export async function renderCampaignDetail(
   // Called after attack create/resolve to keep state consistent.
   async function render(): Promise<void> {
     try {
-      const { campaign, mapData, teams } = await loadData(campaignId);
+      const { campaign, mapData, teams, gms, currentUser } = await loadData(campaignId);
 
       container.innerHTML = `
         <header style="padding:16px 24px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center">
           <span><a href="/admin" style="color:#7ab3f0">← Campaigns</a></span>
           <strong>${esc(campaign.name)}</strong>
           <span style="font-size:0.85em;color:${
-            campaign.is_active ? '#4ade80' : '#888'
-          }">${campaign.is_active ? 'Active' : 'Inactive'}</span>
+            campaign.ended_at
+              ? '#888'
+              : campaign.started_at && campaign.is_active
+              ? '#4ade80'
+              : campaign.started_at
+              ? '#fbbf24'
+              : '#888'
+          }">${
+        campaign.ended_at
+          ? 'Ended'
+          : campaign.started_at && campaign.is_active
+          ? 'Active'
+          : campaign.started_at
+          ? 'Paused'
+          : 'Not Started'
+      }</span>
         </header>
         <main style="padding:24px;max-width:900px;display:grid;gap:32px">
+          <section id="section-lifecycle"></section>
+          <section id="section-settings"></section>
           <section id="section-tiles"></section>
           <section id="section-attacks"></section>
           <section id="section-assets"></section>
+          <section id="section-teams"></section>
+          <section id="section-gms"></section>
         </main>
       `;
 
@@ -358,6 +540,34 @@ export async function renderCampaignDetail(
         teams,
         campaignId,
       );
+      const isSuperuser = currentUser.roles.some((r) => r.role_type === 'superuser');
+
+      renderLifecycle(
+        document.getElementById('section-lifecycle')!,
+        campaign,
+        campaignId,
+        () => void render(),
+      );
+      renderCampaignSettings(
+        document.getElementById('section-settings')!,
+        campaign,
+        campaignId,
+        () => void render(),
+      );
+      renderTeamManager(
+        document.getElementById('section-teams')!,
+        teams,
+        campaignId,
+        () => void render(),
+      );
+      if (isSuperuser) {
+        renderGmManager(
+          document.getElementById('section-gms')!,
+          gms,
+          campaignId,
+          () => void render(),
+        );
+      }
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) return;
       container.innerHTML = `<p style="padding:24px;color:#f87171">Error: ${esc(
