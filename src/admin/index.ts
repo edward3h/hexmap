@@ -4,7 +4,9 @@
 import { api, ApiError } from './api';
 import { captureTokenFromHash, clearToken, isLoggedIn, redirectToLogin } from './auth';
 import { renderCampaignDetail } from './campaign';
+import { renderCampaignForm } from './campaign-form';
 import { renderLogin } from './login';
+import { renderUsersPage } from './users';
 import { esc } from './utils';
 
 interface UserRole {
@@ -128,6 +130,16 @@ async function route(): Promise<void> {
 
   if (pathname === '/admin') {
     await renderDashboard(app);
+    return;
+  }
+
+  if (pathname === '/admin/campaigns/new') {
+    renderCampaignForm(app);
+    return;
+  }
+
+  if (pathname === '/admin/users') {
+    await renderUsersPage(app);
     return;
   }
 
