@@ -334,3 +334,186 @@ function handleDeleteTeam(int $campaignId, int $teamId): never
     $db->prepare('DELETE FROM teams WHERE id = ?')->execute([$teamId]);
     jsonResponse(['ok' => true]);
 }
+
+// ── Users and Roles ───────────────────────────────────────────────────────────
+
+/**
+ * Fetch roles for a list of user IDs and attach them to user rows.
+ * Returns the user rows augmented with a 'roles' key.
+ *
+ * @param array<array{id: string, email: string, display_name: string, avatar_url: string|null}> $users
+ * @return array<array{id: int, email: string, display_name: string, avatar_url: string|null, roles: array}>
+ */
+function attachRolesToUsers(PDO $db, array $users): array
+{
+    if (empty($users)) return [];
+
+    $ids = array_map(fn(array $u): int => (int)$u['id'], $users);
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $stmt = $db->prepare(
+        "SELECT user_id, role_type, campaign_id, team_id FROM user_roles WHERE user_id IN ($placeholders) ORDER BY user_id"
+    );
+    $stmt->execute($ids);
+
+    $rolesByUser = [];
+    foreach ($stmt->fetchAll() as $role) {
+        $rolesByUser[(int)$role['user_id']][] = [
+            'role_type'   => $role['role_type'],
+            'campaign_id' => (int)$role['campaign_id'],
+            'team_id'     => (int)$role['team_id'],
+        ];
+    }
+
+    return array_map(function (array $u) use ($rolesByUser): array {
+        return [
+            'id'           => (int)$u['id'],
+            'email'        => $u['email'],
+            'display_name' => $u['display_name'],
+            'avatar_url'   => $u['avatar_url'],
+            'roles'        => $rolesByUser[(int)$u['id']] ?? [],
+        ];
+    }, $users);
+}
+
+/**
+ * GET /api/users
+ * Returns all users with their roles. Superuser only.
+ */
+function handleListUsers(): never
+{
+    $user = requireAuth();
+    requireSuperuser($user);
+
+    $db    = getDb();
+    $users = $db->query('SELECT id, email, display_name, avatar_url FROM users ORDER BY display_name')->fetchAll();
+
+    jsonResponse(attachRolesToUsers($db, $users));
+}
+
+/**
+ * GET /api/users/search?q=<query>
+ * Search users by email or display_name (LIKE %q%). Superuser only.
+ * q must be at least 2 characters. Returns max 20 results.
+ */
+function handleSearchUsers(): never
+{
+    $user = requireAuth();
+    requireSuperuser($user);
+
+    $q = trim($_GET['q'] ?? '');
+    if (mb_strlen($q) < 2) {
+        jsonResponse(['error' => 'Search query must be at least 2 characters'], 400);
+    }
+
+    $db      = getDb();
+    $pattern = '%' . $q . '%';
+    $stmt    = $db->prepare(
+        'SELECT id, email, display_name, avatar_url FROM users
+          WHERE email LIKE ? OR display_name LIKE ?
+          ORDER BY display_name
+          LIMIT 20'
+    );
+    $stmt->execute([$pattern, $pattern]);
+    $users = $stmt->fetchAll();
+
+    jsonResponse(attachRolesToUsers($db, $users));
+}
+
+/**
+ * GET /api/campaigns/:campaignId/gms
+ * Returns list of GMs for the campaign. Requires GM or superuser.
+ * Intentional asymmetry: listing GMs is accessible to any GM of the campaign
+ * (so GMs can see their co-GMs), but add/remove is superuser-only.
+ * Returns: [{ user_id, display_name, email }]
+ */
+function handleListCampaignGms(int $campaignId): never
+{
+    $user = requireAuth();
+    requireGm($user, $campaignId);
+
+    $db   = getDb();
+    $stmt = $db->prepare(
+        'SELECT u.id AS user_id, u.display_name, u.email
+           FROM user_roles r
+           JOIN users u ON r.user_id = u.id
+          WHERE r.role_type = ? AND r.campaign_id = ?
+          ORDER BY u.display_name'
+    );
+    $stmt->execute(['gm', $campaignId]);
+    $rows = $stmt->fetchAll();
+
+    $result = array_map(function (array $r): array {
+        return [
+            'user_id'      => (int)$r['user_id'],
+            'display_name' => $r['display_name'],
+            'email'        => $r['email'],
+        ];
+    }, $rows);
+
+    jsonResponse($result);
+}
+
+/**
+ * POST /api/campaigns/:campaignId/gms
+ * Body: { "user_id": N }
+ * Adds a GM role for the user in this campaign. Superuser only.
+ * Idempotent: adding an existing GM returns 200 ok.
+ */
+function handleAddCampaignGm(int $campaignId): never
+{
+    $user = requireAuth();
+    requireSuperuser($user);
+
+    $db   = getDb();
+    $body = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    $targetUserId = isset($body['user_id']) && is_int($body['user_id']) ? $body['user_id'] : 0;
+    if ($targetUserId <= 0) {
+        jsonResponse(['error' => 'user_id is required and must be a positive integer'], 400);
+    }
+
+    // Verify user exists
+    $stmt = $db->prepare('SELECT id FROM users WHERE id = ?');
+    $stmt->execute([$targetUserId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['error' => 'User not found'], 404);
+    }
+
+    // Verify campaign exists
+    $stmt = $db->prepare('SELECT id FROM campaigns WHERE id = ?');
+    $stmt->execute([$campaignId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['error' => 'Campaign not found'], 404);
+    }
+
+    // INSERT IGNORE makes this idempotent (UNIQUE constraint: user_id, role_type, campaign_id, team_id)
+    $db->prepare(
+        'INSERT IGNORE INTO user_roles (user_id, role_type, campaign_id, team_id) VALUES (?, ?, ?, 0)'
+    )->execute([$targetUserId, 'gm', $campaignId]);
+
+    jsonResponse(['ok' => true]);
+}
+
+/**
+ * DELETE /api/campaigns/:campaignId/gms/:userId
+ * Removes the GM role for the user in this campaign. Superuser only.
+ * No minimum-GM guard (intentional per spec): a superuser can remove all GMs
+ * because superusers are always available as a management fallback.
+ */
+function handleRemoveCampaignGm(int $campaignId, int $targetUserId): never
+{
+    $user = requireAuth();
+    requireSuperuser($user);
+
+    $db   = getDb();
+    $stmt = $db->prepare(
+        'DELETE FROM user_roles WHERE user_id = ? AND role_type = ? AND campaign_id = ?'
+    );
+    $stmt->execute([$targetUserId, 'gm', $campaignId]);
+
+    if ($stmt->rowCount() === 0) {
+        jsonResponse(['error' => 'GM role not found for this user in this campaign'], 404);
+    }
+
+    jsonResponse(['ok' => true]);
+}
