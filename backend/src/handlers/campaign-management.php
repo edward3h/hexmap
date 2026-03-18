@@ -201,3 +201,136 @@ function handleEndCampaign(int $campaignId): never
     $db->prepare('UPDATE campaigns SET ended_at = NOW(), is_active = 0 WHERE id = ?')->execute([$campaignId]);
     jsonResponse(['ok' => true]);
 }
+
+// ── Team CRUD ─────────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/campaigns/:campaignId/teams
+ * Body: { "name": "...", "display_name": "...", "color": "#rrggbb" } — all required.
+ * Requires GM role.
+ * Returns: 201 { "id": <new_team_id> }
+ * 409 if name already taken in this campaign.
+ */
+function handleCreateTeam(int $campaignId): never
+{
+    $user = requireAuth();
+    requireGm($user, $campaignId);
+
+    $db = getDb();
+
+    // Verify campaign exists
+    $stmt = $db->prepare('SELECT id FROM campaigns WHERE id = ?');
+    $stmt->execute([$campaignId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['error' => 'Campaign not found'], 404);
+    }
+
+    $body        = json_decode(file_get_contents('php://input'), true) ?? [];
+    $name        = trim((string)($body['name'] ?? ''));
+    $displayName = trim((string)($body['display_name'] ?? ''));
+    $color       = trim((string)($body['color'] ?? ''));
+
+    if ($name === '' || $displayName === '' || $color === '') {
+        jsonResponse(['error' => 'name, display_name, and color are required'], 400);
+    }
+
+    try {
+        $stmt = $db->prepare(
+            'INSERT INTO teams (campaign_id, name, display_name, color) VALUES (?, ?, ?, ?)'
+        );
+        $stmt->execute([$campaignId, $name, $displayName, $color]);
+    } catch (\PDOException $e) {
+        // Duplicate name within campaign (UNIQUE constraint)
+        if ($e->getCode() === '23000') {
+            jsonResponse(['error' => 'Team name already exists in this campaign'], 409);
+        }
+        throw $e;
+    }
+
+    $teamId = (int)$db->lastInsertId();
+    jsonResponse(['id' => $teamId], 201);
+}
+
+/**
+ * PATCH /api/campaigns/:campaignId/teams/:teamId
+ * Body: { "name": "...", "display_name": "...", "color": "#rrggbb" } — all optional.
+ * Requires GM role.
+ * 409 if name conflicts with an existing team in this campaign.
+ */
+function handleUpdateTeam(int $campaignId, int $teamId): never
+{
+    $user = requireAuth();
+    requireGm($user, $campaignId);
+
+    $db = getDb();
+
+    // Verify team belongs to this campaign
+    $stmt = $db->prepare('SELECT id FROM teams WHERE id = ? AND campaign_id = ?');
+    $stmt->execute([$teamId, $campaignId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['error' => 'Team not found in this campaign'], 404);
+    }
+
+    $body   = json_decode(file_get_contents('php://input'), true) ?? [];
+    $fields = [];
+    $params = [];
+
+    if (array_key_exists('name', $body)) {
+        $name = trim((string)$body['name']);
+        if ($name === '') jsonResponse(['error' => 'name must not be empty'], 400);
+        $fields[] = 'name = ?';
+        $params[]  = $name;
+    }
+
+    if (array_key_exists('display_name', $body)) {
+        $displayName = trim((string)$body['display_name']);
+        if ($displayName === '') jsonResponse(['error' => 'display_name must not be empty'], 400);
+        $fields[] = 'display_name = ?';
+        $params[]  = $displayName;
+    }
+
+    if (array_key_exists('color', $body)) {
+        $fields[] = 'color = ?';
+        $params[]  = (string)$body['color'];
+    }
+
+    if (empty($fields)) {
+        jsonResponse(['error' => 'At least one field is required'], 400);
+    }
+
+    $params[] = $teamId;
+
+    try {
+        $db->prepare('UPDATE teams SET ' . implode(', ', $fields) . ' WHERE id = ?')->execute($params);
+    } catch (\PDOException $e) {
+        if ($e->getCode() === '23000') {
+            jsonResponse(['error' => 'Team name already exists in this campaign'], 409);
+        }
+        throw $e;
+    }
+
+    jsonResponse(['ok' => true]);
+}
+
+/**
+ * DELETE /api/campaigns/:campaignId/teams/:teamId
+ * Requires GM role.
+ * Tiles owned by this team will have team_id set to NULL (FK ON DELETE SET NULL).
+ */
+function handleDeleteTeam(int $campaignId, int $teamId): never
+{
+    $user = requireAuth();
+    requireGm($user, $campaignId);
+
+    $db = getDb();
+
+    // Verify team belongs to this campaign
+    $stmt = $db->prepare('SELECT id FROM teams WHERE id = ? AND campaign_id = ?');
+    $stmt->execute([$teamId, $campaignId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['error' => 'Team not found in this campaign'], 404);
+    }
+
+    $db->prepare('DELETE FROM teams WHERE id = ?')->execute([$teamId]);
+    jsonResponse(['ok' => true]);
+}
