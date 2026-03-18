@@ -3,6 +3,7 @@
 
 import { api, ApiError } from './api';
 import { captureTokenFromHash, clearToken, isLoggedIn, redirectToLogin } from './auth';
+import { renderCampaignDetail } from './campaign';
 import { renderLogin } from './login';
 import { esc } from './utils';
 
@@ -127,6 +128,12 @@ async function route(): Promise<void> {
 
   if (pathname === '/admin') {
     await renderDashboard(app);
+    return;
+  }
+
+  const campaignMatch = /^\/admin\/campaigns\/(\d+)$/.exec(pathname);
+  if (campaignMatch) {
+    await renderCampaignDetail(app, Number(campaignMatch[1]));
     return;
   }
 
