@@ -8,6 +8,10 @@ $DB_NAME = 'hexmap';
 $DB_USER = 'your_db_user';
 $DB_PASS = 'your_db_password';
 
+// Frontend URL — where the admin SPA is served.
+// In dev this is the Vite server (5173); in production it's the same origin as the API.
+$APP_URL = 'http://localhost:5173';
+
 // Google OAuth2
 // Create credentials at: https://console.cloud.google.com/apis/credentials
 $GOOGLE_CLIENT_ID = '';

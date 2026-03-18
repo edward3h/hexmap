@@ -31,26 +31,29 @@ function handleAuthCallback(string $provider): never
 {
     if (session_status() === PHP_SESSION_NONE) session_start();
 
+    global $APP_URL;
+    $loginUrl = rtrim($APP_URL ?? '', '/') . '/admin/login';
+
     $storedState = $_SESSION['oauth_state'] ?? '';
     $state       = $_GET['state'] ?? '';
     unset($_SESSION['oauth_state'], $_SESSION['oauth_provider']);
 
     // Validate state parameter (CSRF protection)
     if (!$storedState || !$state || !hash_equals($storedState, $state)) {
-        header('Location: /admin/login?error=oauth_failed', true, 302);
+        header('Location: ' . $loginUrl . '?error=oauth_failed', true, 302);
         exit;
     }
 
     // Provider returned an error
     if (isset($_GET['error']) || empty($_GET['code'])) {
-        header('Location: /admin/login?error=oauth_failed', true, 302);
+        header('Location: ' . $loginUrl . '?error=oauth_failed', true, 302);
         exit;
     }
 
     try {
         $tokens = exchangeOAuthCode($provider, $_GET['code']);
         if (empty($tokens['access_token'])) {
-            header('Location: /admin/login?error=oauth_failed', true, 302);
+            header('Location: ' . $loginUrl . '?error=oauth_failed', true, 302);
             exit;
         }
 
@@ -59,7 +62,7 @@ function handleAuthCallback(string $provider): never
 
         if (empty($userInfo['email'])) {
             // Discord users may not have a verified email
-            header('Location: /admin/login?error=oauth_failed', true, 302);
+            header('Location: ' . $loginUrl . '?error=oauth_failed', true, 302);
             exit;
         }
 
@@ -68,12 +71,14 @@ function handleAuthCallback(string $provider): never
         $sessionToken = createSession($db, $userId);
 
         // Deliver token via hash fragment — never sent to server in subsequent requests
-        header('Location: /admin#token=' . urlencode($sessionToken), true, 302);
+        global $APP_URL;
+        $adminUrl = rtrim($APP_URL ?? '', '/') . '/admin';
+        header('Location: ' . $adminUrl . '#token=' . urlencode($sessionToken), true, 302);
         exit;
 
     } catch (\Exception $e) {
         error_log('OAuth callback error: ' . $e->getMessage());
-        header('Location: /admin/login?error=oauth_failed', true, 302);
+        header('Location: ' . $loginUrl . '?error=oauth_failed', true, 302);
         exit;
     }
 }
