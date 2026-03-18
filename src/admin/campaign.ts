@@ -370,13 +370,138 @@ function renderTeamManager(
 }
 
 function renderGmManager(
-  _container: HTMLElement,
-  _gms: AdminGm[],
-  _campaignId: number,
-  _reload: () => void,
+  container: HTMLElement,
+  gms: AdminGm[],
+  campaignId: number,
+  reload: () => void,
 ): void {
-  _container.innerHTML =
-    '<p style="color:#888;font-size:0.9em">GM management coming soon…</p>';
+  const gmRows = gms
+    .map(
+      (gm) => `
+    <li style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #333">
+      <span>${esc(gm.display_name)} <span style="color:#888;font-size:0.85em">${esc(
+        gm.email,
+      )}</span></span>
+      <button data-user-id="${gm.user_id}"
+        style="padding:2px 8px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px;font-size:0.85em">
+        Remove
+      </button>
+    </li>`,
+    )
+    .join('');
+
+  container.innerHTML = `
+    <h3 style="margin:0 0 12px">GMs</h3>
+    ${
+      gms.length === 0
+        ? '<p style="color:#888;font-size:0.9em">No GMs assigned yet.</p>'
+        : `<ul style="list-style:none;padding:0;margin:0 0 16px">${gmRows}</ul>`
+    }
+    <div style="margin-top:12px">
+      <div style="display:flex;gap:8px;align-items:flex-start;max-width:480px">
+        <input id="gm-search-input" type="text" placeholder="Search by email or name (min 2 chars)"
+          style="flex:1;padding:6px 8px;background:#2a2a2a;color:#eee;border:1px solid #555;border-radius:3px">
+        <button id="gm-search-btn"
+          style="padding:6px 12px;background:#444;color:white;border:none;border-radius:3px;cursor:pointer;white-space:nowrap">
+          Search
+        </button>
+      </div>
+      <ul id="gm-search-results" style="list-style:none;padding:0;margin:8px 0 0;max-width:480px"></ul>
+      <span id="gm-search-error" style="color:#f87171;font-size:0.85em"></span>
+    </div>
+  `;
+
+  // Remove GM buttons
+  container.querySelectorAll<HTMLButtonElement>('button[data-user-id]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const userId = Number(btn.dataset['userId']);
+      btn.disabled = true;
+      void api
+        .delete(`/campaigns/${campaignId}/gms/${userId}`)
+        .then(() => reload())
+        .catch((err: unknown) => {
+          // alert() is intentional — the Remove button row has no inline error span.
+          alert(
+            `Failed to remove GM: ${err instanceof ApiError ? err.message : String(err)}`,
+          );
+          btn.disabled = false;
+        });
+    });
+  });
+
+  // Search
+  const searchInput = document.getElementById('gm-search-input') as HTMLInputElement;
+  const searchResults = document.getElementById('gm-search-results')!;
+  const searchError = document.getElementById('gm-search-error')!;
+
+  interface UserResult {
+    id: number;
+    display_name: string;
+    email: string;
+  }
+
+  const doSearch = (): void => {
+    const q = searchInput.value.trim();
+    searchError.textContent = '';
+    searchResults.innerHTML = '';
+
+    if (q.length < 2) {
+      searchError.textContent = 'Enter at least 2 characters to search.';
+      return;
+    }
+
+    void api
+      .get<UserResult[]>(`/users/search?q=${encodeURIComponent(q)}`)
+      .then((users) => {
+        if (users.length === 0) {
+          searchResults.innerHTML =
+            '<li style="padding:6px 0;color:#888">No users found.</li>';
+          return;
+        }
+        searchResults.innerHTML = users
+          .map(
+            (u) => `
+          <li style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #333">
+            <span>${esc(u.display_name)} <span style="color:#888;font-size:0.85em">${esc(
+              u.email,
+            )}</span></span>
+            <button data-add-user-id="${u.id}"
+              style="padding:2px 8px;cursor:pointer;background:#166534;color:white;border:none;border-radius:3px;font-size:0.85em">
+              Add GM
+            </button>
+          </li>`,
+          )
+          .join('');
+
+        searchResults
+          .querySelectorAll<HTMLButtonElement>('button[data-add-user-id]')
+          .forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const userId = Number(btn.dataset['addUserId']);
+              btn.disabled = true;
+              void api
+                .post(`/campaigns/${campaignId}/gms`, { user_id: userId })
+                .then(() => reload())
+                .catch((err: unknown) => {
+                  searchError.textContent = esc(
+                    err instanceof ApiError ? err.message : String(err),
+                  );
+                  btn.disabled = false;
+                });
+            });
+          });
+      })
+      .catch((err: unknown) => {
+        searchError.textContent = esc(
+          err instanceof ApiError ? err.message : String(err),
+        );
+      });
+  };
+
+  document.getElementById('gm-search-btn')?.addEventListener('click', doSearch);
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doSearch();
+  });
 }
 
 function renderTileEditor(
