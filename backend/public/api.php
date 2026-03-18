@@ -73,6 +73,63 @@ if ($method === 'GET' && $path === '/api/auth/login') {
     require_once __DIR__ . '/../src/handlers/admin.php';
     handleUpdateTeamAssets((int)$m[1], (int)$m[2]);
 
+// ── Campaign management routes (auth protected) ──────────────────────────────
+} elseif ($method === 'POST' && $path === '/api/campaigns') {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleCreateCampaign();
+
+} elseif ($method === 'PATCH' && preg_match('#^/api/campaigns/(\d+)$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleUpdateCampaign((int)$m[1]);
+
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/start$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleStartCampaign((int)$m[1]);
+
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/pause$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handlePauseCampaign((int)$m[1]);
+
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/resume$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleResumeCampaign((int)$m[1]);
+
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/end$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleEndCampaign((int)$m[1]);
+
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/teams$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleCreateTeam((int)$m[1]);
+
+} elseif ($method === 'PATCH' && preg_match('#^/api/campaigns/(\d+)/teams/(\d+)$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleUpdateTeam((int)$m[1], (int)$m[2]);
+
+} elseif ($method === 'DELETE' && preg_match('#^/api/campaigns/(\d+)/teams/(\d+)$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleDeleteTeam((int)$m[1], (int)$m[2]);
+
+} elseif ($method === 'GET' && $path === '/api/users') {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleListUsers();
+
+} elseif ($method === 'GET' && $path === '/api/users/search') {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleSearchUsers();
+
+} elseif ($method === 'GET' && preg_match('#^/api/campaigns/(\d+)/gms$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleListCampaignGms((int)$m[1]);
+
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/gms$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleAddCampaignGm((int)$m[1]);
+
+} elseif ($method === 'DELETE' && preg_match('#^/api/campaigns/(\d+)/gms/(\d+)$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleRemoveCampaignGm((int)$m[1], (int)$m[2]);
+
 } elseif ($method === 'GET' && $path === '/api/health') {
     jsonResponse(['status' => 'ok']);
 
