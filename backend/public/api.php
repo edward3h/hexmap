@@ -12,7 +12,7 @@ $path   = rtrim((string)parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 // Handle CORS preflight
 if ($method === 'OPTIONS') {
     header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Authorization, Content-Type');
     http_response_code(204);
     exit;
@@ -51,6 +51,23 @@ if ($method === 'GET' && $path === '/api/auth/login') {
 } elseif ($method === 'GET' && $path === '/api/resources') {
     require_once __DIR__ . '/../src/handlers/campaigns.php';
     handleListResources();
+
+// ── Admin write routes (GM protected) ───────────────────────────────────────
+} elseif ($method === 'PATCH' && preg_match('#^/api/campaigns/(\d+)/tiles/(\d+)$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/admin.php';
+    handleUpdateTile((int)$m[1], (int)$m[2]);
+
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/attacks$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/admin.php';
+    handleCreateAttack((int)$m[1]);
+
+} elseif ($method === 'DELETE' && preg_match('#^/api/campaigns/(\d+)/attacks/(\d+)$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/admin.php';
+    handleResolveAttack((int)$m[1], (int)$m[2]);
+
+} elseif ($method === 'PUT' && preg_match('#^/api/campaigns/(\d+)/teams/(\d+)/assets$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/admin.php';
+    handleUpdateTeamAssets((int)$m[1], (int)$m[2]);
 
 } elseif ($method === 'GET' && $path === '/api/health') {
     jsonResponse(['status' => 'ok']);
