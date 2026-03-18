@@ -172,13 +172,201 @@ function renderCampaignSettings(
 }
 
 function renderTeamManager(
-  _container: HTMLElement,
-  _teams: CampaignTeam[],
-  _campaignId: number,
-  _reload: () => void,
+  container: HTMLElement,
+  teams: CampaignTeam[],
+  campaignId: number,
+  reload: () => void,
 ): void {
-  _container.innerHTML =
-    '<p style="color:#888;font-size:0.9em">Team management coming soon…</p>';
+  const teamRows = teams
+    .map(
+      (t) => `
+    <tr data-team-id="${t.id}">
+      <td style="padding:6px 8px">
+        <span class="team-view">${esc(t.name)}</span>
+        <input class="team-edit-name" type="text" value="${esc(t.name)}"
+          style="display:none;background:#2a2a2a;color:#eee;border:1px solid #555;padding:2px 6px;border-radius:3px;width:120px">
+      </td>
+      <td style="padding:6px 8px">
+        <span class="team-view">${esc(t.display_name)}</span>
+        <input class="team-edit-display" type="text" value="${esc(t.display_name)}"
+          style="display:none;background:#2a2a2a;color:#eee;border:1px solid #555;padding:2px 6px;border-radius:3px;width:140px">
+      </td>
+      <td style="padding:6px 8px">
+        <span class="team-view" style="display:inline-flex;align-items:center;gap:6px">
+          <span style="display:inline-block;width:16px;height:16px;border-radius:3px;background:${esc(
+            t.color,
+          )}"></span>
+          ${esc(t.color)}
+        </span>
+        <input class="team-edit-color" type="color" value="${esc(t.color)}"
+          style="display:none;width:48px;height:28px;border:none;background:none;cursor:pointer">
+      </td>
+      <td style="padding:6px 8px;white-space:nowrap">
+        <span class="team-view">
+          <button class="team-edit-btn" style="padding:2px 8px;cursor:pointer;margin-right:4px">Edit</button>
+          <button class="team-delete-btn" style="padding:2px 8px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px">Delete</button>
+        </span>
+        <span class="team-editing" style="display:none">
+          <button class="team-save-btn" style="padding:2px 8px;cursor:pointer;background:#166534;color:white;border:none;border-radius:3px;margin-right:4px">Save</button>
+          <button class="team-cancel-btn" style="padding:2px 8px;cursor:pointer">Cancel</button>
+          <span class="team-edit-error" style="color:#f87171;font-size:0.85em;margin-left:6px"></span>
+        </span>
+        <span class="team-confirm-delete" style="display:none">
+          Delete? <button class="team-confirm-btn" style="padding:2px 8px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px;margin:0 4px">Confirm</button>
+          <button class="team-cancel-delete-btn" style="padding:2px 8px;cursor:pointer">Cancel</button>
+        </span>
+      </td>
+    </tr>`,
+    )
+    .join('');
+
+  container.innerHTML = `
+    <h3 style="margin:0 0 12px">Teams</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:0.9em;margin-bottom:16px">
+      <thead>
+        <tr style="border-bottom:1px solid #444;text-align:left">
+          <th style="padding:6px 8px">Name</th>
+          <th style="padding:6px 8px">Display Name</th>
+          <th style="padding:6px 8px">Colour</th>
+          <th style="padding:6px 8px"></th>
+        </tr>
+      </thead>
+      <tbody>${teamRows}</tbody>
+    </table>
+    <details>
+      <summary style="cursor:pointer;color:#7ab3f0;margin-bottom:8px">+ Add team</summary>
+      <div style="display:flex;flex-direction:column;gap:8px;max-width:400px;margin-top:8px">
+        <input id="new-team-name" type="text" placeholder="Name (unique)"
+          style="padding:6px;background:#2a2a2a;color:#eee;border:1px solid #555;border-radius:3px">
+        <input id="new-team-display" type="text" placeholder="Display name"
+          style="padding:6px;background:#2a2a2a;color:#eee;border:1px solid #555;border-radius:3px">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.9em">
+          Colour <input id="new-team-color" type="color" value="#888888"
+            style="width:48px;height:28px;border:none;background:none;cursor:pointer">
+        </label>
+        <div style="display:flex;align-items:center;gap:12px">
+          <button id="new-team-submit"
+            style="padding:6px 14px;background:#1d4ed8;color:white;border:none;border-radius:3px;cursor:pointer">
+            Create Team
+          </button>
+          <span id="new-team-error" style="color:#f87171;font-size:0.85em"></span>
+        </div>
+      </div>
+    </details>
+  `;
+
+  // Edit / cancel / save per row
+  container.querySelectorAll<HTMLTableRowElement>('tr[data-team-id]').forEach((row) => {
+    const teamId = Number(row.dataset['teamId']);
+    const viewEls = row.querySelectorAll<HTMLElement>('.team-view');
+    const editingEl = row.querySelector<HTMLElement>('.team-editing')!;
+    const confirmDeleteEl = row.querySelector<HTMLElement>('.team-confirm-delete')!;
+
+    const showEdit = (): void => {
+      viewEls.forEach((el) => (el.style.display = 'none'));
+      editingEl.style.display = 'inline';
+      row
+        .querySelectorAll<HTMLInputElement>(
+          '.team-edit-name,.team-edit-display,.team-edit-color',
+        )
+        .forEach((inp) => (inp.style.display = 'inline-block'));
+    };
+    const hideEdit = (): void => {
+      viewEls.forEach((el) => (el.style.display = ''));
+      editingEl.style.display = 'none';
+      row
+        .querySelectorAll<HTMLInputElement>(
+          '.team-edit-name,.team-edit-display,.team-edit-color',
+        )
+        .forEach((inp) => (inp.style.display = 'none'));
+    };
+
+    row.querySelector('.team-edit-btn')?.addEventListener('click', showEdit);
+    row.querySelector('.team-cancel-btn')?.addEventListener('click', hideEdit);
+
+    row.querySelector('.team-save-btn')?.addEventListener('click', () => {
+      const nameVal = (
+        row.querySelector('.team-edit-name') as HTMLInputElement
+      ).value.trim();
+      const displayVal = (
+        row.querySelector('.team-edit-display') as HTMLInputElement
+      ).value.trim();
+      const colorVal = (row.querySelector('.team-edit-color') as HTMLInputElement).value;
+      const errEl = row.querySelector<HTMLElement>('.team-edit-error')!;
+      errEl.textContent = '';
+
+      if (!nameVal || !displayVal) {
+        errEl.textContent = 'Name and display name are required.';
+        return;
+      }
+
+      void api
+        .patch(`/campaigns/${campaignId}/teams/${teamId}`, {
+          name: nameVal,
+          display_name: displayVal,
+          color: colorVal,
+        })
+        .then(() => reload())
+        .catch((err: unknown) => {
+          errEl.textContent = esc(err instanceof ApiError ? err.message : String(err));
+        });
+    });
+
+    row.querySelector('.team-delete-btn')?.addEventListener('click', () => {
+      viewEls.forEach((el) => (el.style.display = 'none'));
+      confirmDeleteEl.style.display = 'inline';
+    });
+    row.querySelector('.team-cancel-delete-btn')?.addEventListener('click', () => {
+      viewEls.forEach((el) => (el.style.display = ''));
+      confirmDeleteEl.style.display = 'none';
+    });
+    row.querySelector('.team-confirm-btn')?.addEventListener('click', () => {
+      void api
+        .delete(`/campaigns/${campaignId}/teams/${teamId}`)
+        .then(() => reload())
+        .catch((err: unknown) => {
+          // alert() is intentional here — the confirm-delete row has no inline error span.
+          // This mirrors the existing attack editor pattern (which also uses alert() for delete errors).
+          alert(
+            `Failed to delete team: ${
+              err instanceof ApiError ? err.message : String(err)
+            }`,
+          );
+          viewEls.forEach((el) => (el.style.display = ''));
+          confirmDeleteEl.style.display = 'none';
+        });
+    });
+  });
+
+  // Add team form
+  document.getElementById('new-team-submit')?.addEventListener('click', () => {
+    const nameVal = (
+      document.getElementById('new-team-name') as HTMLInputElement
+    ).value.trim();
+    const displayVal = (
+      document.getElementById('new-team-display') as HTMLInputElement
+    ).value.trim();
+    const colorVal = (document.getElementById('new-team-color') as HTMLInputElement)
+      .value;
+    const errEl = document.getElementById('new-team-error')!;
+    errEl.textContent = '';
+
+    if (!nameVal || !displayVal) {
+      errEl.textContent = 'Name and display name are required.';
+      return;
+    }
+
+    void api
+      .post(`/campaigns/${campaignId}/teams`, {
+        name: nameVal,
+        display_name: displayVal,
+        color: colorVal,
+      })
+      .then(() => reload())
+      .catch((err: unknown) => {
+        errEl.textContent = esc(err instanceof ApiError ? err.message : String(err));
+      });
+  });
 }
 
 function renderGmManager(
