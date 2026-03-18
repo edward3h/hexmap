@@ -56,3 +56,11 @@ export interface AdminMapData {
   map: AdminTile[];
   attacks: AdminAttack[];
 }
+
+// user_id (not id) is intentional — distinguishes this projection from AdminUser.id
+// at the call site. AdminGm is only used for the GMs-list endpoint response.
+export interface AdminGm {
+  user_id: number;
+  display_name: string;
+  email: string;
+}
