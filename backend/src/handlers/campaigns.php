@@ -128,7 +128,12 @@ function handleMapData(int $campaignId): void
 
     $map = [];
     foreach ($tileRows as $row) {
-        $tile = ['col' => (int)$row['col'], 'row' => (int)$row['row'], 'coord' => $row['col'] . ',' . $row['row']];
+        $tile = [
+            'id'    => (int)$row['id'],
+            'col'   => (int)$row['col'],
+            'row'   => (int)$row['row'],
+            'coord' => $row['col'] . ',' . $row['row'],
+        ];
         if ($row['color_override'] !== null) $tile['colorOverride'] = $row['color_override'];
         if ($row['team_id'] !== null && isset($teamNameById[(int)$row['team_id']])) {
             $tile['team'] = $teamNameById[(int)$row['team_id']];
@@ -145,7 +150,7 @@ function handleMapData(int $campaignId): void
 
     // Attacks
     $stmt = $db->prepare(
-        'SELECT team_id, from_tile_id, to_tile_id
+        'SELECT id, team_id, from_tile_id, to_tile_id
            FROM attacks
           WHERE campaign_id = ?
             AND resolved_at IS NULL'
@@ -156,6 +161,7 @@ function handleMapData(int $campaignId): void
     $attacks = [];
     foreach ($attackRows as $row) {
         $attacks[] = [
+            'id'   => (int)$row['id'],
             'team' => $teamNameById[(int)$row['team_id']] ?? '',
             'from' => $tileCoordById[(int)$row['from_tile_id']] ?? ['col' => 0, 'row' => 0],
             'to'   => $tileCoordById[(int)$row['to_tile_id']] ?? ['col' => 0, 'row' => 0],
