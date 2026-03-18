@@ -33,6 +33,7 @@ services:
     volumes:
       - ./public:/var/www/html
       - ./src:/var/www/src
+      - ./config.php:/var/www/config.php:ro
     depends_on:
       db:
         condition: service_healthy
