@@ -42,6 +42,7 @@ export interface AdminTile {
   resourceName?: string;
   team?: string;
   defence?: number;
+  colorOverride?: string;
 }
 
 export interface AdminAttack {
