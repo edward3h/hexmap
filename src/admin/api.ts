@@ -10,17 +10,21 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+export async function apiFetch<T>(
+  path: string,
+  options: RequestInit & { skipContentType?: boolean } = {},
+): Promise<T> {
   const token = getToken();
+  const { skipContentType, ...fetchOptions } = options;
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string>),
+    ...(skipContentType ? {} : { 'Content-Type': 'application/json' }),
+    ...(fetchOptions.headers as Record<string, string>),
   };
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch('/api' + path, { ...options, headers });
+  const response = await fetch('/api' + path, { ...fetchOptions, headers });
 
   if (response.status === 401) {
     redirectToLogin();
@@ -44,4 +48,6 @@ export const api = {
   patch: <T>(path: string, body: unknown) =>
     apiFetch<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
   delete: <T>(path: string) => apiFetch<T>(path, { method: 'DELETE' }),
+  upload: <T>(path: string, formData: FormData) =>
+    apiFetch<T>(path, { method: 'POST', body: formData, skipContentType: true }),
 };

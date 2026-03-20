@@ -61,6 +61,10 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/sprites': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
   plugins: [mapPathRewrite(), adminPathRewrite(), tsconfigPaths(), content()],

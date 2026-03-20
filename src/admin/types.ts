@@ -65,3 +65,11 @@ export interface AdminGm {
   display_name: string;
   email: string;
 }
+
+export interface AdminSpriteHistory {
+  id: number;
+  sprite_url: string;
+  sprite_width: number;
+  sprite_height: number;
+  uploaded_at: string;
+}

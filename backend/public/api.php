@@ -138,6 +138,23 @@ if ($method === 'GET' && $path === '/api/auth/login') {
     require_once __DIR__ . '/../src/handlers/campaign-management.php';
     handleRemoveCampaignGm((int)$m[1], (int)$m[2]);
 
+// ── Sprite routes (GM protected) ─────────────────────────────────────────────
+} elseif ($method === 'GET' && preg_match('#^/api/campaigns/(\d+)/teams/(\d+)/sprites$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/sprite.php';
+    handleListSprites((int)$m[1], (int)$m[2]);
+
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/teams/(\d+)/sprites$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/sprite.php';
+    handleUploadSprite((int)$m[1], (int)$m[2]);
+
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/teams/(\d+)/sprites/(\d+)/activate$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/sprite.php';
+    handleActivateSprite((int)$m[1], (int)$m[2], (int)$m[3]);
+
+} elseif ($method === 'DELETE' && preg_match('#^/api/campaigns/(\d+)/teams/(\d+)/sprite$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/sprite.php';
+    handleDeassignSprite((int)$m[1], (int)$m[2]);
+
 } elseif ($method === 'GET' && $path === '/api/health') {
     jsonResponse(['status' => 'ok']);
 

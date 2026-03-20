@@ -8,6 +8,7 @@ import {
   AdminCampaign,
   AdminGm,
   AdminMapData,
+  AdminSpriteHistory,
   AdminTile,
   AdminUser,
 } from './types';
@@ -18,6 +19,9 @@ interface CampaignTeam {
   name: string;
   display_name: string;
   color: string;
+  sprite_url: string | null;
+  sprite_width: number | null;
+  sprite_height: number | null;
 }
 
 interface CampaignDetailData {
@@ -179,6 +183,151 @@ function renderCampaignSettings(
   });
 }
 
+function renderSpritePanel(
+  panel: HTMLElement,
+  team: CampaignTeam,
+  campaignId: number,
+  reload: () => void,
+): void {
+  const currentThumb = team.sprite_url
+    ? `<img src="/${esc(team.sprite_url)}" alt="current sprite"
+        style="height:32px;border:1px solid #444;border-radius:3px;image-rendering:pixelated">`
+    : '<span style="color:#888;font-size:0.9em">No sprite set</span>';
+
+  panel.innerHTML = `
+    <div style="padding:12px 16px;background:#1a1a1a;border-top:1px solid #333">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+        <div>
+          <div style="font-size:0.8em;color:#888;margin-bottom:4px">Current sprite</div>
+          ${currentThumb}
+        </div>
+        <div>
+          <input type="file" accept="image/png,image/jpeg,image/webp,image/gif"
+            style="display:none" class="sprite-file-input">
+          <button class="sprite-upload-btn"
+            style="padding:4px 12px;background:#1d4ed8;color:white;border:none;border-radius:3px;cursor:pointer;font-size:0.85em">
+            Upload new sprite
+          </button>
+          <span class="sprite-upload-error" style="color:#f87171;font-size:0.85em;margin-left:8px"></span>
+        </div>
+        ${
+          team.sprite_url
+            ? `<button class="sprite-deassign-btn"
+                style="padding:4px 12px;background:#7f1d1d;color:white;border:none;border-radius:3px;cursor:pointer;font-size:0.85em">
+                Remove sprite
+              </button>`
+            : ''
+        }
+      </div>
+      <div class="sprite-gallery" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+        <span style="color:#888;font-size:0.85em">Loading history…</span>
+      </div>
+    </div>
+  `;
+
+  const fileInput = panel.querySelector<HTMLInputElement>('.sprite-file-input')!;
+  const uploadBtn = panel.querySelector<HTMLButtonElement>('.sprite-upload-btn')!;
+  const uploadError = panel.querySelector<HTMLElement>('.sprite-upload-error')!;
+
+  uploadBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+    uploadError.textContent = '';
+    uploadBtn.disabled = true;
+    const fd = new FormData();
+    fd.append('sprite', file);
+    void api
+      .upload<{ ok: boolean }>(`/campaigns/${campaignId}/teams/${team.id}/sprites`, fd)
+      .then(() => reload())
+      .catch((err: unknown) => {
+        uploadError.textContent = esc(
+          err instanceof ApiError ? err.message : String(err),
+        );
+        uploadBtn.disabled = false;
+        fileInput.value = '';
+      });
+  });
+
+  panel
+    .querySelector<HTMLButtonElement>('.sprite-deassign-btn')
+    ?.addEventListener('click', (e) => {
+      const btn = e.currentTarget as HTMLButtonElement;
+      btn.disabled = true;
+      void api
+        .delete<{ ok: boolean }>(`/campaigns/${campaignId}/teams/${team.id}/sprite`)
+        .then(() => reload())
+        .catch((err: unknown) => {
+          uploadError.textContent = esc(
+            err instanceof ApiError ? err.message : String(err),
+          );
+          btn.disabled = false;
+        });
+    });
+
+  const gallery = panel.querySelector<HTMLElement>('.sprite-gallery')!;
+  void api
+    .get<AdminSpriteHistory[]>(`/campaigns/${campaignId}/teams/${team.id}/sprites`)
+    .then((history) => {
+      if (history.length === 0) {
+        gallery.innerHTML =
+          '<span style="color:#888;font-size:0.85em">No sprite history yet.</span>';
+        return;
+      }
+      gallery.innerHTML = history
+        .map((s) => {
+          const isActive = s.sprite_url === team.sprite_url;
+          const date = new Date(s.uploaded_at).toLocaleDateString();
+          return `
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;background:#222;border-radius:4px;border:1px solid ${
+            isActive ? '#4ade80' : '#333'
+          }">
+            <img src="/${esc(s.sprite_url)}" alt="sprite"
+              style="height:40px;image-rendering:pixelated;border-radius:2px">
+            <span style="font-size:0.75em;color:#888">${s.sprite_width}×${
+            s.sprite_height
+          }</span>
+            <span style="font-size:0.75em;color:#888">${date}</span>
+            ${
+              isActive
+                ? '<span style="font-size:0.75em;color:#4ade80;font-weight:600">Active</span>'
+                : `<button data-sprite-id="${s.id}"
+                    style="padding:2px 8px;font-size:0.75em;background:#444;color:white;border:none;border-radius:3px;cursor:pointer">
+                    Use
+                  </button>`
+            }
+          </div>`;
+        })
+        .join('');
+
+      gallery
+        .querySelectorAll<HTMLButtonElement>('button[data-sprite-id]')
+        .forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const spriteId = Number(btn.dataset['spriteId']);
+            btn.disabled = true;
+            void api
+              .post<{ ok: boolean }>(
+                `/campaigns/${campaignId}/teams/${team.id}/sprites/${spriteId}/activate`,
+                {},
+              )
+              .then(() => reload())
+              .catch((err: unknown) => {
+                uploadError.textContent = esc(
+                  err instanceof ApiError ? err.message : String(err),
+                );
+                btn.disabled = false;
+              });
+          });
+        });
+    })
+    .catch((err: unknown) => {
+      gallery.innerHTML = `<span style="color:#f87171;font-size:0.85em">${esc(
+        err instanceof ApiError ? err.message : String(err),
+      )}</span>`;
+    });
+}
+
 function renderTeamManager(
   container: HTMLElement,
   teams: CampaignTeam[],
@@ -209,9 +358,18 @@ function renderTeamManager(
         <input class="team-edit-color" type="color" value="${esc(t.color)}"
           style="display:none;width:48px;height:28px;border:none;background:none;cursor:pointer">
       </td>
+      <td style="padding:6px 8px">
+        ${
+          t.sprite_url
+            ? `<img src="/${esc(t.sprite_url)}" alt="sprite"
+                style="height:24px;image-rendering:pixelated;border-radius:2px;vertical-align:middle">`
+            : '<span style="color:#888;font-size:0.8em">—</span>'
+        }
+      </td>
       <td style="padding:6px 8px;white-space:nowrap">
         <span class="team-view">
           <button class="team-edit-btn" style="padding:2px 8px;cursor:pointer;margin-right:4px">Edit</button>
+          <button class="team-sprites-btn" style="padding:2px 8px;cursor:pointer;margin-right:4px">Sprites</button>
           <button class="team-delete-btn" style="padding:2px 8px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px">Delete</button>
         </span>
         <span class="team-editing" style="display:none">
@@ -224,6 +382,9 @@ function renderTeamManager(
           <button class="team-cancel-delete-btn" style="padding:2px 8px;cursor:pointer">Cancel</button>
         </span>
       </td>
+    </tr>
+    <tr class="team-sprite-panel-row" data-sprite-team-id="${t.id}" style="display:none">
+      <td colspan="5" style="padding:0"></td>
     </tr>`,
     )
     .join('');
@@ -236,6 +397,7 @@ function renderTeamManager(
           <th style="padding:6px 8px">Name</th>
           <th style="padding:6px 8px">Display Name</th>
           <th style="padding:6px 8px">Colour</th>
+          <th style="padding:6px 8px">Sprite</th>
           <th style="padding:6px 8px"></th>
         </tr>
       </thead>
@@ -291,6 +453,22 @@ function renderTeamManager(
 
     row.querySelector('.team-edit-btn')?.addEventListener('click', showEdit);
     row.querySelector('.team-cancel-btn')?.addEventListener('click', hideEdit);
+
+    // Sprites panel toggle
+    const team = teams.find((t) => t.id === teamId)!;
+    const spritePanelRow = container.querySelector<HTMLTableRowElement>(
+      `tr[data-sprite-team-id="${teamId}"]`,
+    )!;
+    const spritePanelCell = spritePanelRow.querySelector('td')!;
+    row.querySelector('.team-sprites-btn')?.addEventListener('click', () => {
+      const isOpen = spritePanelRow.style.display !== 'none';
+      if (isOpen) {
+        spritePanelRow.style.display = 'none';
+      } else {
+        spritePanelRow.style.display = '';
+        renderSpritePanel(spritePanelCell, team, campaignId, reload);
+      }
+    });
 
     row.querySelector('.team-save-btn')?.addEventListener('click', () => {
       const nameVal = (

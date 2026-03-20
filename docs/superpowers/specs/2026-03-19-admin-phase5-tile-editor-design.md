@@ -44,13 +44,13 @@ The DB column is `defense` (American). The JSON API and TypeScript interfaces us
 
 Currently accepts only `team_id` (required). Extended to accept all editable fields — all optional; only keys present in the body are updated. The existing `team_id`-required validation is removed. Requires GM or superuser.
 
-| Field | Type | Validation |
-|-------|------|------------|
-| `team_id` | `int\|null` | Must belong to campaign, or null |
-| `location_name` | `string\|null` | Max 255 chars, or null to clear |
-| `resource_name` | `string\|null` | Must exist in `resources` table (`SELECT name FROM resources WHERE name = ?`), or null to clear |
-| `color_override` | `string\|null` | Must match `/^#[0-9a-f]{6}$/i`; normalised to lowercase by the backend; or null to clear |
-| `defense` | `int` | Non-negative integer (0 = no defence bonus) |
+| Field            | Type           | Validation                                                                                      |
+| ---------------- | -------------- | ----------------------------------------------------------------------------------------------- |
+| `team_id`        | `int\|null`    | Must belong to campaign, or null                                                                |
+| `location_name`  | `string\|null` | Max 255 chars, or null to clear                                                                 |
+| `resource_name`  | `string\|null` | Must exist in `resources` table (`SELECT name FROM resources WHERE name = ?`), or null to clear |
+| `color_override` | `string\|null` | Must match `/^#[0-9a-f]{6}$/i`; normalised to lowercase by the backend; or null to clear        |
+| `defense`        | `int`          | Non-negative integer (0 = no defence bonus)                                                     |
 
 **History recording:** The existing logic that writes a `tile_state_history` row is conditioned on `team_id` being present in the request body. Patches that do not include `team_id` must not write a history row. When `team_id: null` is included in the body (unassigning a team), a history row IS written (previous team → null).
 
@@ -95,7 +95,9 @@ First verify the tile exists and belongs to this campaign (`WHERE id = ? AND cam
 
 1. Count unresolved `attacks` rows: `WHERE (from_tile_id = ? OR to_tile_id = ?) AND resolved_at IS NULL`. If count > 0 → **409** (regardless of whether `attack_history` rows also exist):
    ```json
-   { "error": "Tile has N active attack(s) referencing it. Resolve those attacks before deleting this tile." }
+   {
+     "error": "Tile has N active attack(s) referencing it. Resolve those attacks before deleting this tile."
+   }
    ```
 2. Otherwise, count `attack_history` rows: `WHERE from_tile_id = ? OR to_tile_id = ?`. If count > 0 → **409**:
    ```json
@@ -142,7 +144,7 @@ function renderHexGrid(
   tiles: AdminTile[],
   teams: CampaignTeam[],
   onSelect: (sel: { col: number; row: number; tile: AdminTile | null }) => void,
-): { setSelected: (col: number | null, row: number | null) => void }
+): { setSelected: (col: number | null, row: number | null) => void };
 ```
 
 `renderTileEditor` creates separate sub-containers for the grid and the table before calling `renderHexGrid`, so the SVG and table elements do not interfere.
@@ -194,12 +196,14 @@ Clicking any polygon calls `onSelect({ col, row, tile: AdminTile | null })`, whi
 Rendered immediately below the grid. Replaced (not toggled) on each new selection. After any successful write, `reload()` re-renders the entire tile section (grid + table) from fresh `/map-data` data.
 
 **Create mode** (empty slot selected):
+
 - Coord shown as read-only label
 - Inputs: Location name (text, max 255), Resource (dropdown), Defence (number ≥ 0, default 0), Colour override (see below), Team (dropdown with "— none —" default)
 - **Create** → `POST /api/campaigns/:id/tiles` → `reload()`
 - **Cancel** → removes panel, clears selection highlight
 
 **Edit mode** (existing tile selected):
+
 - Same inputs, pre-populated from `AdminTile` data
 - `AdminTile.team` is a team name string (not id). Pre-select the team dropdown by finding `teams.find(t => t.name === tile.team)?.id`. If not found (team deleted), default to "— none —". `AdminTile.team` is absent (not null) when the tile has no team; absent counts as "— none —".
 - `AdminTile.defence` is absent (not 0) when the tile has no defence bonus (the API omits the field when `defense = 0`). The Defence input pre-populates to `0` when the field is absent.
@@ -212,6 +216,7 @@ Inline error displayed below the buttons on any API failure. Clicking a table ro
 ### Colour override input
 
 `color_override` is nullable. A checkbox **"Override colour"** controls the picker:
+
 - Unchecked → colour picker disabled; `color_override: null` sent on save
 - Checked → colour picker enabled
 - Pre-population: if `AdminTile.colorOverride` is absent/undefined → checkbox unchecked, picker disabled. If present → checkbox checked, picker shows that colour.
@@ -237,12 +242,13 @@ function renderTileEditor(
   teams: CampaignTeam[],
   campaignId: number,
   reload: () => void,
-): void
+): void;
 ```
 
 The call site in `renderCampaignDetail` must pass `() => void render()` as `reload`.
 
 Implementation:
+
 1. Fetches resources from `/api/resources` (inline error + disabled Save on failure)
 2. Creates a `gridContainer` div and a `tableContainer` div inside `container`; appends both
 3. Calls `renderHexGrid(gridContainer, …)`; stores the returned `setSelected` reference
@@ -266,7 +272,7 @@ export interface AdminTile {
   resourceName?: string;
   team?: string;
   defence?: number;
-  colorOverride?: string;   // ← new
+  colorOverride?: string; // ← new
 }
 ```
 
@@ -274,12 +280,12 @@ export interface AdminTile {
 
 ## Error Handling
 
-| Code | Condition |
-|------|-----------|
-| 400 | Invalid field value (unknown resource, negative defence, malformed colour, location_name > 255 chars) |
-| 403 | Non-GM/superuser attempts any write |
-| 404 | Tile or campaign not found; tile does not belong to campaign (delete) |
-| 409 | col/row already occupied (create); tile referenced by active attacks or attack history (delete) |
+| Code | Condition                                                                                             |
+| ---- | ----------------------------------------------------------------------------------------------------- |
+| 400  | Invalid field value (unknown resource, negative defence, malformed colour, location_name > 255 chars) |
+| 403  | Non-GM/superuser attempts any write                                                                   |
+| 404  | Tile or campaign not found; tile does not belong to campaign (delete)                                 |
+| 409  | col/row already occupied (create); tile referenced by active attacks or attack history (delete)       |
 
 All errors displayed inline in the panel. No full-page reloads.
 

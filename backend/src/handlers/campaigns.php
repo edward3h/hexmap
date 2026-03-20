@@ -181,7 +181,7 @@ function handleListTeams(int $campaignId): void
     }
 
     $stmt = $db->prepare(
-        'SELECT id, name, display_name, color
+        'SELECT id, name, display_name, color, sprite_url, sprite_width, sprite_height
            FROM teams
           WHERE campaign_id = ?
           ORDER BY name'
@@ -190,7 +190,9 @@ function handleListTeams(int $campaignId): void
     $rows = $stmt->fetchAll();
 
     foreach ($rows as &$row) {
-        $row['id'] = (int)$row['id'];
+        $row['id']            = (int)$row['id'];
+        $row['sprite_width']  = $row['sprite_width'] !== null ? (int)$row['sprite_width'] : null;
+        $row['sprite_height'] = $row['sprite_height'] !== null ? (int)$row['sprite_height'] : null;
     }
 
     jsonResponse($rows);
