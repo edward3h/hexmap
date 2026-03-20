@@ -61,6 +61,14 @@ if ($method === 'GET' && $path === '/api/auth/login') {
     require_once __DIR__ . '/../src/handlers/admin.php';
     handleUpdateTile((int)$m[1], (int)$m[2]);
 
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/tiles$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/admin.php';
+    handleCreateTile((int)$m[1]);
+
+} elseif ($method === 'DELETE' && preg_match('#^/api/campaigns/(\d+)/tiles/(\d+)$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/admin.php';
+    handleDeleteTile((int)$m[1], (int)$m[2]);
+
 } elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/attacks$#', $path, $m)) {
     require_once __DIR__ . '/../src/handlers/admin.php';
     handleCreateAttack((int)$m[1]);
