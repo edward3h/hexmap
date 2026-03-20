@@ -11,8 +11,8 @@ require_once __DIR__ . '/../middleware.php';
 
 /**
  * PATCH /api/campaigns/:campaignId/tiles/:tileId
- * Body: { "team_id": 3 }  or  { "team_id": null }
- * Updates tile ownership and records history.
+ * Body: any subset of { "team_id", "location_name", "resource_name", "color_override", "defense" }
+ * Updates tile fields dynamically and records history when team_id is present.
  * Requires GM role for the campaign.
  */
 function handleUpdateTile(int $campaignId, int $tileId): never
@@ -21,17 +21,7 @@ function handleUpdateTile(int $campaignId, int $tileId): never
     requireGm($user, $campaignId);
 
     $body = json_decode(file_get_contents('php://input'), true) ?? [];
-
-    // team_id may be null (unassign) or a positive int (assign)
-    $newTeamId = array_key_exists('team_id', $body)
-        ? ($body['team_id'] === null ? null : (int)$body['team_id'])
-        : false;
-
-    if ($newTeamId === false) {
-        jsonResponse(['error' => 'team_id is required'], 400);
-    }
-
-    $db = getDb();
+    $db   = getDb();
 
     // Verify tile belongs to this campaign
     $stmt = $db->prepare('SELECT id, team_id FROM tiles WHERE id = ? AND campaign_id = ?');
@@ -41,28 +31,93 @@ function handleUpdateTile(int $campaignId, int $tileId): never
         jsonResponse(['error' => 'Tile not found'], 404);
     }
 
-    // Verify team belongs to this campaign (if assigning)
-    if ($newTeamId !== null) {
-        $stmt = $db->prepare('SELECT id FROM teams WHERE id = ? AND campaign_id = ?');
-        $stmt->execute([$newTeamId, $campaignId]);
-        if (!$stmt->fetch()) {
-            jsonResponse(['error' => 'Team not found in this campaign'], 404);
+    $setClauses = [];
+    $params     = [];
+    $hasTeamId  = array_key_exists('team_id', $body);
+
+    // team_id
+    if ($hasTeamId) {
+        $newTeamId = $body['team_id'] === null ? null : (int)$body['team_id'];
+        if ($newTeamId !== null) {
+            $s = $db->prepare('SELECT id FROM teams WHERE id = ? AND campaign_id = ?');
+            $s->execute([$newTeamId, $campaignId]);
+            if (!$s->fetch()) {
+                jsonResponse(['error' => 'Team not found in this campaign'], 404);
+            }
         }
+        $setClauses[] = 'team_id = ?';
+        $params[]     = $newTeamId;
     }
 
-    $previousTeamId = $tile['team_id'] !== null ? (int)$tile['team_id'] : null;
+    // location_name
+    if (array_key_exists('location_name', $body)) {
+        $v = $body['location_name'];
+        if ($v !== null && (!is_string($v) || mb_strlen($v) > 255)) {
+            jsonResponse(['error' => 'location_name must be a string of max 255 characters'], 400);
+        }
+        $setClauses[] = 'location_name = ?';
+        $params[]     = $v;
+    }
 
-    // Update tile
-    $db->prepare('UPDATE tiles SET team_id = ?, updated_at = NOW() WHERE id = ?')
-       ->execute([$newTeamId, $tileId]);
+    // resource_name
+    if (array_key_exists('resource_name', $body)) {
+        $v = $body['resource_name'];
+        if ($v !== null) {
+            $s = $db->prepare('SELECT name FROM resources WHERE name = ?');
+            $s->execute([$v]);
+            if (!$s->fetch()) {
+                jsonResponse(['error' => 'resource_name not found in resources table'], 400);
+            }
+        }
+        $setClauses[] = 'resource_name = ?';
+        $params[]     = $v;
+    }
 
-    // Record history
+    // color_override
+    if (array_key_exists('color_override', $body)) {
+        $v = $body['color_override'];
+        if ($v !== null) {
+            if (!is_string($v) || !preg_match('/^#[0-9a-f]{6}$/i', $v)) {
+                jsonResponse(['error' => 'color_override must be in #rrggbb format'], 400);
+            }
+            $v = strtolower($v);
+        }
+        $setClauses[] = 'color_override = ?';
+        $params[]     = $v;
+    }
+
+    // defense
+    if (array_key_exists('defense', $body)) {
+        $v = $body['defense'];
+        if (!is_int($v) || $v < 0) {
+            jsonResponse(['error' => 'defense must be a non-negative integer'], 400);
+        }
+        $setClauses[] = 'defense = ?';
+        $params[]     = $v;
+    }
+
+    if (empty($setClauses)) {
+        jsonResponse(['error' => 'No valid fields provided'], 400);
+    }
+
+    $params[] = $tileId;
+    $params[] = $campaignId;
     $db->prepare(
-        'INSERT INTO tile_state_history (campaign_id, tile_id, previous_team_id, new_team_id, change_reason)
-         VALUES (?, ?, ?, ?, ?)'
-    )->execute([$campaignId, $tileId, $previousTeamId, $newTeamId, 'admin']);
+        'UPDATE tiles SET ' . implode(', ', $setClauses) . ' WHERE id = ? AND campaign_id = ?'
+    )->execute($params);
 
-    jsonResponse(['ok' => true, 'tile_id' => $tileId, 'team_id' => $newTeamId]);
+    // Record history only when team_id key was present in the body
+    if ($hasTeamId) {
+        $previousTeamId = $tile['team_id'] !== null ? (int)$tile['team_id'] : null;
+        $writtenTeamId  = $body['team_id'] === null ? null : (int)$body['team_id'];
+        $db->prepare(
+            'INSERT INTO tile_state_history
+                (campaign_id, tile_id, previous_team_id, new_team_id, change_reason)
+             VALUES (?, ?, ?, ?, ?)'
+        )->execute([$campaignId, $tileId, $previousTeamId, $writtenTeamId, 'admin']);
+    }
+
+    jsonResponse(['ok' => true]);
 }
 
 // ── Attacks ──────────────────────────────────────────────────────────────────
