@@ -359,3 +359,50 @@ function handleCreateTile(int $campaignId): never
 
     jsonResponse(['id' => (int)$db->lastInsertId()], 201);
 }
+
+/**
+ * DELETE /api/campaigns/:campaignId/tiles/:tileId
+ * Deletes a tile. Blocked if referenced by attacks or attack_history.
+ * Requires GM role for the campaign.
+ */
+function handleDeleteTile(int $campaignId, int $tileId): never
+{
+    $user = requireAuth();
+    requireGm($user, $campaignId);
+
+    $db = getDb();
+
+    $stmt = $db->prepare('SELECT id FROM tiles WHERE id = ? AND campaign_id = ?');
+    $stmt->execute([$tileId, $campaignId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['error' => 'Tile not found'], 404);
+    }
+
+    // Check 1: unresolved attacks
+    $stmt = $db->prepare(
+        'SELECT COUNT(*) FROM attacks
+          WHERE (from_tile_id = ? OR to_tile_id = ?) AND resolved_at IS NULL'
+    );
+    $stmt->execute([$tileId, $tileId]);
+    $activeCount = (int)$stmt->fetchColumn();
+    if ($activeCount > 0) {
+        jsonResponse([
+            'error' => "Tile has {$activeCount} active attack(s) referencing it. " .
+                       'Resolve those attacks before deleting this tile.',
+        ], 409);
+    }
+
+    // Check 2: attack history
+    $stmt = $db->prepare(
+        'SELECT COUNT(*) FROM attack_history WHERE from_tile_id = ? OR to_tile_id = ?'
+    );
+    $stmt->execute([$tileId, $tileId]);
+    if ((int)$stmt->fetchColumn() > 0) {
+        jsonResponse(['error' => 'This tile appears in attack history records and cannot be deleted.'], 409);
+    }
+
+    // tile_state_history rows cascade automatically via ON DELETE CASCADE
+    $db->prepare('DELETE FROM tiles WHERE id = ?')->execute([$tileId]);
+
+    jsonResponse(['ok' => true]);
+}
