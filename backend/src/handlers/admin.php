@@ -268,3 +268,94 @@ function handleUpdateTeamAssets(int $campaignId, int $teamId): never
 
     jsonResponse(['ok' => true]);
 }
+
+// ── Tile CRUD ─────────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/campaigns/:campaignId/tiles
+ * Body: { col, row, location_name?, resource_name?, color_override?, defense?, team_id? }
+ * Creates a new tile. Requires GM role for the campaign.
+ */
+function handleCreateTile(int $campaignId): never
+{
+    $user = requireAuth();
+    requireGm($user, $campaignId);
+
+    $db = getDb();
+
+    // Verify campaign exists
+    $stmt = $db->prepare('SELECT id FROM campaigns WHERE id = ?');
+    $stmt->execute([$campaignId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['error' => 'Campaign not found'], 404);
+    }
+
+    $body = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    if (!array_key_exists('col', $body) || !is_int($body['col']) ||
+        !array_key_exists('row', $body) || !is_int($body['row'])) {
+        jsonResponse(['error' => 'col and row are required integers'], 400);
+    }
+    $col = $body['col'];
+    $row = $body['row'];
+
+    $locationName = null;
+    if (array_key_exists('location_name', $body) && $body['location_name'] !== null) {
+        if (!is_string($body['location_name']) || mb_strlen($body['location_name']) > 255) {
+            jsonResponse(['error' => 'location_name must be a string of max 255 characters'], 400);
+        }
+        $locationName = $body['location_name'];
+    }
+
+    $resourceName = null;
+    if (array_key_exists('resource_name', $body) && $body['resource_name'] !== null) {
+        $s = $db->prepare('SELECT name FROM resources WHERE name = ?');
+        $s->execute([$body['resource_name']]);
+        if (!$s->fetch()) {
+            jsonResponse(['error' => 'resource_name not found in resources table'], 400);
+        }
+        $resourceName = $body['resource_name'];
+    }
+
+    $colorOverride = null;
+    if (array_key_exists('color_override', $body) && $body['color_override'] !== null) {
+        if (!is_string($body['color_override']) || !preg_match('/^#[0-9a-f]{6}$/i', $body['color_override'])) {
+            jsonResponse(['error' => 'color_override must be in #rrggbb format'], 400);
+        }
+        $colorOverride = strtolower($body['color_override']);
+    }
+
+    $defense = 0;
+    if (array_key_exists('defense', $body) && $body['defense'] !== null) {
+        if (!is_int($body['defense']) || $body['defense'] < 0) {
+            jsonResponse(['error' => 'defense must be a non-negative integer'], 400);
+        }
+        $defense = $body['defense'];
+    }
+
+    $teamId = null;
+    if (array_key_exists('team_id', $body) && $body['team_id'] !== null) {
+        $teamId = (int)$body['team_id'];
+        $s = $db->prepare('SELECT id FROM teams WHERE id = ? AND campaign_id = ?');
+        $s->execute([$teamId, $campaignId]);
+        if (!$s->fetch()) {
+            jsonResponse(['error' => 'Team not found in this campaign'], 404);
+        }
+    }
+
+    try {
+        $stmt = $db->prepare(
+            'INSERT INTO tiles
+                (campaign_id, col, `row`, location_name, resource_name, color_override, defense, team_id)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        );
+        $stmt->execute([$campaignId, $col, $row, $locationName, $resourceName, $colorOverride, $defense, $teamId]);
+    } catch (\PDOException $e) {
+        if ($e->getCode() === '23000') {
+            jsonResponse(['error' => 'A tile already exists at this position'], 409);
+        }
+        throw $e;
+    }
+
+    jsonResponse(['id' => (int)$db->lastInsertId()], 201);
+}
