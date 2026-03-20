@@ -43,7 +43,10 @@ export function renderHexGrid(
   // Grid bounds
   let minCol: number, maxCol: number, minRow: number, maxRow: number;
   if (tiles.length === 0) {
-    minCol = -2; maxCol = 2; minRow = -2; maxRow = 2;
+    minCol = -2;
+    maxCol = 2;
+    minRow = -2;
+    maxRow = 2;
   } else {
     minCol = Math.min(...tiles.map((t) => t.col)) - 1;
     maxCol = Math.max(...tiles.map((t) => t.col)) + 1;
@@ -52,8 +55,10 @@ export function renderHexGrid(
   }
 
   // Compute SVG pixel extents of all hex centres, then add R padding on each side
-  let svgMinX = Infinity, svgMaxX = -Infinity;
-  let svgMinY = Infinity, svgMaxY = -Infinity;
+  let svgMinX = Infinity,
+    svgMaxX = -Infinity;
+  let svgMinY = Infinity,
+    svgMaxY = -Infinity;
   for (let col = minCol; col <= maxCol; col++) {
     for (let row = minRow; row <= maxRow; row++) {
       const { x, y } = hexCentre(col, row);
@@ -63,8 +68,10 @@ export function renderHexGrid(
       svgMaxY = Math.max(svgMaxY, y + R);
     }
   }
-  svgMinX -= R; svgMinY -= R;
-  svgMaxX += R; svgMaxY += R;
+  svgMinX -= R;
+  svgMinY -= R;
+  svgMaxX += R;
+  svgMaxY += R;
 
   // Build polygon group strings
   const groups: string[] = [];
@@ -76,7 +83,8 @@ export function renderHexGrid(
       const cx = x.toFixed(2);
       const cy = (y + 4).toFixed(2);
       if (tile) {
-        const fill = tile.team ? (teamColor.get(tile.team) ?? '#333') : '#333';
+        const rawFill = tile.team ? teamColor.get(tile.team) ?? '#333' : '#333';
+        const fill = rawFill.replace(/[^#a-zA-Z0-9()%., ]/g, '');
         const raw = tile.locationName ? tile.locationName.slice(0, 10) : tile.coord;
         const label = raw.replace(/&/g, '&amp;').replace(/</g, '&lt;');
         groups.push(
@@ -85,7 +93,7 @@ export function renderHexGrid(
             ` data-ds="#888" data-dsw="1"/>` +
             `<text x="${cx}" y="${cy}" fill="#eee" font-size="7"` +
             ` text-anchor="middle" pointer-events="none">${label}</text>` +
-          `</g>`,
+            `</g>`,
         );
       } else {
         groups.push(
@@ -94,7 +102,7 @@ export function renderHexGrid(
             ` stroke-dasharray="4,3" data-ds="#555" data-dsw="1"/>` +
             `<text x="${cx}" y="${cy}" fill="#444" font-size="10"` +
             ` text-anchor="middle" pointer-events="none">+</text>` +
-          `</g>`,
+            `</g>`,
         );
       }
     }
@@ -127,10 +135,7 @@ export function renderHexGrid(
 
   function setSelected(col: number | null, row: number | null): void {
     if (selectedPoly) {
-      selectedPoly.setAttribute(
-        'stroke',
-        selectedPoly.getAttribute('data-ds') ?? '#888',
-      );
+      selectedPoly.setAttribute('stroke', selectedPoly.getAttribute('data-ds') ?? '#888');
       selectedPoly.setAttribute(
         'stroke-width',
         selectedPoly.getAttribute('data-dsw') ?? '1',
