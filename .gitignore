@@ -26,6 +26,5 @@ dist-ssr
 .env
 /deploy.sh
 .worktrees/
-.serena/
 .superpowers/
 backend/public/sprites/
