@@ -12,7 +12,8 @@ require_once __DIR__ . '/helpers.php';
 function getTokenFromHeader(): ?string
 {
     $headers    = getallheaders();
-    $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+    $authHeader = $headers['Authorization'] ?? $headers['authorization']
+        ?? $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
     if (preg_match('/^Bearer\s+(.+)$/i', $authHeader, $m)) {
         return trim($m[1]);
     }

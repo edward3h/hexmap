@@ -1,5 +1,9 @@
 RewriteEngine On
 
+# Pass Authorization header to PHP (stripped by Apache in CGI/FPM setups)
+RewriteCond %{HTTP:Authorization} ^(.+)$
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
 # If the request is for an existing file or directory, serve it directly
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
@@ -10,3 +14,6 @@ RewriteRule ^map/\d+ map/index.html [L]
 
 # Route /api/* requests to api.php
 RewriteRule ^api(/.*)?$ api.php [L,QSA]
+
+# Route /admin/* paths to the admin SPA
+RewriteRule ^admin(/.*)?$ admin/index.html [L]

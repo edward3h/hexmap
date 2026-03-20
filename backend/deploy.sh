@@ -42,6 +42,10 @@ cp -r "$PROJECT_ROOT/dist/"* "$STAGING/public_html/"
 # Config template
 cp "$SCRIPT_DIR/config.example.php" "$STAGING/config.example.php"
 
+# Migration runner (not web-accessible)
+cp "$SCRIPT_DIR/migrate.php" "$STAGING/migrate.php"
+cp -r "$SCRIPT_DIR/migrations" "$STAGING/migrations"
+
 echo ""
 echo "==> Staging complete: $STAGING"
 echo ""

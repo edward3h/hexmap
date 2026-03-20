@@ -10,16 +10,20 @@ $DB_PASS = 'your_db_password';
 
 // Frontend URL — where the admin SPA is served.
 // In dev this is the Vite server (5173); in production it's the same origin as the API.
+// IMPORTANT: In production, use https:// — using http:// causes the OAuth token to be
+// lost when Apache rewrites the redirect to https (hash fragments are stripped on redirect).
 $APP_URL = 'http://localhost:5173';
 
 // Google OAuth2
 // Create credentials at: https://console.cloud.google.com/apis/credentials
 $GOOGLE_CLIENT_ID = '';
 $GOOGLE_CLIENT_SECRET = '';
+// IMPORTANT: In production, use https:// to match the registered redirect URI exactly.
 $GOOGLE_REDIRECT_URI = 'http://localhost:8080/api/auth/callback?provider=google';
 
 // Discord OAuth2
 // Create app at: https://discord.com/developers/applications
 $DISCORD_CLIENT_ID = '';
 $DISCORD_CLIENT_SECRET = '';
+// IMPORTANT: In production, use https:// to match the registered redirect URI exactly.
 $DISCORD_REDIRECT_URI = 'http://localhost:8080/api/auth/callback?provider=discord';

@@ -25,5 +25,6 @@ dist-ssr
 
 .env
 /deploy.sh
+/.deployed_config_example.php
 .worktrees/
 backend/public/sprites/
