@@ -12,13 +12,13 @@
 
 ## File Map
 
-| File | Change |
-|------|--------|
-| `src/admin/types.ts` | Add `colorOverride?: string` to `AdminTile` |
-| `backend/src/handlers/admin.php` | Rewrite `handleUpdateTile`; add `handleCreateTile`, `handleDeleteTile` |
-| `backend/public/api.php` | Add 2 route entries for POST/DELETE tiles |
-| `src/admin/hexGrid.ts` | **New** — `renderHexGrid` function |
-| `src/admin/campaign.ts` | Add `renderTileTable` helper, rewrite `renderTileEditor`, update call site |
+| File                             | Change                                                                     |
+| -------------------------------- | -------------------------------------------------------------------------- |
+| `src/admin/types.ts`             | Add `colorOverride?: string` to `AdminTile`                                |
+| `backend/src/handlers/admin.php` | Rewrite `handleUpdateTile`; add `handleCreateTile`, `handleDeleteTile`     |
+| `backend/public/api.php`         | Add 2 route entries for POST/DELETE tiles                                  |
+| `src/admin/hexGrid.ts`           | **New** — `renderHexGrid` function                                         |
+| `src/admin/campaign.ts`          | Add `renderTileTable` helper, rewrite `renderTileEditor`, update call site |
 
 ---
 
@@ -27,6 +27,7 @@
 ### Task 1: Add `colorOverride` to `AdminTile` in `types.ts`
 
 **Files:**
+
 - Modify: `src/admin/types.ts`
 
 - [ ] **Step 1: Add the field**
@@ -82,6 +83,7 @@ git commit -m "feat: add colorOverride field to AdminTile interface"
 ### Task 2: Rewrite `handleUpdateTile` in `admin.php`
 
 **Files:**
+
 - Modify: `backend/src/handlers/admin.php` lines 18–66
 
 - [ ] **Step 1: Replace the function**
@@ -207,6 +209,7 @@ git commit -m "feat: extend handleUpdateTile to accept all tile fields"
 ### Task 3: Add `handleCreateTile` to `admin.php`
 
 **Files:**
+
 - Modify: `backend/src/handlers/admin.php` (append after `handleUpdateTeamAssets`)
 
 - [ ] **Step 1: Append the function**
@@ -318,6 +321,7 @@ git commit -m "feat: add handleCreateTile endpoint"
 ### Task 4: Add `handleDeleteTile` to `admin.php`
 
 **Files:**
+
 - Modify: `backend/src/handlers/admin.php` (append after `handleCreateTile`)
 
 - [ ] **Step 1: Append the function**
@@ -383,6 +387,7 @@ git commit -m "feat: add handleDeleteTile endpoint"
 ### Task 5: Add router entries to `api.php`
 
 **Files:**
+
 - Modify: `backend/public/api.php`
 
 - [ ] **Step 1: Insert after the existing PATCH tiles entry (line 62)**
@@ -431,6 +436,7 @@ git commit -m "feat: add POST and DELETE tile routes to api.php"
 ### Task 6: Create `src/admin/hexGrid.ts`
 
 **Files:**
+
 - Create: `src/admin/hexGrid.ts`
 
 - [ ] **Step 1: Create the file**
@@ -481,7 +487,10 @@ export function renderHexGrid(
   // Grid bounds
   let minCol: number, maxCol: number, minRow: number, maxRow: number;
   if (tiles.length === 0) {
-    minCol = -2; maxCol = 2; minRow = -2; maxRow = 2;
+    minCol = -2;
+    maxCol = 2;
+    minRow = -2;
+    maxRow = 2;
   } else {
     minCol = Math.min(...tiles.map((t) => t.col)) - 1;
     maxCol = Math.max(...tiles.map((t) => t.col)) + 1;
@@ -490,8 +499,10 @@ export function renderHexGrid(
   }
 
   // Compute SVG pixel extents of all hex centres, then add R padding on each side
-  let svgMinX = Infinity, svgMaxX = -Infinity;
-  let svgMinY = Infinity, svgMaxY = -Infinity;
+  let svgMinX = Infinity,
+    svgMaxX = -Infinity;
+  let svgMinY = Infinity,
+    svgMaxY = -Infinity;
   for (let col = minCol; col <= maxCol; col++) {
     for (let row = minRow; row <= maxRow; row++) {
       const { x, y } = hexCentre(col, row);
@@ -501,8 +512,10 @@ export function renderHexGrid(
       svgMaxY = Math.max(svgMaxY, y + R);
     }
   }
-  svgMinX -= R; svgMinY -= R;
-  svgMaxX += R; svgMaxY += R;
+  svgMinX -= R;
+  svgMinY -= R;
+  svgMaxX += R;
+  svgMaxY += R;
 
   // Build polygon group strings
   const groups: string[] = [];
@@ -514,7 +527,7 @@ export function renderHexGrid(
       const cx = x.toFixed(2);
       const cy = (y + 4).toFixed(2);
       if (tile) {
-        const fill = tile.team ? (teamColor.get(tile.team) ?? '#333') : '#333';
+        const fill = tile.team ? teamColor.get(tile.team) ?? '#333' : '#333';
         const raw = tile.locationName ? tile.locationName.slice(0, 10) : tile.coord;
         const label = raw.replace(/&/g, '&amp;').replace(/</g, '&lt;');
         groups.push(
@@ -523,7 +536,7 @@ export function renderHexGrid(
             ` data-ds="#888" data-dsw="1"/>` +
             `<text x="${cx}" y="${cy}" fill="#eee" font-size="7"` +
             ` text-anchor="middle" pointer-events="none">${label}</text>` +
-          `</g>`,
+            `</g>`,
         );
       } else {
         groups.push(
@@ -532,7 +545,7 @@ export function renderHexGrid(
             ` stroke-dasharray="4,3" data-ds="#555" data-dsw="1"/>` +
             `<text x="${cx}" y="${cy}" fill="#444" font-size="10"` +
             ` text-anchor="middle" pointer-events="none">+</text>` +
-          `</g>`,
+            `</g>`,
         );
       }
     }
@@ -565,10 +578,7 @@ export function renderHexGrid(
 
   function setSelected(col: number | null, row: number | null): void {
     if (selectedPoly) {
-      selectedPoly.setAttribute(
-        'stroke',
-        selectedPoly.getAttribute('data-ds') ?? '#888',
-      );
+      selectedPoly.setAttribute('stroke', selectedPoly.getAttribute('data-ds') ?? '#888');
       selectedPoly.setAttribute(
         'stroke-width',
         selectedPoly.getAttribute('data-dsw') ?? '1',
@@ -610,6 +620,7 @@ git commit -m "feat: add renderHexGrid SVG function"
 ### Task 7: Update imports and add `renderTileTable` helper
 
 **Files:**
+
 - Modify: `src/admin/campaign.ts`
 
 - [ ] **Step 1: Update imports at the top of the file**
@@ -644,11 +655,15 @@ function renderTileTable(
   const rows = tiles
     .map(
       (tile) =>
-        `<tr data-tile-id="${tile.id}" style="cursor:pointer;border-bottom:1px solid #2a2a2a">
+        `<tr data-tile-id="${
+          tile.id
+        }" style="cursor:pointer;border-bottom:1px solid #2a2a2a">
           <td style="padding:6px 8px;font-family:monospace">${esc(tile.coord)}</td>
           <td style="padding:6px 8px">${esc(tile.locationName ?? '')}</td>
           <td style="padding:6px 8px">${esc(tile.resourceName ?? '')}</td>
-          <td style="padding:6px 8px">${tile.defence !== undefined ? String(tile.defence) : '0'}</td>
+          <td style="padding:6px 8px">${
+            tile.defence !== undefined ? String(tile.defence) : '0'
+          }</td>
           <td style="padding:6px 8px">${esc(tile.team ?? '')}</td>
         </tr>`,
     )
@@ -691,6 +706,7 @@ git commit -m "feat: add renderTileTable helper and hexGrid import"
 ### Task 8: Replace `renderTileEditor` function body
 
 **Files:**
+
 - Modify: `src/admin/campaign.ts` (replace lines 691–761, the existing `renderTileEditor`)
 
 - [ ] **Step 1: Replace the function**
@@ -756,14 +772,16 @@ async function renderTileEditor(
     const resourceOpts = resources
       .map((r) => {
         const selected = !isCreate && tile.resourceName === r.name ? 'selected' : '';
-        return `<option value="${esc(r.name)}" ${selected}>${esc(r.display_name)}</option>`;
+        return `<option value="${esc(r.name)}" ${selected}>${esc(
+          r.display_name,
+        )}</option>`;
       })
       .join('');
 
     const hasColor = !isCreate && tile.colorOverride !== undefined;
-    const colorVal = hasColor ? (tile!.colorOverride ?? '#000000') : '#000000';
-    const defenceVal = isCreate ? 0 : (tile.defence ?? 0);
-    const locationVal = isCreate ? '' : (tile.locationName ?? '');
+    const colorVal = hasColor ? tile!.colorOverride ?? '#000000' : '#000000';
+    const defenceVal = isCreate ? 0 : tile.defence ?? 0;
+    const locationVal = isCreate ? '' : tile.locationName ?? '';
     const heading = isCreate
       ? `New tile at (${col},${row})`
       : `Editing: ${esc(tile.locationName ?? tile.coord)}`;
@@ -774,7 +792,11 @@ async function renderTileEditor(
     panelContainer.innerHTML = `
       <div style="background:#222;border:1px solid #555;border-radius:4px;padding:16px;margin-top:16px">
         <h4 style="margin:0 0 12px;color:#7ab3f0">${heading}</h4>
-        ${isCreate ? `<p style="color:#888;font-size:0.85em;margin:0 0 12px">Position: (${col},${row}) — read-only</p>` : ''}
+        ${
+          isCreate
+            ? `<p style="color:#888;font-size:0.85em;margin:0 0 12px">Position: (${col},${row}) — read-only</p>`
+            : ''
+        }
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <label style="display:flex;flex-direction:column;gap:4px;color:#888;font-size:0.9em">
             Location name
@@ -817,9 +839,13 @@ async function renderTileEditor(
           <button id="tile-save"
             style="padding:4px 16px;cursor:pointer;background:#166534;color:white;border:none;border-radius:3px${disabledStyle}"
             ${disabledAttr}>${isCreate ? 'Create' : 'Save'}</button>
-          ${!isCreate ? `<button id="tile-del"
+          ${
+            !isCreate
+              ? `<button id="tile-del"
             style="padding:4px 16px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px">
-            Delete tile</button>` : ''}
+            Delete tile</button>`
+              : ''
+          }
           <button id="tile-cancel"
             style="padding:4px 12px;cursor:pointer;background:none;color:#888;border:1px solid #555;border-radius:3px">
             Cancel</button>
@@ -836,10 +862,12 @@ async function renderTileEditor(
         ).checked;
       });
 
-    panelContainer.querySelector<HTMLButtonElement>('#tile-cancel')!.addEventListener('click', () => {
-      panelContainer.innerHTML = '';
-      setSelected(null, null);
-    });
+    panelContainer
+      .querySelector<HTMLButtonElement>('#tile-cancel')!
+      .addEventListener('click', () => {
+        panelContainer.innerHTML = '';
+        setSelected(null, null);
+      });
 
     panelContainer
       .querySelector<HTMLButtonElement>('#tile-save')!
@@ -862,19 +890,21 @@ async function renderTileEditor(
       saveBtn.disabled = true;
 
       const locationName =
-        (panelContainer.querySelector<HTMLInputElement>('#tile-loc')!).value.trim() || null;
+        panelContainer.querySelector<HTMLInputElement>('#tile-loc')!.value.trim() || null;
       const resourceName =
-        (panelContainer.querySelector<HTMLSelectElement>('#tile-res')!).value || null;
+        panelContainer.querySelector<HTMLSelectElement>('#tile-res')!.value || null;
       const defRaw = parseInt(
-        (panelContainer.querySelector<HTMLInputElement>('#tile-def')!).value,
+        panelContainer.querySelector<HTMLInputElement>('#tile-def')!.value,
         10,
       );
       const defense = isNaN(defRaw) || defRaw < 0 ? 0 : defRaw;
-      const colorOn = (panelContainer.querySelector<HTMLInputElement>('#tile-color-on')!).checked;
+      const colorOn =
+        panelContainer.querySelector<HTMLInputElement>('#tile-color-on')!.checked;
       const colorOverride = colorOn
-        ? (panelContainer.querySelector<HTMLInputElement>('#tile-color')!).value
+        ? panelContainer.querySelector<HTMLInputElement>('#tile-color')!.value
         : null;
-      const teamIdStr = (panelContainer.querySelector<HTMLSelectElement>('#tile-team')!).value;
+      const teamIdStr =
+        panelContainer.querySelector<HTMLSelectElement>('#tile-team')!.value;
       const teamId = teamIdStr ? parseInt(teamIdStr, 10) : null;
 
       try {
@@ -916,12 +946,16 @@ async function renderTileEditor(
           style="padding:4px 10px;cursor:pointer;background:none;color:#888;border:1px solid #555;border-radius:3px">
           Cancel</button>
       `;
-      btns.querySelector<HTMLButtonElement>('#tile-del-ok')!.addEventListener('click', () => {
-        void handleDelete();
-      });
-      btns.querySelector<HTMLButtonElement>('#tile-del-no')!.addEventListener('click', () => {
-        resetDeleteButtons();
-      });
+      btns
+        .querySelector<HTMLButtonElement>('#tile-del-ok')!
+        .addEventListener('click', () => {
+          void handleDelete();
+        });
+      btns
+        .querySelector<HTMLButtonElement>('#tile-del-no')!
+        .addEventListener('click', () => {
+          resetDeleteButtons();
+        });
     }
 
     function resetDeleteButtons(): void {
@@ -937,16 +971,22 @@ async function renderTileEditor(
           style="padding:4px 12px;cursor:pointer;background:none;color:#888;border:1px solid #555;border-radius:3px">
           Cancel</button>
       `;
-      panelContainer.querySelector<HTMLButtonElement>('#tile-save')!.addEventListener('click', () => {
-        void handleSave();
-      });
-      panelContainer.querySelector<HTMLButtonElement>('#tile-del')!.addEventListener('click', () => {
-        showDeleteConfirm();
-      });
-      panelContainer.querySelector<HTMLButtonElement>('#tile-cancel')!.addEventListener('click', () => {
-        panelContainer.innerHTML = '';
-        setSelected(null, null);
-      });
+      panelContainer
+        .querySelector<HTMLButtonElement>('#tile-save')!
+        .addEventListener('click', () => {
+          void handleSave();
+        });
+      panelContainer
+        .querySelector<HTMLButtonElement>('#tile-del')!
+        .addEventListener('click', () => {
+          showDeleteConfirm();
+        });
+      panelContainer
+        .querySelector<HTMLButtonElement>('#tile-cancel')!
+        .addEventListener('click', () => {
+          panelContainer.innerHTML = '';
+          setSelected(null, null);
+        });
     }
 
     async function handleDelete(): Promise<void> {
@@ -985,6 +1025,7 @@ git commit -m "feat: rewrite renderTileEditor with hex grid and CRUD panel"
 ### Task 9: Update the `renderTileEditor` call site
 
 **Files:**
+
 - Modify: `src/admin/campaign.ts` (around line 1021)
 
 - [ ] **Step 1: Add `reload` argument to the call**
@@ -992,24 +1033,19 @@ git commit -m "feat: rewrite renderTileEditor with hex grid and CRUD panel"
 Find the call to `renderTileEditor` (currently 4 args, no `reload`):
 
 ```typescript
-      renderTileEditor(
-        document.getElementById('section-tiles')!,
-        mapData,
-        teams,
-        campaignId,
-      );
+renderTileEditor(document.getElementById('section-tiles')!, mapData, teams, campaignId);
 ```
 
 Replace with:
 
 ```typescript
-      void renderTileEditor(
-        document.getElementById('section-tiles')!,
-        mapData,
-        teams,
-        campaignId,
-        () => void render(),
-      );
+void renderTileEditor(
+  document.getElementById('section-tiles')!,
+  mapData,
+  teams,
+  campaignId,
+  () => void render(),
+);
 ```
 
 - [ ] **Step 2: Run lint and build**
