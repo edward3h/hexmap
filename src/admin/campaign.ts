@@ -2,7 +2,15 @@
 // Campaign detail page: tile editor, attack editor, team asset editor.
 
 import { api, ApiError } from './api';
-import { AdminAttack, AdminCampaign, AdminGm, AdminMapData, AdminUser } from './types';
+import { renderHexGrid } from './hexGrid';
+import {
+  AdminAttack,
+  AdminCampaign,
+  AdminGm,
+  AdminMapData,
+  AdminTile,
+  AdminUser,
+} from './types';
 import { esc } from './utils';
 
 interface CampaignTeam {
@@ -504,50 +512,36 @@ function renderGmManager(
   });
 }
 
-function renderTileEditor(
+function renderTileTable(
   container: HTMLElement,
-  mapData: AdminMapData,
-  teams: CampaignTeam[],
-  campaignId: number,
+  tiles: AdminTile[],
+  onSelect: (sel: { col: number; row: number; tile: AdminTile | null }) => void,
 ): void {
-  const teamByName = Object.fromEntries(teams.map((t) => [t.name, t]));
-
-  const rows = mapData.map
-    .map((tile) => {
-      const selectedTeam = tile.team ? teamByName[tile.team] : null;
-      const opts = teams
-        .map(
-          (t) =>
-            `<option value="${t.id}" ${selectedTeam?.id === t.id ? 'selected' : ''}>${esc(
-              t.display_name,
-            )}</option>`,
-        )
-        .join('');
-
-      return `<tr>
-        <td style="padding:6px 8px;font-family:monospace">${esc(tile.coord)}</td>
-        <td style="padding:6px 8px">${esc(tile.locationName ?? '')}</td>
-        <td style="padding:6px 8px">${esc(tile.resourceName ?? '')}</td>
-        <td style="padding:6px 8px">
-          <select data-tile-id="${
-            tile.id
-          }" style="background:#2a2a2a;color:#eee;border:1px solid #555;padding:2px 4px;border-radius:3px">
-            <option value="">— none —</option>
-            ${opts}
-          </select>
-        </td>
-      </tr>`;
-    })
+  const rows = tiles
+    .map(
+      (tile) =>
+        `<tr data-tile-id="${
+          tile.id
+        }" style="cursor:pointer;border-bottom:1px solid #2a2a2a">
+          <td style="padding:6px 8px;font-family:monospace">${esc(tile.coord)}</td>
+          <td style="padding:6px 8px">${esc(tile.locationName ?? '')}</td>
+          <td style="padding:6px 8px">${esc(tile.resourceName ?? '')}</td>
+          <td style="padding:6px 8px">${
+            tile.defence !== undefined ? String(tile.defence) : '0'
+          }</td>
+          <td style="padding:6px 8px">${esc(tile.team ?? '')}</td>
+        </tr>`,
+    )
     .join('');
 
   container.innerHTML = `
-    <h3 style="margin:0 0 12px">Tiles</h3>
-    <table style="width:100%;border-collapse:collapse;font-size:0.9em">
+    <table style="width:100%;border-collapse:collapse;font-size:0.9em;margin-top:8px">
       <thead>
         <tr style="border-bottom:1px solid #444;text-align:left">
           <th style="padding:6px 8px">Coord</th>
           <th style="padding:6px 8px">Location</th>
           <th style="padding:6px 8px">Resource</th>
+          <th style="padding:6px 8px">Defence</th>
           <th style="padding:6px 8px">Team</th>
         </tr>
       </thead>
@@ -555,25 +549,304 @@ function renderTileEditor(
     </table>
   `;
 
-  container.querySelectorAll<HTMLSelectElement>('select[data-tile-id]').forEach((sel) => {
-    sel.addEventListener('change', () => {
-      const tileId = Number(sel.dataset['tileId']);
-      const teamId = sel.value ? Number(sel.value) : null;
-      sel.disabled = true;
-      void api
-        .patch(`/campaigns/${campaignId}/tiles/${tileId}`, { team_id: teamId })
-        .catch((err: unknown) => {
-          alert(
-            `Failed to update tile: ${
-              err instanceof ApiError ? err.message : String(err)
-            }`,
-          );
-        })
-        .finally(() => {
-          sel.disabled = false;
-        });
+  container.querySelectorAll<HTMLTableRowElement>('tr[data-tile-id]').forEach((tr) => {
+    tr.addEventListener('click', () => {
+      const tileId = Number(tr.dataset['tileId']);
+      const tile = tiles.find((t) => t.id === tileId);
+      if (tile) onSelect({ col: tile.col, row: tile.row, tile });
     });
   });
+}
+
+async function renderTileEditor(
+  container: HTMLElement,
+  mapData: AdminMapData,
+  teams: CampaignTeam[],
+  campaignId: number,
+  reload: () => void,
+): Promise<void> {
+  container.innerHTML = '<h3 style="margin:0 0 12px">Tiles</h3>';
+
+  // Fetch resources; on failure show error and disable Save/Create
+  type Resource = { name: string; display_name: string };
+  let resources: Resource[] = [];
+  let resourcesFailed = false;
+  try {
+    resources = await api.get<Resource[]>('/resources');
+  } catch {
+    resourcesFailed = true;
+    const errMsg = document.createElement('p');
+    errMsg.style.cssText = 'color:#f87171;padding:4px 0 12px;font-size:0.9em';
+    errMsg.textContent = 'Failed to load resources. Save/Create will be disabled.';
+    container.appendChild(errMsg);
+  }
+
+  const gridContainer = document.createElement('div');
+  const tableContainer = document.createElement('div');
+  const panelContainer = document.createElement('div');
+  container.appendChild(gridContainer);
+  container.appendChild(tableContainer);
+  container.appendChild(panelContainer);
+
+  // Stub replaced once renderHexGrid returns
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  let setSelected: (col: number | null, row: number | null) => void = () => {};
+
+  function onSelect(sel: { col: number; row: number; tile: AdminTile | null }): void {
+    setSelected(sel.col, sel.row);
+    renderPanel(sel);
+    panelContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  const grid = renderHexGrid(gridContainer, mapData.map, teams, onSelect);
+  setSelected = grid.setSelected;
+  renderTileTable(tableContainer, mapData.map, onSelect);
+
+  function renderPanel(sel: { col: number; row: number; tile: AdminTile | null }): void {
+    panelContainer.innerHTML = '';
+    const { col, row, tile } = sel;
+    const isCreate = tile === null;
+
+    const teamOpts = teams
+      .map((t) => {
+        const selected = !isCreate && tile.team === t.name ? 'selected' : '';
+        return `<option value="${t.id}" ${selected}>${esc(t.display_name)}</option>`;
+      })
+      .join('');
+
+    const resourceOpts = resources
+      .map((r) => {
+        const selected = !isCreate && tile.resourceName === r.name ? 'selected' : '';
+        return `<option value="${esc(r.name)}" ${selected}>${esc(
+          r.display_name,
+        )}</option>`;
+      })
+      .join('');
+
+    const hasColor = !isCreate && tile.colorOverride !== undefined;
+    const colorVal = hasColor ? tile.colorOverride ?? '#000000' : '#000000';
+    const defenceVal = isCreate ? 0 : tile.defence ?? 0;
+    const locationVal = isCreate ? '' : tile.locationName ?? '';
+    const heading = isCreate
+      ? `New tile at (${col},${row})`
+      : `Editing: ${esc(tile.locationName ?? tile.coord)}`;
+
+    const disabledAttr = resourcesFailed ? ' disabled' : '';
+    const disabledStyle = resourcesFailed ? ';opacity:0.5' : '';
+
+    panelContainer.innerHTML = `
+      <div style="background:#222;border:1px solid #555;border-radius:4px;padding:16px;margin-top:16px">
+        <h4 style="margin:0 0 12px;color:#7ab3f0">${heading}</h4>
+        ${
+          isCreate
+            ? `<p style="color:#888;font-size:0.85em;margin:0 0 12px">Position: (${col},${row}) — read-only</p>`
+            : ''
+        }
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <label style="display:flex;flex-direction:column;gap:4px;color:#888;font-size:0.9em">
+            Location name
+            <input id="tile-loc" type="text" maxlength="255" value="${esc(locationVal)}"
+              style="background:#2a2a2a;border:1px solid #555;color:#eee;padding:4px 6px;border-radius:3px">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;color:#888;font-size:0.9em">
+            Resource
+            <select id="tile-res"
+              style="background:#2a2a2a;border:1px solid #555;color:#eee;padding:4px 6px;border-radius:3px">
+              <option value="">— none —</option>
+              ${resourceOpts}
+            </select>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;color:#888;font-size:0.9em">
+            Defence
+            <input id="tile-def" type="number" min="0" value="${defenceVal}"
+              style="background:#2a2a2a;border:1px solid #555;color:#eee;padding:4px 6px;border-radius:3px;width:80px">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;color:#888;font-size:0.9em">
+            Colour override
+            <span style="display:flex;gap:8px;align-items:center">
+              <input id="tile-color-on" type="checkbox" ${hasColor ? 'checked' : ''}
+                style="width:16px;height:16px;cursor:pointer">
+              <input id="tile-color" type="color" value="${colorVal}"
+                ${!hasColor ? 'disabled' : ''}
+                style="width:40px;height:28px;cursor:pointer;border:none;background:none">
+            </span>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;color:#888;font-size:0.9em">
+            Team
+            <select id="tile-team"
+              style="background:#2a2a2a;border:1px solid #555;color:#eee;padding:4px 6px;border-radius:3px">
+              <option value="">— none —</option>
+              ${teamOpts}
+            </select>
+          </label>
+        </div>
+        <div id="tile-btns" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button id="tile-save"
+            style="padding:4px 16px;cursor:pointer;background:#166534;color:white;border:none;border-radius:3px${disabledStyle}"
+            ${disabledAttr}>${isCreate ? 'Create' : 'Save'}</button>
+          ${
+            !isCreate
+              ? `<button id="tile-del"
+            style="padding:4px 16px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px">
+            Delete tile</button>`
+              : ''
+          }
+          <button id="tile-cancel"
+            style="padding:4px 12px;cursor:pointer;background:none;color:#888;border:1px solid #555;border-radius:3px">
+            Cancel</button>
+        </div>
+        <p id="tile-err" style="color:#f87171;font-size:0.9em;margin:8px 0 0;display:none"></p>
+      </div>
+    `;
+
+    panelContainer
+      .querySelector<HTMLInputElement>('#tile-color-on')!
+      .addEventListener('change', (e) => {
+        panelContainer.querySelector<HTMLInputElement>('#tile-color')!.disabled = !(
+          e.target as HTMLInputElement
+        ).checked;
+      });
+
+    panelContainer
+      .querySelector<HTMLButtonElement>('#tile-cancel')!
+      .addEventListener('click', () => {
+        panelContainer.innerHTML = '';
+        setSelected(null, null);
+      });
+
+    panelContainer
+      .querySelector<HTMLButtonElement>('#tile-save')!
+      .addEventListener('click', () => {
+        void handleSave();
+      });
+
+    if (!isCreate) {
+      panelContainer
+        .querySelector<HTMLButtonElement>('#tile-del')!
+        .addEventListener('click', () => {
+          showDeleteConfirm();
+        });
+    }
+
+    async function handleSave(): Promise<void> {
+      const errEl = panelContainer.querySelector<HTMLElement>('#tile-err')!;
+      errEl.style.display = 'none';
+      const saveBtn = panelContainer.querySelector<HTMLButtonElement>('#tile-save')!;
+      saveBtn.disabled = true;
+
+      const locationName =
+        panelContainer.querySelector<HTMLInputElement>('#tile-loc')!.value.trim() || null;
+      const resourceName =
+        panelContainer.querySelector<HTMLSelectElement>('#tile-res')!.value || null;
+      const defRaw = parseInt(
+        panelContainer.querySelector<HTMLInputElement>('#tile-def')!.value,
+        10,
+      );
+      const defense = isNaN(defRaw) || defRaw < 0 ? 0 : defRaw;
+      const colorOn =
+        panelContainer.querySelector<HTMLInputElement>('#tile-color-on')!.checked;
+      const colorOverride = colorOn
+        ? panelContainer.querySelector<HTMLInputElement>('#tile-color')!.value
+        : null;
+      const teamIdStr =
+        panelContainer.querySelector<HTMLSelectElement>('#tile-team')!.value;
+      const teamId = teamIdStr ? parseInt(teamIdStr, 10) : null;
+
+      try {
+        if (isCreate) {
+          await api.post(`/campaigns/${campaignId}/tiles`, {
+            col,
+            row,
+            location_name: locationName,
+            resource_name: resourceName,
+            color_override: colorOverride,
+            defense,
+            team_id: teamId,
+          });
+        } else {
+          await api.patch(`/campaigns/${campaignId}/tiles/${tile.id}`, {
+            location_name: locationName,
+            resource_name: resourceName,
+            color_override: colorOverride,
+            defense,
+            team_id: teamId,
+          });
+        }
+        reload();
+      } catch (err: unknown) {
+        errEl.textContent = err instanceof ApiError ? err.message : String(err);
+        errEl.style.display = 'block';
+        saveBtn.disabled = resourcesFailed;
+      }
+    }
+
+    function showDeleteConfirm(): void {
+      const btns = panelContainer.querySelector<HTMLElement>('#tile-btns')!;
+      btns.innerHTML = `
+        <span style="color:#f87171;font-size:0.9em">Delete this tile?</span>
+        <button id="tile-del-ok"
+          style="padding:4px 10px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px">
+          Confirm</button>
+        <button id="tile-del-no"
+          style="padding:4px 10px;cursor:pointer;background:none;color:#888;border:1px solid #555;border-radius:3px">
+          Cancel</button>
+      `;
+      btns
+        .querySelector<HTMLButtonElement>('#tile-del-ok')!
+        .addEventListener('click', () => {
+          void handleDelete();
+        });
+      btns
+        .querySelector<HTMLButtonElement>('#tile-del-no')!
+        .addEventListener('click', () => {
+          resetDeleteButtons();
+        });
+    }
+
+    function resetDeleteButtons(): void {
+      const btns = panelContainer.querySelector<HTMLElement>('#tile-btns')!;
+      btns.innerHTML = `
+        <button id="tile-save"
+          style="padding:4px 16px;cursor:pointer;background:#166534;color:white;border:none;border-radius:3px${disabledStyle}"
+          ${disabledAttr}>Save</button>
+        <button id="tile-del"
+          style="padding:4px 16px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px">
+          Delete tile</button>
+        <button id="tile-cancel"
+          style="padding:4px 12px;cursor:pointer;background:none;color:#888;border:1px solid #555;border-radius:3px">
+          Cancel</button>
+      `;
+      panelContainer
+        .querySelector<HTMLButtonElement>('#tile-save')!
+        .addEventListener('click', () => {
+          void handleSave();
+        });
+      panelContainer
+        .querySelector<HTMLButtonElement>('#tile-del')!
+        .addEventListener('click', () => {
+          showDeleteConfirm();
+        });
+      panelContainer
+        .querySelector<HTMLButtonElement>('#tile-cancel')!
+        .addEventListener('click', () => {
+          panelContainer.innerHTML = '';
+          setSelected(null, null);
+        });
+    }
+
+    async function handleDelete(): Promise<void> {
+      const errEl = panelContainer.querySelector<HTMLElement>('#tile-err')!;
+      errEl.style.display = 'none';
+      try {
+        await api.delete(`/campaigns/${campaignId}/tiles/${tile!.id}`);
+        reload();
+      } catch (err: unknown) {
+        errEl.textContent = err instanceof ApiError ? err.message : String(err);
+        errEl.style.display = 'block';
+        resetDeleteButtons();
+      }
+    }
+  }
 }
 
 function renderAttackEditor(
@@ -834,11 +1107,12 @@ export async function renderCampaignDetail(
         </main>
       `;
 
-      renderTileEditor(
+      await renderTileEditor(
         document.getElementById('section-tiles')!,
         mapData,
         teams,
         campaignId,
+        () => void render(),
       );
       renderAttackEditor(
         document.getElementById('section-attacks')!,
