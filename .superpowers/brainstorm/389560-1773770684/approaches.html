@@ -1,0 +1,61 @@
+<h2>Backend Architecture Approaches</h2>
+<p class="subtitle">Three ways to add auth + write API to the existing PHP + Vite stack</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Extend the PHP backend (Recommended)</h3>
+      <p>Add OAuth2 (Discord + Google), sessions, and write endpoints directly to the existing PHP backend. New admin UI pages added to the Vite app at <code>/admin</code>.</p>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Single backend to deploy and maintain</li>
+          <li>Consistent with existing shared-host deployment</li>
+          <li>No new runtime dependencies</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>PHP OAuth libraries are more verbose than JS equivalents</li>
+          <li>api.php grows larger (mitigated by splitting into files)</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Add a Node.js/Express auth layer</h3>
+      <p>Keep PHP for read data. Add a Node.js server handling OAuth2 and write operations. Admin UI in Vite calls both servers.</p>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Mature OAuth libraries (Passport.js)</li>
+          <li>TypeScript consistency with frontend</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>Two backends to manage and deploy</li>
+          <li>Complicates shared-host deployment</li>
+          <li>Split responsibilities between PHP and Node</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Migrate backend to Node.js/TypeScript entirely</h3>
+      <p>Rewrite backend in Express + TypeScript. Handles auth, all read and write APIs. Deploy as a single Node process.</p>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Full TypeScript consistency across the stack</li>
+          <li>Best OAuth ecosystem</li>
+          <li>Easier to evolve long-term</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>Significant migration effort (rewrite existing PHP endpoints)</li>
+          <li>May not fit shared-host PHP deployment</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<h2>Admin UI Structure</h2>
+<p class="subtitle">Pages and navigation within the <code>/admin</code> section of the Vite app</p>
+
+<div class="section">
+  <h3>Pages by role</h3>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:12px">
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:16px">
+      <div class="label" style="color:#e5a550">Any logged-in user</div>
+      <ul style="margin-top:8px;padding-left:18px;line-height:2">
+        <li><code>/admin</code> — dashboard (role-aware)</li>
+        <li><code>/admin/login</code> — OAuth login buttons</li>
+        <li><code>/admin/campaigns/new</code> — create campaign</li>
+      </ul>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:16px">
+      <div class="label" style="color:#5b8dd9">GM (per campaign)</div>
+      <ul style="margin-top:8px;padding-left:18px;line-height:2">
+        <li><code>/admin/campaigns/{id}</code> — campaign overview</li>
+        <li><code>/admin/campaigns/{id}/map</code> — tile ownership editor</li>
+        <li><code>/admin/campaigns/{id}/attacks</code> — manage attacks</li>
+        <li><code>/admin/campaigns/{id}/teams</code> — teams + assets</li>
+        <li><code>/admin/campaigns/{id}/members</code> — manage players</li>
+      </ul>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:8px;padding:16px">
+      <div class="label" style="color:#5ba85b">Superuser</div>
+      <ul style="margin-top:8px;padding-left:18px;line-height:2">
+        <li><code>/admin/users</code> — all users + role management</li>
+        <li><em>Plus all GM pages across all campaigns</em></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>Player pages</h3>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px">
+    <div class="label" style="color:#a55be5">Player (scoped to their team)</div>
+    <ul style="margin-top:8px;padding-left:18px;line-height:2;columns:2">
+      <li><code>/admin/campaigns/{id}/teams/{tid}</code> — edit own team profile</li>
+      <li><code>/admin/campaigns/{id}/attacks</code> — submit / cancel own attacks</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>Map editor approach</h3>
+  <div class="options" style="margin-top:8px">
+    <div class="option" data-choice="a" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>Simple 2D grid form</h3>
+        <p>A table/grid showing all tiles. Click a tile row to change its owner via a dropdown. Fast to build, no 3D dependency.</p>
+      </div>
+    </div>
+    <div class="option" data-choice="b" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>Reuse the 3D Babylon.js map</h3>
+        <p>Embed the existing map viewer with an "edit mode" overlay. Click a tile on the 3D map to open an edit panel. More immersive but more complex.</p>
+      </div>
+    </div>
+  </div>
+</div>

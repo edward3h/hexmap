@@ -1,0 +1,86 @@
+<h2>Admin UI Wireframes</h2>
+<p class="subtitle">Key screens — click to select your preferred layout style</p>
+
+<div class="section">
+  <h3>Login page (<code>/admin/login</code>)</h3>
+  <div class="mockup">
+    <div class="mockup-header">Hexmap Admin — Login</div>
+    <div class="mockup-body" style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px">
+      <div style="font-size:1.2em;font-weight:bold">Sign in to Hexmap</div>
+      <button class="mock-button" style="width:220px;background:#5865F2;color:white">Sign in with Discord</button>
+      <button class="mock-button" style="width:220px;background:#ea4335;color:white">Sign in with Google</button>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>Dashboard (<code>/admin</code>) — GM view</h3>
+  <div class="mockup">
+    <div class="mockup-header">Hexmap Admin — Dashboard &nbsp;|&nbsp; Signed in as: Alice &nbsp;|&nbsp; <span style="color:#aaa">Logout</span></div>
+    <div class="mockup-body" style="display:flex;gap:0">
+      <div class="mock-sidebar" style="width:180px;min-height:200px">
+        <div style="padding:8px;font-weight:bold;color:#888;font-size:11px">MY CAMPAIGNS</div>
+        <div style="padding:8px;background:var(--highlight,#333)">▶ Spring Crusade</div>
+        <div style="padding:8px">Summer War</div>
+        <div style="padding:8px;margin-top:8px;color:#5b8dd9">+ New Campaign</div>
+      </div>
+      <div class="mock-content" style="flex:1;padding:16px">
+        <div style="font-weight:bold;margin-bottom:8px">Spring Crusade</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          <button class="mock-button">Edit Map</button>
+          <button class="mock-button">Attacks</button>
+          <button class="mock-button">Teams</button>
+          <button class="mock-button">Members</button>
+          <button class="mock-button">Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px">
+  <h3>Tile ownership editor (<code>/admin/campaigns/{id}/map</code>)</h3>
+  <div class="mockup">
+    <div class="mockup-header">Edit Map — Spring Crusade</div>
+    <div class="mockup-body" style="padding:12px">
+      <input class="mock-input" placeholder="Search tiles..." style="width:200px;margin-bottom:8px">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="text-align:left;padding:6px">Coord</th>
+            <th style="text-align:left;padding:6px">Location</th>
+            <th style="text-align:left;padding:6px">Resource</th>
+            <th style="text-align:left;padding:6px">Owner</th>
+            <th style="text-align:left;padding:6px">Defence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:6px">A1</td>
+            <td style="padding:6px">Hive Primus</td>
+            <td style="padding:6px">HiveCity</td>
+            <td style="padding:6px"><select class="mock-input" style="padding:2px 4px"><option>Green</option><option>Red</option><option>Blue</option><option>— none —</option></select></td>
+            <td style="padding:6px"><input class="mock-input" type="number" value="2" style="width:50px;padding:2px 4px"></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:6px">B2</td>
+            <td style="padding:6px">Forge Delta</td>
+            <td style="padding:6px">Manufactorum</td>
+            <td style="padding:6px"><select class="mock-input" style="padding:2px 4px"><option>Red</option><option>Green</option><option>Blue</option><option>— none —</option></select></td>
+            <td style="padding:6px"><input class="mock-input" type="number" value="1" style="width:50px;padding:2px 4px"></td>
+          </tr>
+          <tr>
+            <td style="padding:6px">C3</td>
+            <td style="padding:6px">Outpost 7</td>
+            <td style="padding:6px">—</td>
+            <td style="padding:6px"><select class="mock-input" style="padding:2px 4px"><option>— none —</option><option>Green</option><option>Red</option><option>Blue</option></select></td>
+            <td style="padding:6px"><input class="mock-input" type="number" value="0" style="width:50px;padding:2px 4px"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px">
+        <button class="mock-button" style="background:#5b8dd9;color:white">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>

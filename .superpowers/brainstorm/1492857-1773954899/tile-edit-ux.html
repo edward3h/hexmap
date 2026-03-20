@@ -1,0 +1,70 @@
+<h2>Tile Editing Experience</h2>
+<p class="subtitle">When you click a tile in the grid, how do you edit its properties?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Edit panel below the grid</h3>
+      <p>Clicking a tile (or an empty slot) opens a property panel directly beneath the grid. The table below shows a read-only summary. One panel open at a time.</p>
+      <div style="margin-top:10px;background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:10px;font-size:0.75em">
+        <div style="color:#7ab3f0;margin-bottom:6px">Hex Grid</div>
+        <svg width="100%" height="60" viewBox="0 0 300 60">
+          <polygon points="30,5 50,5 60,21 50,37 30,37 20,21" fill="#2a4a2a" stroke="#4ade80" stroke-width="1.5"/>
+          <text x="40" y="24" fill="#eee" font-size="7" text-anchor="middle">Alpha</text>
+          <polygon points="70,5 90,5 100,21 90,37 70,37 60,21" fill="#4a2a4a" stroke="#a78bfa" stroke-width="2.5"/>
+          <text x="80" y="24" fill="#eee" font-size="7" text-anchor="middle">Hill</text>
+          <polygon points="110,5 130,5 140,21 130,37 110,37 100,21" fill="#111" stroke="#555" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="120" y="23" fill="#444" font-size="9" text-anchor="middle">+</text>
+          <polygon points="150,5 170,5 180,21 170,37 150,37 140,21" fill="#111" stroke="#555" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="160" y="23" fill="#444" font-size="9" text-anchor="middle">+</text>
+        </svg>
+        <div style="background:#222;border:1px solid #a78bfa;border-radius:4px;padding:8px;margin-top:6px;color:#ccc">
+          <div style="color:#a78bfa;font-weight:600;margin-bottom:6px">Editing: Hill (2,0)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <label style="display:flex;flex-direction:column;gap:2px;color:#888">Location name<input style="background:#2a2a2a;border:1px solid #555;color:#eee;padding:2px 4px;border-radius:3px" value="Hill Pass"></label>
+            <label style="display:flex;flex-direction:column;gap:2px;color:#888">Resource<input style="background:#2a2a2a;border:1px solid #555;color:#eee;padding:2px 4px;border-radius:3px" value="base"></label>
+            <label style="display:flex;flex-direction:column;gap:2px;color:#888">Defence<input style="background:#2a2a2a;border:1px solid #555;color:#eee;padding:2px 4px;border-radius:3px;width:40px" value="1"></label>
+            <label style="display:flex;flex-direction:column;gap:2px;color:#888">Colour override<input type="color" style="background:none;border:none;width:36px;height:24px;cursor:pointer" value="#7c3aed"></label>
+          </div>
+          <div style="margin-top:6px;display:flex;gap:6px">
+            <span style="background:#166534;color:white;padding:2px 10px;border-radius:3px;cursor:pointer">Save</span>
+            <span style="background:#7f1d1d;color:white;padding:2px 10px;border-radius:3px;cursor:pointer">Delete tile</span>
+            <span style="color:#888;padding:2px 8px;cursor:pointer">Cancel</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Inline row editing in the table</h3>
+      <p>Clicking a tile in the grid scrolls the table below and highlights that row. Editing happens in the table row itself — fields expand inline (same pattern as the current team name/colour editor).</p>
+      <div style="margin-top:10px;background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:10px;font-size:0.75em">
+        <div style="color:#7ab3f0;margin-bottom:6px">Hex Grid (click scrolls to row below)</div>
+        <svg width="100%" height="45" viewBox="0 0 300 45">
+          <polygon points="30,5 50,5 60,21 50,37 30,37 20,21" fill="#2a4a2a" stroke="#4ade80" stroke-width="1.5"/>
+          <text x="40" y="24" fill="#eee" font-size="7" text-anchor="middle">Alpha</text>
+          <polygon points="70,5 90,5 100,21 90,37 70,37 60,21" fill="#4a2a4a" stroke="#a78bfa" stroke-width="2.5"/>
+          <text x="80" y="24" fill="#eee" font-size="7" text-anchor="middle">Hill</text>
+        </svg>
+        <div style="margin-top:8px;border-collapse:collapse;width:100%">
+          <div style="display:grid;grid-template-columns:60px 1fr 1fr 70px;gap:0;border-bottom:1px solid #444;color:#888;padding:2px 4px">
+            <span>Coord</span><span>Location</span><span>Resource</span><span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:60px 1fr 1fr 70px;gap:0;border-bottom:1px solid #333;color:#aaa;padding:3px 4px">
+            <span>1,0</span><span>Alpha Base</span><span>HQ</span><span style="color:#7ab3f0">Edit</span>
+          </div>
+          <div style="display:grid;grid-template-columns:60px 1fr 1fr 70px;gap:0;border:1px solid #a78bfa;border-radius:3px;color:#ccc;padding:3px 4px;background:#1e1a2a">
+            <span>2,0</span>
+            <input style="background:#2a2a2a;border:1px solid #555;color:#eee;padding:1px 3px;border-radius:3px;width:80px" value="Hill Pass">
+            <input style="background:#2a2a2a;border:1px solid #555;color:#eee;padding:1px 3px;border-radius:3px;width:60px" value="base">
+            <span style="color:#4ade80;cursor:pointer">Save</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,93 @@
+<h2>Tile Editor Layout</h2>
+<p class="subtitle">How should the hex grid sit within the campaign admin page?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Grid + Table side by side</h3>
+      <p>The hex grid sits above or beside the tile list. Click an empty hex to open a "create tile" form. Click an existing hex to select it in the table below for editing.</p>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <div style="flex:1;background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:8px;font-size:0.75em;color:#888">
+          <div style="color:#7ab3f0;margin-bottom:4px">Hex Grid (click to select/create)</div>
+          <svg width="100%" height="80" viewBox="0 0 200 80">
+            <!-- existing tiles -->
+            <polygon points="30,10 50,10 60,26 50,42 30,42 20,26" fill="#2a4a2a" stroke="#4ade80" stroke-width="1"/>
+            <text x="40" y="30" fill="#eee" font-size="7" text-anchor="middle">1,0</text>
+            <polygon points="70,10 90,10 100,26 90,42 70,42 60,26" fill="#4a2a2a" stroke="#f87171" stroke-width="1"/>
+            <text x="80" y="30" fill="#eee" font-size="7" text-anchor="middle">2,0</text>
+            <polygon points="110,10 130,10 140,26 130,42 110,42 100,26" fill="#1a1a2a" stroke="#555" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="120" y="30" fill="#555" font-size="7" text-anchor="middle">3,0</text>
+            <!-- empty cells -->
+            <polygon points="150,10 170,10 180,26 170,42 150,42 140,26" fill="#111" stroke="#333" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="160" y="28" fill="#444" font-size="7" text-anchor="middle">+ new</text>
+            <polygon points="50,42 70,42 80,58 70,74 50,74 40,58" fill="#111" stroke="#333" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="60" y="62" fill="#444" font-size="7" text-anchor="middle">+ new</text>
+          </svg>
+        </div>
+        <div style="flex:1;background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:8px;font-size:0.75em;color:#888">
+          <div style="color:#7ab3f0;margin-bottom:4px">Tile list (click to edit)</div>
+          <div style="border-bottom:1px solid #333;padding:2px 0;color:#aaa">1,0 — Alpha Base</div>
+          <div style="border-bottom:1px solid #333;padding:2px 0;color:#aaa">2,0 — River Ford</div>
+          <div style="border-bottom:1px solid #333;padding:2px 0;color:#555;font-style:italic">3,0 — (selected)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Grid is the primary interface</h3>
+      <p>The hex grid replaces the tile table entirely. Click any hex to open an inline property panel. Empty hexes show a "+" to create. No separate list view.</p>
+      <div style="margin-top:12px;background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:8px">
+        <div style="color:#7ab3f0;font-size:0.75em;margin-bottom:6px">Hex Grid — click any tile to edit, click empty space to create</div>
+        <div style="display:flex;gap:8px">
+          <svg width="160" height="100" viewBox="0 0 160 100">
+            <polygon points="30,10 50,10 60,26 50,42 30,42 20,26" fill="#2a4a2a" stroke="#4ade80" stroke-width="2"/>
+            <text x="40" y="30" fill="#eee" font-size="7" text-anchor="middle">Alpha</text>
+            <polygon points="70,10 90,10 100,26 90,42 70,42 60,26" fill="#4a2a2a" stroke="#f87171" stroke-width="2"/>
+            <text x="80" y="30" fill="#eee" font-size="7" text-anchor="middle">River</text>
+            <polygon points="110,10 130,10 140,26 130,42 110,42 100,26" fill="#111" stroke="#555" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="120" y="28" fill="#444" font-size="9" text-anchor="middle">+</text>
+            <polygon points="50,42 70,42 80,58 70,74 50,74 40,58" fill="#3a2a4a" stroke="#a78bfa" stroke-width="2"/>
+            <text x="60" y="62" fill="#eee" font-size="7" text-anchor="middle">Hill</text>
+            <polygon points="90,42 110,42 120,58 110,74 90,74 80,58" fill="#111" stroke="#555" stroke-width="1" stroke-dasharray="3,2"/>
+            <text x="100" y="62" fill="#444" font-size="9" text-anchor="middle">+</text>
+          </svg>
+          <div style="flex:1;background:#111;border:1px solid #4ade80;border-radius:4px;padding:8px;font-size:0.72em;color:#ccc">
+            <div style="color:#4ade80;margin-bottom:4px">Alpha Base (1,0)</div>
+            <div style="color:#888;margin-bottom:2px">Location: Alpha Base</div>
+            <div style="color:#888;margin-bottom:2px">Resource: HQ</div>
+            <div style="color:#888;margin-bottom:2px">Defence: 2</div>
+            <div style="margin-top:6px;display:flex;gap:4px">
+              <span style="background:#166534;color:white;padding:2px 6px;border-radius:3px;cursor:pointer">Save</span>
+              <span style="background:#7f1d1d;color:white;padding:2px 6px;border-radius:3px;cursor:pointer">Delete</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Grid for creation only, table for editing</h3>
+      <p>An "Add Tile" section shows the grid (only empty slots visible). Editing existing tile properties stays in the existing table rows (inline edit on click, as the team column works now).</p>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+        <div style="background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:8px;font-size:0.75em">
+          <div style="color:#7ab3f0;margin-bottom:4px">▶ Add new tile (click to expand grid)</div>
+        </div>
+        <div style="background:#1a1a1a;border:1px solid #444;border-radius:4px;padding:8px;font-size:0.75em;color:#aaa">
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid #333;padding-bottom:4px;margin-bottom:4px">
+            <span>1,0 — Alpha Base</span><span style="color:#7ab3f0">Edit ✕</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span>2,0 — River Ford</span><span style="color:#7ab3f0">Edit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
