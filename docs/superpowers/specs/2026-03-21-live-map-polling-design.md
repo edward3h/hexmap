@@ -209,9 +209,15 @@ Polling tick (pollRefresh):
 }
 
 @keyframes toast-fade {
-  0%   { opacity: 1; }
-  70%  { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 ```
 
