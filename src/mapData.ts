@@ -70,6 +70,9 @@ const fetchMapData = (): Promise<MapData> => {
       return response.json() as Promise<MapData>;
     })
     .then((mapData) => {
+      for (const key of Object.keys(teamRef)) {
+        delete teamRef[key];
+      }
       for (const team of mapData.teams) {
         teamRef[team.name] = team;
       }
