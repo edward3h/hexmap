@@ -131,6 +131,15 @@ void fetch(`/api/campaigns/${campaignId}`)
     if (c) document.title = c.name;
   });
 
+const backNav = document.getElementById('back-nav');
+if (backNav) {
+  const adminLink = document.createElement('a');
+  adminLink.href = `/admin/campaigns/${campaignId}`;
+  adminLink.textContent = 'Edit campaign →';
+  adminLink.style.marginLeft = '16px';
+  backNav.appendChild(adminLink);
+}
+
 async function buildMap(): Promise<{
   scene: Scene;
   camera: ArcRotateCamera;
