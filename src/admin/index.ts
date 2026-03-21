@@ -52,7 +52,10 @@ async function renderDashboard(container: HTMLElement): Promise<void> {
 
     container.innerHTML = `
       <header style="padding:16px 24px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center">
-        <strong>Hexmap Admin</strong>
+        <span style="display:flex;align-items:center;gap:16px">
+          <strong>Hexmap Admin</strong>
+          <a href="/" style="color:#7ab3f0;font-size:0.85em;text-decoration:none">← Public site</a>
+        </span>
         <span>
           ${esc(user.display_name)}
           <button id="logout-btn" style="margin-left:12px;padding:4px 10px;cursor:pointer">Logout</button>
