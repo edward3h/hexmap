@@ -100,7 +100,7 @@ function addSharedListeners(): void {
   });
 }
 
-export function initColorPicker(id: string, onChange: (hex: string) => void): void {
+export function initColorPicker(id: string, onChange?: (hex: string) => void): void {
   injectStyles();
   addSharedListeners();
 
@@ -130,7 +130,7 @@ export function initColorPicker(id: string, onChange: (hex: string) => void): vo
       });
       btn.classList.add('selected');
       popover.hidden = true;
-      onChange(hex);
+      onChange?.(hex);
     });
   });
 }

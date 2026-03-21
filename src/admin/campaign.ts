@@ -2,7 +2,7 @@
 // Campaign detail page: tile editor, attack editor, team asset editor.
 
 import { api, ApiError } from './api';
-import { colorPickerHtml, initColorPicker } from './colorPicker';
+import { colorPickerHtml, initColorPicker, TILE_PALETTE } from './colorPicker';
 import { renderHexGrid } from './hexGrid';
 import {
   AdminAttack,
@@ -427,14 +427,12 @@ function renderTeamManager(
     </details>
   `;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  initColorPicker('new-team-color', () => {});
+  initColorPicker('new-team-color');
 
   // Edit / cancel / save per row
   container.querySelectorAll<HTMLTableRowElement>('tr[data-team-id]').forEach((row) => {
     const teamId = Number(row.dataset['teamId']);
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    initColorPicker(`team-edit-color-${teamId}`, () => {});
+    initColorPicker(`team-edit-color-${teamId}`);
     const viewEls = row.querySelectorAll<HTMLElement>('.team-view');
     const editingEl = row.querySelector<HTMLElement>('.team-editing')!;
     const confirmDeleteEl = row.querySelector<HTMLElement>('.team-confirm-delete')!;
@@ -809,7 +807,7 @@ async function renderTileEditor(
       .join('');
 
     const hasColor = !isCreate && tile.colorOverride !== undefined;
-    const colorVal = hasColor ? tile.colorOverride ?? '#000000' : '#000000';
+    const colorVal = hasColor ? tile.colorOverride ?? '#FF3333' : '#FF3333';
     const defenceVal = isCreate ? 0 : tile.defence ?? 0;
     const locationVal = isCreate ? '' : tile.locationName ?? '';
     const heading = isCreate
@@ -851,9 +849,9 @@ async function renderTileEditor(
             <span style="display:flex;gap:8px;align-items:center">
               <input id="tile-color-on" type="checkbox" ${hasColor ? 'checked' : ''}
                 style="width:16px;height:16px;cursor:pointer">
-              <input id="tile-color" type="color" value="${colorVal}"
-                ${!hasColor ? 'disabled' : ''}
-                style="width:40px;height:28px;cursor:pointer;border:none;background:none">
+              <span id="tile-color-picker" style="${
+                !hasColor ? 'pointer-events:none;opacity:0.4' : ''
+              }">${colorPickerHtml('tile-color', colorVal, TILE_PALETTE)}</span>
             </span>
           </label>
           <label style="display:flex;flex-direction:column;gap:4px;color:#888;font-size:0.9em">
@@ -884,12 +882,16 @@ async function renderTileEditor(
       </div>
     `;
 
+    initColorPicker('tile-color');
+
     panelContainer
       .querySelector<HTMLInputElement>('#tile-color-on')!
       .addEventListener('change', (e) => {
-        panelContainer.querySelector<HTMLInputElement>('#tile-color')!.disabled = !(
-          e.target as HTMLInputElement
-        ).checked;
+        const pickerWrapper =
+          panelContainer.querySelector<HTMLElement>('#tile-color-picker')!;
+        const enabled = (e.target as HTMLInputElement).checked;
+        pickerWrapper.style.pointerEvents = enabled ? '' : 'none';
+        pickerWrapper.style.opacity = enabled ? '' : '0.4';
       });
 
     panelContainer
@@ -931,7 +933,8 @@ async function renderTileEditor(
       const colorOn =
         panelContainer.querySelector<HTMLInputElement>('#tile-color-on')!.checked;
       const colorOverride = colorOn
-        ? panelContainer.querySelector<HTMLInputElement>('#tile-color')!.value
+        ? panelContainer.querySelector<HTMLElement>('#tile-color')?.dataset['value'] ??
+          null
         : null;
       const teamIdStr =
         panelContainer.querySelector<HTMLSelectElement>('#tile-team')!.value;
