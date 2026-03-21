@@ -1256,23 +1256,7 @@ export async function renderCampaignDetail(
         <header style="padding:16px 24px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center">
           <span><a href="/admin" style="color:#7ab3f0">← Campaigns</a></span>
           <strong>${esc(campaign.name)}</strong>
-          <span style="font-size:0.85em;color:${
-            campaign.ended_at
-              ? '#888'
-              : campaign.started_at && campaign.is_active
-              ? '#4ade80'
-              : campaign.started_at
-              ? '#fbbf24'
-              : '#888'
-          }">${
-        campaign.ended_at
-          ? 'Ended'
-          : campaign.started_at && campaign.is_active
-          ? 'Active'
-          : campaign.started_at
-          ? 'Paused'
-          : 'Not Started'
-      }</span>
+          <a href="/map/${campaignId}" style="color:#7ab3f0;text-decoration:none;font-size:0.85em">View map →</a>
         </header>
         <main style="padding:24px;max-width:900px;display:grid;gap:32px">
           <section id="section-lifecycle"></section>
