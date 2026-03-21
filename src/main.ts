@@ -25,7 +25,9 @@ import { showScores } from './scores';
 import { showMapIcons } from './teamSprites';
 import { clearHighlight, loadTileFactory } from './tileDefs';
 
-const createScene = function (engine: Engine) {
+const createScene = function (
+  engine: Engine,
+): Promise<{ scene: Scene; camera: ArcRotateCamera }> {
   const scene = new Scene(engine);
 
   const camera = new ArcRotateCamera(
@@ -105,40 +107,103 @@ const createScene = function (engine: Engine) {
     ol.tick();
   });
 
-  void Promise.all([loadTileFactory(scene, ol), fetchMapData()]).then((v) => {
-    const [createTile, mapData] = v;
-    mapData.map.forEach(createTile);
-    showMapIcons(scene, mapData);
-    engine.hideLoadingUI();
-    showAttackArrows(scene, mapData);
-    showScores(mapData);
-  });
+  const ready = Promise.all([loadTileFactory(scene, ol), fetchMapData()]).then(
+    ([createTile, mapData]) => {
+      mapData.map.forEach(createTile);
+      showMapIcons(scene, mapData);
+      showAttackArrows(scene, mapData);
+      showScores(mapData);
+      return { scene, camera };
+    },
+  );
 
-  return { scene, camera };
+  return ready;
 };
 
 const canvas = document.getElementById('app') as HTMLCanvasElement;
 DefaultLoadingScreen.DefaultLogoUrl = '/ardboyz.png';
 const engine = new Engine(canvas, true, { stencil: true });
-engine.displayLoadingUI();
 
-const { scene, camera } = createScene(engine);
-
+// One-time campaign title fetch (not part of poll cycle)
 void fetch(`/api/campaigns/${campaignId}`)
   .then((res) => (res.ok ? (res.json() as Promise<Campaign>) : null))
   .then((c) => {
     if (c) document.title = c.name;
   });
-const keyScenes: Scene[] = [];
-keyScenes.push(createKeyScene(engine, camera, 'HQ', { scale: 0.7 }));
-keyScenes.push(createKeyScene(engine, camera, 'CommandBastion', { row: 1 }));
-keyScenes.push(createKeyScene(engine, camera, 'ShieldGenerator', { row: 2, scale: 0.8 }));
-keyScenes.push(createKeyScene(engine, camera, 'PowerStation', { row: 3 }));
-keyScenes.push(createKeyScene(engine, camera, 'Manufactorum', { row: 4, scale: 0.8 }));
-keyScenes.push(createKeyScene(engine, camera, 'SpacePort', { row: 5, scale: 0.7 }));
-keyScenes.push(createKeyScene(engine, camera, 'HiveCity', { row: 6, scale: 0.5 }));
 
-engine.runRenderLoop(() => {
-  scene.render();
-  keyScenes.forEach((x) => x.render());
-});
+async function buildMap(): Promise<{
+  scene: Scene;
+  camera: ArcRotateCamera;
+  keyScenes: Scene[];
+}> {
+  const { scene, camera } = await createScene(engine);
+  const keyScenes: Scene[] = [
+    createKeyScene(engine, camera, 'HQ', { scale: 0.7 }),
+    createKeyScene(engine, camera, 'CommandBastion', { row: 1 }),
+    createKeyScene(engine, camera, 'ShieldGenerator', { row: 2, scale: 0.8 }),
+    createKeyScene(engine, camera, 'PowerStation', { row: 3 }),
+    createKeyScene(engine, camera, 'Manufactorum', { row: 4, scale: 0.8 }),
+    createKeyScene(engine, camera, 'SpacePort', { row: 5, scale: 0.7 }),
+    createKeyScene(engine, camera, 'HiveCity', { row: 6, scale: 0.5 }),
+  ];
+  return { scene, camera, keyScenes };
+}
+
+function showToast(): void {
+  const existing = document.getElementById('map-refresh-toast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'map-refresh-toast';
+  toast.textContent = 'Map refreshed';
+  document.body.appendChild(toast);
+  toast.addEventListener('animationend', () => toast.remove(), { once: true });
+}
+
+engine.displayLoadingUI();
+
+buildMap()
+  .then(({ scene, camera, keyScenes }) => {
+    engine.hideLoadingUI();
+
+    let currentScene = scene;
+    let currentCamera = camera;
+    let currentKeyScenes = keyScenes;
+
+    engine.runRenderLoop(() => {
+      currentScene.render();
+      currentKeyScenes.forEach((x) => x.render());
+    });
+
+    let refreshing = false;
+
+    function pollRefresh(): void {
+      if (refreshing) return;
+      refreshing = true;
+      clearHighlight();
+      buildMap()
+        .then(({ scene: newScene, camera: newCamera, keyScenes: newKeyScenes }) => {
+          currentCamera.onViewMatrixChangedObservable.clear();
+          currentScene.dispose();
+          currentKeyScenes.forEach((s) => s.dispose());
+          currentScene = newScene;
+          currentCamera = newCamera;
+          currentKeyScenes = newKeyScenes;
+          showToast();
+        })
+        .catch(() => {
+          // silent — next poll will retry
+        })
+        .finally(() => {
+          refreshing = false;
+        });
+    }
+
+    setInterval(pollRefresh, 30 * 60 * 1000);
+  })
+  .catch(() => {
+    engine.hideLoadingUI();
+    const err = document.createElement('p');
+    err.textContent = 'Failed to load map. Please refresh the page.';
+    err.style.cssText = 'color:white;text-align:center;padding:2rem;';
+    document.body.appendChild(err);
+  });
