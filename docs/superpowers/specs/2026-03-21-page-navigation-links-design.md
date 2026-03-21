@@ -13,7 +13,7 @@ Add navigation links between the four pages of the Hexmap application so users c
 
 - Add a static "Admin →" anchor to `index.html`.
 - Visible to all visitors; unauthenticated users will be redirected to login by the admin app.
-- Placement: top-right corner of the page, styled consistently with the existing inline styles used throughout the project.
+- Placement: top-right corner of the page, as a positioned element (e.g. `position:fixed; top:12px; right:16px`). Style to match the surrounding rendered content in `src/campaigns.ts`: `font-family: system-ui, sans-serif; color: #7ab3f0; text-decoration: none; font-size: 0.9em`.
 
 ### Admin dashboard (`/admin`) → Root page (`/`)
 
@@ -22,14 +22,14 @@ Add navigation links between the four pages of the Hexmap application so users c
 
 ### Map page (`/map/{id}`) → Admin campaign page (`/admin/campaigns/{id}`)
 
-- The campaign ID is already available via the exported `campaignId` from `src/mapData.ts`.
-- Inject an "Admin →" anchor into the existing `<nav id="back-nav">` element after the DOM is ready, via `src/main.ts`.
+- The campaign ID is already available via the exported `campaignId` from `src/mapData.ts`. `getCampaignId()` redirects to root if no ID is present, so the map page only renders with a valid campaign ID — no null-guard is needed.
+- Inject an "Edit campaign →" anchor into the existing `<nav id="back-nav">` element at module top-level in `src/main.ts`, using `document.getElementById('back-nav')`. The nav element is static HTML present from initial parse, so no async wait is needed. Appended after the existing `← Campaigns` link, with a small gap (e.g. `margin-left: 16px`).
 - Visible to all visitors.
 
 ### Admin campaign page (`/admin/campaigns/{id}`) → Map page (`/map/{id}`)
 
 - The campaign ID is available from the URL (`/admin/campaigns/{id}`).
-- Add a "View map →" link inside the campaign detail header rendered by `renderCampaignDetail()` in `src/admin/campaign.ts`.
+- The campaign detail header rendered by `renderCampaignDetail()` in `src/admin/campaign.ts` is a three-column flex row: left (`← Campaigns`), centre (campaign name), right (inline status badge). Add a "View map →" link by replacing the inline status badge in the right-hand `<span>`. The campaign status continues to appear in the Campaign Status / lifecycle section rendered below the header, so no information is lost.
 
 ## Implementation Approach
 
