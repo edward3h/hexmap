@@ -136,7 +136,7 @@ if (backNav) {
   const adminLink = document.createElement('a');
   adminLink.href = `/admin/campaigns/${campaignId}`;
   adminLink.textContent = 'Edit campaign →';
-  adminLink.style.marginLeft = '16px';
+  adminLink.style.marginLeft = '1rem';
   backNav.appendChild(adminLink);
 }
 
