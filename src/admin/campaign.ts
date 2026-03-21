@@ -2,6 +2,7 @@
 // Campaign detail page: tile editor, attack editor, team asset editor.
 
 import { api, ApiError } from './api';
+import { colorPickerHtml, initColorPicker } from './colorPicker';
 import { renderHexGrid } from './hexGrid';
 import {
   AdminAttack,
@@ -355,8 +356,10 @@ function renderTeamManager(
           )}"></span>
           ${esc(t.color)}
         </span>
-        <input class="team-edit-color" type="color" value="${esc(t.color)}"
-          style="display:none;width:48px;height:28px;border:none;background:none;cursor:pointer">
+        <div class="team-edit-color" style="display:none">${colorPickerHtml(
+          `team-edit-color-${t.id}`,
+          t.color,
+        )}</div>
       </td>
       <td style="padding:6px 8px">
         ${
@@ -411,8 +414,7 @@ function renderTeamManager(
         <input id="new-team-display" type="text" placeholder="Display name"
           style="padding:6px;background:#2a2a2a;color:#eee;border:1px solid #555;border-radius:3px">
         <label style="display:flex;align-items:center;gap:8px;font-size:0.9em">
-          Colour <input id="new-team-color" type="color" value="#888888"
-            style="width:48px;height:28px;border:none;background:none;cursor:pointer">
+          Colour ${colorPickerHtml('new-team-color', '#FF3333')}
         </label>
         <div style="display:flex;align-items:center;gap:12px">
           <button id="new-team-submit"
@@ -425,9 +427,14 @@ function renderTeamManager(
     </details>
   `;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  initColorPicker('new-team-color', () => {});
+
   // Edit / cancel / save per row
   container.querySelectorAll<HTMLTableRowElement>('tr[data-team-id]').forEach((row) => {
     const teamId = Number(row.dataset['teamId']);
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    initColorPicker(`team-edit-color-${teamId}`, () => {});
     const viewEls = row.querySelectorAll<HTMLElement>('.team-view');
     const editingEl = row.querySelector<HTMLElement>('.team-editing')!;
     const confirmDeleteEl = row.querySelector<HTMLElement>('.team-confirm-delete')!;
@@ -436,19 +443,17 @@ function renderTeamManager(
       viewEls.forEach((el) => (el.style.display = 'none'));
       editingEl.style.display = 'inline';
       row
-        .querySelectorAll<HTMLInputElement>(
-          '.team-edit-name,.team-edit-display,.team-edit-color',
-        )
+        .querySelectorAll<HTMLElement>('.team-edit-name,.team-edit-display')
         .forEach((inp) => (inp.style.display = 'inline-block'));
+      row.querySelector<HTMLElement>('.team-edit-color')!.style.display = 'inline-block';
     };
     const hideEdit = (): void => {
       viewEls.forEach((el) => (el.style.display = ''));
       editingEl.style.display = 'none';
       row
-        .querySelectorAll<HTMLInputElement>(
-          '.team-edit-name,.team-edit-display,.team-edit-color',
-        )
+        .querySelectorAll<HTMLElement>('.team-edit-name,.team-edit-display')
         .forEach((inp) => (inp.style.display = 'none'));
+      row.querySelector<HTMLElement>('.team-edit-color')!.style.display = 'none';
     };
 
     row.querySelector('.team-edit-btn')?.addEventListener('click', showEdit);
@@ -477,7 +482,9 @@ function renderTeamManager(
       const displayVal = (
         row.querySelector('.team-edit-display') as HTMLInputElement
       ).value.trim();
-      const colorVal = (row.querySelector('.team-edit-color') as HTMLInputElement).value;
+      const colorVal =
+        document.getElementById(`team-edit-color-${teamId}`)?.dataset['value'] ??
+        team.color;
       const errEl = row.querySelector<HTMLElement>('.team-edit-error')!;
       errEl.textContent = '';
 
@@ -532,8 +539,8 @@ function renderTeamManager(
     const displayVal = (
       document.getElementById('new-team-display') as HTMLInputElement
     ).value.trim();
-    const colorVal = (document.getElementById('new-team-color') as HTMLInputElement)
-      .value;
+    const colorVal =
+      document.getElementById('new-team-color')?.dataset['value'] ?? '#FF3333';
     const errEl = document.getElementById('new-team-error')!;
     errEl.textContent = '';
 
