@@ -15,17 +15,17 @@ const HEX_W = HEX_H * 0.866; // flat-to-flat width ≈ 45
 function hexCentre(col: number, row: number): { x: number; y: number } {
   // Safe modulo: ((col % 2) + 2) % 2 ensures correct parity for negative cols
   const colParity = ((col % 2) + 2) % 2;
-  return { x: col * HEX_W, y: row * HEX_H - colParity * HEX_H * 0.5 };
+  return { x: col * R * 1.5, y: -(row * HEX_W - colParity * HEX_W * 0.5) };
 }
 
 function hexPoints(cx: number, cy: number): string {
   return [
-    [cx, cy - R],
-    [cx + HEX_W / 2, cy - R / 2],
-    [cx + HEX_W / 2, cy + R / 2],
-    [cx, cy + R],
-    [cx - HEX_W / 2, cy + R / 2],
-    [cx - HEX_W / 2, cy - R / 2],
+    [cx + R, cy],
+    [cx + R / 2, cy - HEX_W / 2],
+    [cx - R / 2, cy - HEX_W / 2],
+    [cx - R, cy],
+    [cx - R / 2, cy + HEX_W / 2],
+    [cx + R / 2, cy + HEX_W / 2],
   ]
     .map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`)
     .join(' ');
@@ -62,10 +62,10 @@ export function renderHexGrid(
   for (let col = minCol; col <= maxCol; col++) {
     for (let row = minRow; row <= maxRow; row++) {
       const { x, y } = hexCentre(col, row);
-      svgMinX = Math.min(svgMinX, x - HEX_W / 2);
-      svgMaxX = Math.max(svgMaxX, x + HEX_W / 2);
-      svgMinY = Math.min(svgMinY, y - R);
-      svgMaxY = Math.max(svgMaxY, y + R);
+      svgMinX = Math.min(svgMinX, x - R);
+      svgMaxX = Math.max(svgMaxX, x + R);
+      svgMinY = Math.min(svgMinY, y - HEX_W / 2);
+      svgMaxY = Math.max(svgMaxY, y + HEX_W / 2);
     }
   }
   svgMinX -= R;
