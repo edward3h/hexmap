@@ -66,6 +66,18 @@ h1 {
   border: 1px solid #33ff33;
 }
 
+.status.not-started {
+  background: rgba(255, 255, 255, 0.05);
+  color: #888;
+  border: 1px solid #555;
+}
+
+.status.paused {
+  background: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+  border: 1px solid #facc15;
+}
+
 .status.ended {
   background: rgba(255, 255, 255, 0.05);
   color: #888;

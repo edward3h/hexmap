@@ -29,7 +29,32 @@ interface Campaign {
   description: string;
   is_active: boolean;
   created_at: string;
+  started_at: string | null;
+  ended_at: string | null;
 }
+
+type CampaignState = 'not_started' | 'active' | 'paused' | 'ended';
+
+function getCampaignState(c: Campaign): CampaignState {
+  if (c.ended_at) return 'ended';
+  if (!c.started_at) return 'not_started';
+  if (c.is_active) return 'active';
+  return 'paused';
+}
+
+const STATE_LABEL: Record<CampaignState, string> = {
+  not_started: 'Not Started',
+  active: 'Active',
+  paused: 'Paused',
+  ended: 'Ended',
+};
+
+const STATE_COLOUR: Record<CampaignState, string> = {
+  not_started: '#888',
+  active: '#4ade80',
+  paused: '#facc15',
+  ended: '#888',
+};
 
 async function renderDashboard(container: HTMLElement): Promise<void> {
   container.innerHTML = '<p style="padding:24px">Loading…</p>';
@@ -80,8 +105,8 @@ async function renderDashboard(container: HTMLElement): Promise<void> {
                   c.name,
                 )}</a>
                 <span style="font-size:0.85em;color:${
-                  c.is_active ? '#4ade80' : '#888'
-                }">${c.is_active ? 'Active' : 'Inactive'}</span>
+                  STATE_COLOUR[getCampaignState(c)]
+                }">${STATE_LABEL[getCampaignState(c)]}</span>
               </li>`,
               )
               .join('')}

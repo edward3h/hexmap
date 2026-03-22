@@ -37,8 +37,21 @@ fetch('/api/campaigns')
       }
 
       const status = document.createElement('span');
-      status.className = campaign.ended_at ? 'status ended' : 'status active';
-      status.textContent = campaign.ended_at ? 'Ended' : 'Active';
+      const state = campaign.ended_at
+        ? 'ended'
+        : !campaign.started_at
+        ? 'not_started'
+        : campaign.is_active
+        ? 'active'
+        : 'paused';
+      const stateLabel: Record<string, string> = {
+        not_started: 'Not Started',
+        active: 'Active',
+        paused: 'Paused',
+        ended: 'Ended',
+      };
+      status.className = `status ${state.replace('_', '-')}`;
+      status.textContent = stateLabel[state];
       card.appendChild(status);
 
       container.appendChild(card);
