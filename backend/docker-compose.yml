@@ -9,6 +9,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
+      - ./schema-auth.sql:/docker-entrypoint-initdb.d/00-schema-auth.sql:ro
       - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
       - ./seed-campaign2.sql:/docker-entrypoint-initdb.d/03-seed-campaign2.sql:ro
