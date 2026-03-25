@@ -15,6 +15,7 @@
 ### Task 1: Add "Admin →" link to root page
 
 **Files:**
+
 - Modify: `index.html`
 
 **Background:** `index.html` is a near-empty HTML file — `<div id="campaign-list">` and a script tag. The body is styled by `src/campaigns.css` which sets `background: #0a0a0a`, `color: #ccc`, `font-family: Arial`. There are no inline styles in the HTML. A `position: fixed` link in the top-right corner is appropriate since the body layout is centred flex-column.
@@ -24,14 +25,22 @@
   In `index.html`, add the following anchor inside `<body>`, before the `<div id="campaign-list">`:
 
   ```html
-  <a href="/admin" style="position:fixed;top:12px;right:16px;color:#7ab3f0;text-decoration:none;font-size:0.9em;font-family:system-ui,sans-serif">Admin →</a>
+  <a
+    href="/admin"
+    style="position:fixed;top:12px;right:16px;color:#7ab3f0;text-decoration:none;font-size:0.9em;font-family:system-ui,sans-serif"
+    >Admin →</a
+  >
   ```
 
   Full resulting `<body>` section:
 
   ```html
   <body>
-    <a href="/admin" style="position:fixed;top:12px;right:16px;color:#7ab3f0;text-decoration:none;font-size:0.9em;font-family:system-ui,sans-serif">Admin →</a>
+    <a
+      href="/admin"
+      style="position:fixed;top:12px;right:16px;color:#7ab3f0;text-decoration:none;font-size:0.9em;font-family:system-ui,sans-serif"
+      >Admin →</a
+    >
     <div id="campaign-list"></div>
     <script type="module" src="/src/campaigns.ts"></script>
   </body>
@@ -73,6 +82,7 @@
 ### Task 2: Add "← Public site" link to admin dashboard header
 
 **Files:**
+
 - Modify: `src/admin/index.ts`
 
 **Background:** `renderDashboard()` (line ~53) builds the page HTML as a template literal. The `<header>` is a flex row with `justify-content:space-between`. Left side is `<strong>Hexmap Admin</strong>`, right side is the user name + logout button. Add the public site link alongside the left-side label.
@@ -90,7 +100,9 @@
   ```html
   <span style="display:flex;align-items:center;gap:16px">
     <strong>Hexmap Admin</strong>
-    <a href="/" style="color:#7ab3f0;font-size:0.85em;text-decoration:none">← Public site</a>
+    <a href="/" style="color:#7ab3f0;font-size:0.85em;text-decoration:none"
+      >← Public site</a
+    >
   </span>
   ```
 
@@ -128,6 +140,7 @@
 ### Task 3: Add "Edit campaign →" link to map page nav
 
 **Files:**
+
 - Modify: `src/main.ts`
 
 **Background:** `map/index.html` has a static `<nav id="back-nav"><a href="/">← Campaigns</a></nav>`. The nav is styled by `src/style.css` — `position: fixed; top: 0.75rem; left: 0.75rem` — and links inside it get green text on a dark semi-transparent background (see `#back-nav a` rule). `campaignId` is already imported from `./mapData` at the top of `main.ts` (line 23) and is a guaranteed non-null positive integer when the map page renders. Inject the new link at module top-level (synchronously), before the async scene setup.
@@ -194,6 +207,7 @@
 ### Task 4: Add "View map →" link to campaign admin header
 
 **Files:**
+
 - Modify: `src/admin/campaign.ts`
 
 **Background:** `renderCampaignDetail()` (around line 1251) renders the page as a template literal. The `<header>` is a three-column flex row: left `<span>` with `← Campaigns` link, centre `<strong>` with campaign name, right `<span>` with an inline status badge (colour-coded text: "Active", "Paused", "Ended", "Not Started"). The campaign status also appears in the "Campaign Status" lifecycle section rendered below the header, so removing the inline badge loses no information. Replace the right-hand `<span>` with a "View map →" link. The campaign ID is available as the `campaignId` parameter passed to `renderCampaignDetail()`.
@@ -203,7 +217,8 @@
   In `src/admin/campaign.ts`, find the right-hand `<span>` in the header template (around line 1259–1275). It looks like:
 
   ```html
-  <span style="font-size:0.85em;color:${
+  <span
+    style="font-size:0.85em;color:${
     campaign.ended_at
       ? '#888'
       : campaign.started_at && campaign.is_active
@@ -211,21 +226,18 @@
       : campaign.started_at
       ? '#fbbf24'
       : '#888'
-  }">${
-    campaign.ended_at
-      ? 'Ended'
-      : campaign.started_at && campaign.is_active
-      ? 'Active'
-      : campaign.started_at
-      ? 'Paused'
-      : 'Not Started'
-  }</span>
+  }"
+    >${ campaign.ended_at ? 'Ended' : campaign.started_at && campaign.is_active ? 'Active'
+    : campaign.started_at ? 'Paused' : 'Not Started' }</span
+  >
   ```
 
   Replace it with:
 
   ```html
-  <a href="/map/${campaignId}" style="color:#7ab3f0;text-decoration:none;font-size:0.85em">View map →</a>
+  <a href="/map/${campaignId}" style="color:#7ab3f0;text-decoration:none;font-size:0.85em"
+    >View map →</a
+  >
   ```
 
   Note: `campaignId` here refers to the parameter of `renderCampaignDetail(container, campaignId)` — check the function signature to confirm the parameter name matches.

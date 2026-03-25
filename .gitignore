@@ -28,3 +28,5 @@ dist-ssr
 /.deployed_config_example.php
 .worktrees/
 backend/public/sprites/
+.playwright-mcp/
+.superpowers/
