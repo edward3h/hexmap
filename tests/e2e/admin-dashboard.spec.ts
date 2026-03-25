@@ -18,10 +18,10 @@ test('unauthenticated /admin redirects to login page', async ({ page }) => {
 test('authenticated admin shows campaign dashboard', async ({ page }) => {
   // Navigate to set localStorage on the correct origin
   await page.goto('/admin');
-  await page.evaluate(
-    ({ key, token }) => localStorage.setItem(key, token),
-    { key: TOKEN_KEY, token: TEST_TOKEN },
-  );
+  await page.evaluate(({ key, token }) => localStorage.setItem(key, token), {
+    key: TOKEN_KEY,
+    token: TEST_TOKEN,
+  });
 
   // Navigate again — now authenticated
   await page.goto('/admin');

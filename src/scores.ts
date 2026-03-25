@@ -41,7 +41,6 @@ function prepareRows(team: Team, mapData: MapData): Row[] {
   return r;
 }
 
-
 export function showScores(mapData: MapData) {
   const data = mapData.teams.reduce(
     (acc: Record<string, Row[]>, t) => ((acc[t.name] = prepareRows(t, mapData)), acc),

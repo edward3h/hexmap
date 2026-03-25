@@ -6,7 +6,11 @@ const BACKEND_DIR = path.resolve(__dirname, '../backend');
 const HEALTH_URL = 'http://localhost:8080/api/health';
 
 const DOCKER_COMPOSE_ARGS = [
-  'compose', '-f', 'docker-compose.yml', '-f', 'docker-compose.test.yml',
+  'compose',
+  '-f',
+  'docker-compose.yml',
+  '-f',
+  'docker-compose.test.yml',
 ];
 
 async function isBackendHealthy(): Promise<boolean> {
@@ -33,8 +37,19 @@ async function waitForMySQL(maxWaitMs = 60_000): Promise<void> {
   while (Date.now() < deadline) {
     const result = spawnSync(
       'docker',
-      [...DOCKER_COMPOSE_ARGS, 'exec', '-T', 'db',
-       'mysqladmin', 'ping', '-h', 'localhost', '-uhexmap', '-phexmap', '--silent'],
+      [
+        ...DOCKER_COMPOSE_ARGS,
+        'exec',
+        '-T',
+        'db',
+        'mysqladmin',
+        'ping',
+        '-h',
+        'localhost',
+        '-uhexmap',
+        '-phexmap',
+        '--silent',
+      ],
       { cwd: BACKEND_DIR, stdio: 'pipe' },
     );
     if (result.status === 0) return;
@@ -49,7 +64,16 @@ function applyTestSeed(): void {
 
   const result = spawnSync(
     'docker',
-    [...DOCKER_COMPOSE_ARGS, 'exec', '-T', 'db', 'mysql', '-uhexmap', '-phexmap', 'hexmap'],
+    [
+      ...DOCKER_COMPOSE_ARGS,
+      'exec',
+      '-T',
+      'db',
+      'mysql',
+      '-uhexmap',
+      '-phexmap',
+      'hexmap',
+    ],
     { cwd: BACKEND_DIR, input: sql, stdio: ['pipe', 'inherit', 'inherit'] },
   );
 
@@ -75,11 +99,10 @@ export default async function globalSetup() {
   }
 
   console.log('[setup] Starting Docker backend...');
-  const result = spawnSync(
-    'docker',
-    [...DOCKER_COMPOSE_ARGS, 'up', '-d'],
-    { cwd: BACKEND_DIR, stdio: 'inherit' },
-  );
+  const result = spawnSync('docker', [...DOCKER_COMPOSE_ARGS, 'up', '-d'], {
+    cwd: BACKEND_DIR,
+    stdio: 'inherit',
+  });
 
   if (result.status !== 0) {
     throw new Error('docker compose failed to start');

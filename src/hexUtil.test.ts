@@ -2,11 +2,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@babylonjs/core/Maths/math.vector', () => ({
   Vector3: class Vector3 {
-    constructor(
-      public x: number,
-      public y: number,
-      public z: number,
-    ) {}
+    constructor(public x: number, public y: number, public z: number) {}
     scale(s: number) {
       return new Vector3(this.x * s, this.y * s, this.z * s);
     }
