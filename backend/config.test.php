@@ -3,7 +3,7 @@
 // CI-only backend configuration. Copy to config.php in CI environments.
 // Uses empty OAuth credentials — auth tests rely on pre-seeded session tokens, not OAuth flows.
 
-$DB_HOST = '127.0.0.1';
+$DB_HOST = 'db'; // Docker Compose service name
 $DB_NAME = 'hexmap';
 $DB_USER = 'hexmap';
 $DB_PASS = 'hexmap';
