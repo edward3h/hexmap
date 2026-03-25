@@ -1,0 +1,13 @@
+# backend/docker-compose.test.yml
+# Override that mounts the test seed alongside the standard seeds.
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.test.yml up -d
+#
+# Note: initdb scripts only run on first boot (empty data volume).
+# Destroy and recreate the volume if the db is already initialised:
+#   docker compose down -v && docker compose -f docker-compose.yml -f docker-compose.test.yml up -d
+
+services:
+  db:
+    volumes:
+      - ./seed-test.sql:/docker-entrypoint-initdb.d/04-seed-test.sql:ro

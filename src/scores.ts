@@ -2,28 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { MapData, Team, teamRef } from './mapData';
 import { displayResource } from './resourceMeshes';
-
-interface Row {
-  description: string;
-  count: number;
-  svp: number;
-}
-
-const resourceOrder: Record<string, number> = {
-  HQ: 1,
-  'Command Bastion': 2,
-  'Shield Generator': 3,
-  'Power Station': 4,
-  Manufactorum: 5,
-  'Space Port': 6,
-  'Hive City': 7,
-};
-
-function resourceCompare(a: Row, b: Row) {
-  const scoreA = resourceOrder[a.description] || 10;
-  const scoreB = resourceOrder[b.description] || 10;
-  return scoreB - scoreA;
-}
+import { pluralize, resourceCompare, Row, total } from './scores.helpers';
 
 function prepareRows(team: Team, mapData: MapData): Row[] {
   const r: Row[] = [];
@@ -60,17 +39,6 @@ function prepareRows(team: Team, mapData: MapData): Row[] {
   r.sort(resourceCompare);
   r.unshift(...assetRows);
   return r;
-}
-
-function pluralize(row: Row): string {
-  if (row.count == 1) {
-    return row.description;
-  }
-  return `${row.count} ${row.description}s`;
-}
-
-function total(rows: Row[]): number {
-  return rows.reduce((acc, r) => acc + r.count * r.svp, 0);
 }
 
 export function showScores(mapData: MapData) {
