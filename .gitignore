@@ -30,3 +30,4 @@ dist-ssr
 backend/public/sprites/
 .playwright-mcp/
 .superpowers/
+test-results/
