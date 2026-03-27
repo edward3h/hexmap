@@ -979,6 +979,10 @@ async function renderTileEditor(
         errEl.textContent = err instanceof ApiError ? err.message : String(err);
         errEl.style.display = 'block';
         saveBtn.disabled = resourcesFailed;
+        // Grid is stale — refresh so the user can see and edit the existing tile.
+        if (isCreate && err instanceof ApiError && err.status === 409) {
+          reload();
+        }
       }
     }
 
