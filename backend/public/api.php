@@ -138,6 +138,18 @@ if ($method === 'GET' && $path === '/api/auth/login') {
     require_once __DIR__ . '/../src/handlers/campaign-management.php';
     handleRemoveCampaignGm((int)$m[1], (int)$m[2]);
 
+} elseif ($method === 'GET' && preg_match('#^/api/campaigns/(\d+)/players$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleListCampaignPlayers((int)$m[1]);
+
+} elseif ($method === 'POST' && preg_match('#^/api/campaigns/(\d+)/players$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleAddCampaignPlayer((int)$m[1]);
+
+} elseif ($method === 'DELETE' && preg_match('#^/api/campaigns/(\d+)/players/(\d+)$#', $path, $m)) {
+    require_once __DIR__ . '/../src/handlers/campaign-management.php';
+    handleRemoveCampaignPlayer((int)$m[1], (int)$m[2]);
+
 // ── Sprite routes (GM protected) ─────────────────────────────────────────────
 } elseif ($method === 'GET' && preg_match('#^/api/campaigns/(\d+)/teams/(\d+)/sprites$#', $path, $m)) {
     require_once __DIR__ . '/../src/handlers/sprite.php';

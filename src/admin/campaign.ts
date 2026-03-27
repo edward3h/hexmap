@@ -9,6 +9,7 @@ import {
   AdminCampaign,
   AdminGm,
   AdminMapData,
+  AdminPlayer,
   AdminSpriteHistory,
   AdminTile,
   AdminUser,
@@ -30,18 +31,31 @@ interface CampaignDetailData {
   mapData: AdminMapData;
   teams: CampaignTeam[];
   gms: AdminGm[];
+  players: AdminPlayer[];
   currentUser: AdminUser;
 }
 
 async function loadData(campaignId: number): Promise<CampaignDetailData> {
-  const [campaign, mapData, teams, gms, currentUser] = await Promise.all([
+  // Load current user first to determine which endpoints to call.
+  const currentUser = await api.get<AdminUser>('/auth/me');
+  const isGmOrSuperuser = currentUser.roles.some(
+    (r) =>
+      r.role_type === 'superuser' ||
+      (r.role_type === 'gm' && r.campaign_id === campaignId),
+  );
+
+  const [campaign, mapData, teams, gms, players] = await Promise.all([
     api.get<AdminCampaign>(`/campaigns/${campaignId}`),
     api.get<AdminMapData>(`/campaigns/${campaignId}/map-data`),
     api.get<CampaignTeam[]>(`/campaigns/${campaignId}/teams`),
-    api.get<AdminGm[]>(`/campaigns/${campaignId}/gms`),
-    api.get<AdminUser>('/auth/me'),
+    isGmOrSuperuser
+      ? api.get<AdminGm[]>(`/campaigns/${campaignId}/gms`)
+      : Promise.resolve<AdminGm[]>([]),
+    isGmOrSuperuser
+      ? api.get<AdminPlayer[]>(`/campaigns/${campaignId}/players`)
+      : Promise.resolve<AdminPlayer[]>([]),
   ]);
-  return { campaign, mapData, teams, gms, currentUser };
+  return { campaign, mapData, teams, gms, players, currentUser };
 }
 
 type CampaignState = 'not_started' | 'active' | 'paused' | 'ended';
@@ -1250,6 +1264,461 @@ function renderAssetEditor(
   });
 }
 
+// Odd-q offset hex adjacency — mirrors areHexesAdjacent in backend/src/hex.php.
+function areHexesAdjacent(
+  col1: number,
+  row1: number,
+  col2: number,
+  row2: number,
+): boolean {
+  const neighbours =
+    col1 % 2 === 0
+      ? [
+          [1, 0],
+          [1, 1],
+          [-1, 0],
+          [-1, 1],
+          [0, -1],
+          [0, 1],
+        ]
+      : [
+          [1, 0],
+          [1, -1],
+          [-1, 0],
+          [-1, -1],
+          [0, -1],
+          [0, 1],
+        ];
+  return neighbours.some(([dc, dr]) => col1 + dc === col2 && row1 + dr === row2);
+}
+
+function renderPlayerManager(
+  container: HTMLElement,
+  players: AdminPlayer[],
+  teams: CampaignTeam[],
+  campaignId: number,
+  reload: () => void,
+): void {
+  const teamById = Object.fromEntries(teams.map((t) => [t.id, t]));
+
+  // Group players by team
+  const byTeam = new Map<number, AdminPlayer[]>();
+  for (const p of players) {
+    if (!byTeam.has(p.team_id)) byTeam.set(p.team_id, []);
+    byTeam.get(p.team_id)!.push(p);
+  }
+
+  const teamSections = teams
+    .map((team) => {
+      const teamPlayers = byTeam.get(team.id) ?? [];
+      const rows = teamPlayers
+        .map(
+          (p) => `
+        <li style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #333">
+          <span>${esc(p.display_name)} <span style="color:#888;font-size:0.85em">${esc(
+            p.email,
+          )}</span></span>
+          <button data-remove-player-id="${p.user_id}"
+            style="padding:2px 8px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px;font-size:0.85em">
+            Remove
+          </button>
+        </li>`,
+        )
+        .join('');
+
+      return `
+        <div style="margin-bottom:16px">
+          <strong style="color:${esc(team.color)}">${esc(team.display_name)}</strong>
+          ${
+            teamPlayers.length === 0
+              ? '<p style="color:#888;font-size:0.9em;margin:4px 0 0">No players assigned.</p>'
+              : `<ul style="list-style:none;padding:0;margin:4px 0 0">${rows}</ul>`
+          }
+        </div>`;
+    })
+    .join('');
+
+  const teamOptions = teams
+    .map((t) => `<option value="${t.id}">${esc(t.display_name)}</option>`)
+    .join('');
+
+  container.innerHTML = `
+    <h3 style="margin:0 0 12px">Players</h3>
+    ${
+      teams.length === 0
+        ? '<p style="color:#888;font-size:0.9em">No teams in this campaign yet.</p>'
+        : teamSections
+    }
+    <details style="margin-top:8px">
+      <summary style="cursor:pointer;color:#7ab3f0;margin-bottom:8px">+ Add player</summary>
+      <div style="display:flex;flex-direction:column;gap:8px;max-width:480px;margin-top:8px">
+        <label>Team
+          <select id="player-team-select"
+            style="display:block;width:100%;margin-top:2px;background:#2a2a2a;color:#eee;border:1px solid #555;padding:4px;border-radius:3px">
+            ${teamOptions}
+          </select>
+        </label>
+        <div style="display:flex;gap:8px;align-items:flex-start">
+          <input id="player-search-input" type="text" placeholder="Search by email or name (min 2 chars)"
+            style="flex:1;padding:6px 8px;background:#2a2a2a;color:#eee;border:1px solid #555;border-radius:3px">
+          <button id="player-search-btn"
+            style="padding:6px 12px;background:#444;color:white;border:none;border-radius:3px;cursor:pointer;white-space:nowrap">
+            Search
+          </button>
+        </div>
+        <ul id="player-search-results" style="list-style:none;padding:0;margin:0"></ul>
+        <span id="player-search-error" style="color:#f87171;font-size:0.85em"></span>
+      </div>
+    </details>
+  `;
+
+  // Remove player buttons
+  container
+    .querySelectorAll<HTMLButtonElement>('button[data-remove-player-id]')
+    .forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const userId = Number(btn.dataset['removePlayerId']);
+        btn.disabled = true;
+        void api
+          .delete(`/campaigns/${campaignId}/players/${userId}`)
+          .then(() => reload())
+          .catch((err: unknown) => {
+            alert(
+              `Failed to remove player: ${
+                err instanceof ApiError ? err.message : String(err)
+              }`,
+            );
+            btn.disabled = false;
+          });
+      });
+    });
+
+  const searchInput = document.getElementById('player-search-input') as HTMLInputElement;
+  const searchResults = document.getElementById('player-search-results')!;
+  const searchError = document.getElementById('player-search-error')!;
+  const teamSelect = document.getElementById('player-team-select') as HTMLSelectElement;
+
+  interface UserResult {
+    id: number;
+    display_name: string;
+    email: string;
+  }
+
+  const doSearch = (): void => {
+    const q = searchInput.value.trim();
+    searchError.textContent = '';
+    searchResults.innerHTML = '';
+
+    if (q.length < 2) {
+      searchError.textContent = 'Enter at least 2 characters to search.';
+      return;
+    }
+
+    void api
+      .get<UserResult[]>(`/users/search?q=${encodeURIComponent(q)}`)
+      .then((users) => {
+        if (users.length === 0) {
+          searchResults.innerHTML =
+            '<li style="padding:6px 0;color:#888">No users found.</li>';
+          return;
+        }
+        searchResults.innerHTML = users
+          .map(
+            (u) => `
+          <li style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #333">
+            <span>${esc(u.display_name)} <span style="color:#888;font-size:0.85em">${esc(
+              u.email,
+            )}</span></span>
+            <button data-add-player-id="${u.id}"
+              style="padding:2px 8px;cursor:pointer;background:#166534;color:white;border:none;border-radius:3px;font-size:0.85em">
+              Add Player
+            </button>
+          </li>`,
+          )
+          .join('');
+
+        searchResults
+          .querySelectorAll<HTMLButtonElement>('button[data-add-player-id]')
+          .forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const userId = Number(btn.dataset['addPlayerId']);
+              const selectedTeamId = Number(teamSelect.value);
+              btn.disabled = true;
+              void api
+                .post(`/campaigns/${campaignId}/players`, {
+                  user_id: userId,
+                  team_id: selectedTeamId,
+                })
+                .then(() => reload())
+                .catch((err: unknown) => {
+                  searchError.textContent = esc(
+                    err instanceof ApiError ? err.message : String(err),
+                  );
+                  btn.disabled = false;
+                });
+            });
+          });
+      })
+      .catch((err: unknown) => {
+        searchError.textContent = esc(
+          err instanceof ApiError ? err.message : String(err),
+        );
+      });
+  };
+
+  document.getElementById('player-search-btn')?.addEventListener('click', doSearch);
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  // Suppress unused variable warning — teamById used for future extensibility
+  void teamById;
+}
+
+function renderPlayerView(
+  container: HTMLElement,
+  campaignId: number,
+  playerTeamId: number,
+  mapData: AdminMapData,
+  teams: CampaignTeam[],
+  reload: () => void,
+): void {
+  const playerTeam = teams.find((t) => t.id === playerTeamId);
+  const teamName = playerTeam?.name ?? '';
+  const teamDisplayName = playerTeam?.display_name ?? 'Your Team';
+  const teamColor = playerTeam?.color ?? '#888';
+
+  // Tiles owned by the player's team
+  const myTiles = mapData.map.filter((t) => t.team === teamName);
+
+  // Active attacks for the player's team
+  const myAttacks = mapData.attacks.filter((a: AdminAttack) => a.team === teamName);
+
+  // Assets for the player's team
+  const teamAssets = mapData.teams.find((t) => t.name === teamName)?.assets ?? {};
+
+  const tileRows = myTiles
+    .map(
+      (t) => `
+    <tr>
+      <td style="padding:6px 8px;font-family:monospace">${esc(t.coord)}</td>
+      <td style="padding:6px 8px">${esc(t.locationName ?? '—')}</td>
+      <td style="padding:6px 8px">${esc(t.resourceName ?? '—')}</td>
+      <td style="padding:6px 8px">${t.defence ?? 0}</td>
+    </tr>`,
+    )
+    .join('');
+
+  const attackRows = myAttacks
+    .map(
+      (a: AdminAttack) => `
+    <tr>
+      <td style="padding:6px 8px;font-family:monospace">${esc(
+        `${a.from.col},${a.from.row}`,
+      )}</td>
+      <td style="padding:6px 8px;font-family:monospace">${esc(
+        `${a.to.col},${a.to.row}`,
+      )}</td>
+      <td style="padding:6px 8px">
+        <button data-cancel-attack-id="${a.id}"
+          style="padding:2px 8px;cursor:pointer;background:#7f1d1d;color:white;border:none;border-radius:3px">
+          Cancel
+        </button>
+      </td>
+    </tr>`,
+    )
+    .join('');
+
+  const fromTileOptions = myTiles
+    .map(
+      (t) =>
+        `<option value="${t.id}" data-col="${t.col}" data-row="${
+          t.row
+        }" data-resource="${esc(t.resourceName ?? '')}">${esc(t.coord)}${
+          t.locationName ? ' — ' + esc(t.locationName) : ''
+        }</option>`,
+    )
+    .join('');
+
+  const assetEntries = Object.entries(teamAssets);
+  const assetRows =
+    assetEntries.length === 0
+      ? '<p style="color:#888;font-size:0.9em">No assets.</p>'
+      : assetEntries
+          .map(
+            ([name, val]) =>
+              `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #333;max-width:360px"><span>${esc(
+                name,
+              )}</span><strong>${val}</strong></div>`,
+          )
+          .join('');
+
+  container.innerHTML = `
+    <header style="padding:16px 24px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center">
+      <span><a href="/admin" style="color:#7ab3f0">← Campaigns</a></span>
+      <strong style="color:${esc(teamColor)}">${esc(teamDisplayName)}</strong>
+      <span style="font-size:0.85em;color:#888">Player view</span>
+    </header>
+    <main style="padding:24px;max-width:900px;display:grid;gap:32px">
+
+      <section>
+        <h3 style="margin:0 0 12px">Your Tiles</h3>
+        ${
+          myTiles.length === 0
+            ? '<p style="color:#888">Your team owns no tiles.</p>'
+            : `<table style="width:100%;border-collapse:collapse;font-size:0.9em">
+              <thead><tr style="border-bottom:1px solid #444;text-align:left">
+                <th style="padding:6px 8px">Coord</th>
+                <th style="padding:6px 8px">Location</th>
+                <th style="padding:6px 8px">Resource</th>
+                <th style="padding:6px 8px">Defence</th>
+              </tr></thead>
+              <tbody>${tileRows}</tbody>
+            </table>`
+        }
+      </section>
+
+      <section>
+        <h3 style="margin:0 0 12px">Active Attacks</h3>
+        ${
+          myAttacks.length === 0
+            ? '<p style="color:#888">No active attacks.</p>'
+            : `<table style="width:100%;border-collapse:collapse;font-size:0.9em;margin-bottom:16px">
+              <thead><tr style="border-bottom:1px solid #444;text-align:left">
+                <th style="padding:6px 8px">From</th>
+                <th style="padding:6px 8px">To</th>
+                <th style="padding:6px 8px"></th>
+              </tr></thead>
+              <tbody>${attackRows}</tbody>
+            </table>`
+        }
+
+        <details style="margin-top:8px">
+          <summary style="cursor:pointer;color:#7ab3f0;margin-bottom:8px">+ Submit attack</summary>
+          <div style="display:flex;flex-direction:column;gap:8px;max-width:360px;margin-top:8px">
+            ${
+              myTiles.length === 0
+                ? '<p style="color:#888;font-size:0.9em">Your team owns no tiles to attack from.</p>'
+                : `<label>From tile
+                <select id="player-atk-from"
+                  style="display:block;width:100%;margin-top:2px;background:#2a2a2a;color:#eee;border:1px solid #555;padding:4px;border-radius:3px">
+                  ${fromTileOptions}
+                </select>
+              </label>
+              <label>To tile
+                <select id="player-atk-to"
+                  style="display:block;width:100%;margin-top:2px;background:#2a2a2a;color:#eee;border:1px solid #555;padding:4px;border-radius:3px">
+                  <option value="">— select a From tile first —</option>
+                </select>
+              </label>
+              <button id="player-atk-submit"
+                style="padding:6px 16px;background:#1d4ed8;color:white;border:none;border-radius:3px;cursor:pointer;align-self:flex-start">
+                Submit Attack
+              </button>`
+            }
+          </div>
+        </details>
+      </section>
+
+      <section>
+        <h3 style="margin:0 0 12px">Assets</h3>
+        ${assetRows}
+      </section>
+
+    </main>
+  `;
+
+  // Cancel attack buttons
+  container
+    .querySelectorAll<HTMLButtonElement>('button[data-cancel-attack-id]')
+    .forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const attackId = Number(btn.dataset['cancelAttackId']);
+        btn.disabled = true;
+        void api
+          .delete(`/campaigns/${campaignId}/attacks/${attackId}`)
+          .then(() => reload())
+          .catch((err: unknown) => {
+            alert(
+              `Failed to cancel attack: ${
+                err instanceof ApiError ? err.message : String(err)
+              }`,
+            );
+            btn.disabled = false;
+          });
+      });
+    });
+
+  if (myTiles.length === 0) return;
+
+  const fromSelect = document.getElementById('player-atk-from') as HTMLSelectElement;
+  const toSelect = document.getElementById('player-atk-to') as HTMLSelectElement;
+
+  const updateToOptions = (): void => {
+    const selectedOption = fromSelect.selectedOptions[0];
+    if (!selectedOption) return;
+
+    const fromCol = Number(selectedOption.dataset['col']);
+    const fromRow = Number(selectedOption.dataset['row']);
+    const fromResource = selectedOption.dataset['resource'] ?? '';
+    const fromTileId = Number(selectedOption.value);
+
+    // Check if Spaceport is already in use (non-adjacent active attack from this tile)
+    const spaceportInUse = myAttacks.some((a: AdminAttack) => {
+      if (a.from.col !== fromCol || a.from.row !== fromRow) return false;
+      return !areHexesAdjacent(fromCol, fromRow, a.to.col, a.to.row);
+    });
+
+    const hasSpaceport = fromResource === 'Spaceport' && !spaceportInUse;
+
+    // Build To options: adjacent tiles OR all tiles (Spaceport), excluding own team's tiles
+    const validTargets = mapData.map.filter((t) => {
+      if (t.id === fromTileId) return false;
+      if (t.team === teamName) return false; // cannot attack own tiles
+      if (hasSpaceport) return true; // Spaceport: any non-own tile
+      return areHexesAdjacent(fromCol, fromRow, t.col, t.row);
+    });
+
+    if (validTargets.length === 0) {
+      toSelect.innerHTML = '<option value="">— no valid targets —</option>';
+    } else {
+      toSelect.innerHTML = validTargets
+        .map(
+          (t) =>
+            `<option value="${t.id}">${esc(t.coord)}${
+              t.locationName ? ' — ' + esc(t.locationName) : ''
+            }${t.team ? ' (' + esc(t.team) + ')' : ''}</option>`,
+        )
+        .join('');
+    }
+  };
+
+  fromSelect.addEventListener('change', updateToOptions);
+  updateToOptions(); // populate on initial render
+
+  document.getElementById('player-atk-submit')?.addEventListener('click', () => {
+    const fromId = Number(fromSelect.value);
+    const toId = Number(toSelect.value);
+    if (!fromId || !toId) {
+      alert('Please select both a From tile and a To tile.');
+      return;
+    }
+    void api
+      .post(`/campaigns/${campaignId}/attacks`, {
+        from_tile_id: fromId,
+        to_tile_id: toId,
+      })
+      .then(() => reload())
+      .catch((err: unknown) => {
+        alert(
+          `Failed to submit attack: ${
+            err instanceof ApiError ? err.message : String(err)
+          }`,
+        );
+      });
+  });
+}
+
 export async function renderCampaignDetail(
   container: HTMLElement,
   campaignId: number,
@@ -1260,7 +1729,32 @@ export async function renderCampaignDetail(
   // Called after attack create/resolve to keep state consistent.
   async function render(): Promise<void> {
     try {
-      const { campaign, mapData, teams, gms, currentUser } = await loadData(campaignId);
+      const { campaign, mapData, teams, gms, players, currentUser } = await loadData(
+        campaignId,
+      );
+
+      const isSuperuser = currentUser.roles.some((r) => r.role_type === 'superuser');
+      const isGm = currentUser.roles.some(
+        (r) =>
+          r.role_type === 'superuser' ||
+          (r.role_type === 'gm' && r.campaign_id === campaignId),
+      );
+      const playerRole = currentUser.roles.find(
+        (r) => r.role_type === 'player' && r.campaign_id === campaignId,
+      );
+
+      // Players who are not also GMs/superusers see a restricted player view.
+      if (!isGm && playerRole) {
+        renderPlayerView(
+          container,
+          campaignId,
+          playerRole.team_id,
+          mapData,
+          teams,
+          () => void render(),
+        );
+        return;
+      }
 
       container.innerHTML = `
         <header style="padding:16px 24px;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center">
@@ -1276,6 +1770,7 @@ export async function renderCampaignDetail(
           <section id="section-assets"></section>
           <section id="section-teams"></section>
           <section id="section-gms"></section>
+          <section id="section-players"></section>
         </main>
       `;
 
@@ -1299,7 +1794,6 @@ export async function renderCampaignDetail(
         teams,
         campaignId,
       );
-      const isSuperuser = currentUser.roles.some((r) => r.role_type === 'superuser');
 
       renderLifecycle(
         document.getElementById('section-lifecycle')!,
@@ -1327,6 +1821,14 @@ export async function renderCampaignDetail(
           () => void render(),
         );
       }
+      // GMs (and superusers) can manage players
+      renderPlayerManager(
+        document.getElementById('section-players')!,
+        players,
+        teams,
+        campaignId,
+        () => void render(),
+      );
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) return;
       container.innerHTML = `<p style="padding:24px;color:#f87171">Error: ${esc(

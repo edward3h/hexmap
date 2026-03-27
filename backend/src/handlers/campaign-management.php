@@ -517,3 +517,105 @@ function handleRemoveCampaignGm(int $campaignId, int $targetUserId): never
 
     jsonResponse(['ok' => true]);
 }
+
+// ── Player management ─────────────────────────────────────────────────────────
+
+/**
+ * GET /api/campaigns/:campaignId/players
+ * Returns list of players for the campaign, grouped with their team_id.
+ * Requires GM or superuser.
+ * Returns: [{ user_id, display_name, email, team_id }]
+ */
+function handleListCampaignPlayers(int $campaignId): never
+{
+    $user = requireAuth();
+    requireGm($user, $campaignId);
+
+    $db   = getDb();
+    $stmt = $db->prepare(
+        'SELECT u.id AS user_id, u.display_name, u.email, r.team_id
+           FROM user_roles r
+           JOIN users u ON r.user_id = u.id
+          WHERE r.role_type = ? AND r.campaign_id = ?
+          ORDER BY r.team_id, u.display_name'
+    );
+    $stmt->execute(['player', $campaignId]);
+    $rows = $stmt->fetchAll();
+
+    $result = array_map(function (array $r): array {
+        return [
+            'user_id'      => (int)$r['user_id'],
+            'display_name' => $r['display_name'],
+            'email'        => $r['email'],
+            'team_id'      => (int)$r['team_id'],
+        ];
+    }, $rows);
+
+    jsonResponse($result);
+}
+
+/**
+ * POST /api/campaigns/:campaignId/players
+ * Body: { "user_id": N, "team_id": N }
+ * Assigns a player role for the user in this campaign for a specific team.
+ * Requires GM or superuser. Idempotent.
+ */
+function handleAddCampaignPlayer(int $campaignId): never
+{
+    $user = requireAuth();
+    requireGm($user, $campaignId);
+
+    $db   = getDb();
+    $body = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    $targetUserId = isset($body['user_id']) && is_int($body['user_id']) ? $body['user_id'] : 0;
+    $teamId       = isset($body['team_id']) && is_int($body['team_id']) ? $body['team_id'] : 0;
+
+    if ($targetUserId <= 0 || $teamId <= 0) {
+        jsonResponse(['error' => 'user_id and team_id are required positive integers'], 400);
+    }
+
+    // Verify user exists
+    $stmt = $db->prepare('SELECT id FROM users WHERE id = ?');
+    $stmt->execute([$targetUserId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['error' => 'User not found'], 404);
+    }
+
+    // Verify team belongs to campaign
+    $stmt = $db->prepare('SELECT id FROM teams WHERE id = ? AND campaign_id = ?');
+    $stmt->execute([$teamId, $campaignId]);
+    if (!$stmt->fetch()) {
+        jsonResponse(['error' => 'Team not found in this campaign'], 404);
+    }
+
+    // INSERT IGNORE makes this idempotent (UNIQUE constraint: user_id, role_type, campaign_id, team_id)
+    $db->prepare(
+        'INSERT IGNORE INTO user_roles (user_id, role_type, campaign_id, team_id) VALUES (?, ?, ?, ?)'
+    )->execute([$targetUserId, 'player', $campaignId, $teamId]);
+
+    jsonResponse(['ok' => true], 201);
+}
+
+/**
+ * DELETE /api/campaigns/:campaignId/players/:userId
+ * Removes the player role for the user in this campaign.
+ * Requires GM or superuser.
+ */
+function handleRemoveCampaignPlayer(int $campaignId, int $targetUserId): never
+{
+    $user = requireAuth();
+    requireGm($user, $campaignId);
+
+    $db   = getDb();
+    $stmt = $db->prepare(
+        'DELETE FROM user_roles WHERE user_id = ? AND role_type = ? AND campaign_id = ?'
+    );
+    $stmt->execute([$targetUserId, 'player', $campaignId]);
+
+    if ($stmt->rowCount() === 0) {
+        jsonResponse(['error' => 'Player role not found for this user in this campaign'], 404);
+    }
+
+    jsonResponse(['ok' => true]);
+}

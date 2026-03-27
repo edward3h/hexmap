@@ -6,6 +6,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../helpers.php';
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../middleware.php';
+require_once __DIR__ . '/../hex.php';
 
 // ── Tiles ────────────────────────────────────────────────────────────────────
 
@@ -124,44 +125,113 @@ function handleUpdateTile(int $campaignId, int $tileId): never
 
 /**
  * POST /api/campaigns/:campaignId/attacks
- * Body: { "team_id": 3, "from_tile_id": 10, "to_tile_id": 11 }
+ * Body (GM): { "team_id": 3, "from_tile_id": 10, "to_tile_id": 11 }
+ * Body (player): { "from_tile_id": 10, "to_tile_id": 11 }
  * Creates a new unresolved attack.
- * Requires GM role for the campaign.
+ * GMs: no adjacency enforcement. Players: from_tile must be owned by their team,
+ * to_tile must be adjacent (or long-range via Spaceport), and must not be their own tile.
  */
 function handleCreateAttack(int $campaignId): never
 {
-    $user = requireAuth();
-    requireGm($user, $campaignId);
+    $user  = requireAuth();
+    $db    = getDb();
+    $roles = getUserRoles($db, $user['id']);
+
+    $isGm         = isGmForCampaign($roles, $campaignId);
+    $playerTeamId = getPlayerTeam($roles, $campaignId);
+
+    if (!$isGm && $playerTeamId === null) {
+        jsonResponse(['error' => 'Forbidden'], 403);
+    }
 
     $body = json_decode(file_get_contents('php://input'), true) ?? [];
 
-    // Cast and validate — all three must be positive integers
-    $teamId     = isset($body['team_id'])      && is_int($body['team_id'])      ? $body['team_id']      : 0;
     $fromTileId = isset($body['from_tile_id']) && is_int($body['from_tile_id']) ? $body['from_tile_id'] : 0;
     $toTileId   = isset($body['to_tile_id'])   && is_int($body['to_tile_id'])   ? $body['to_tile_id']   : 0;
 
-    if ($teamId <= 0 || $fromTileId <= 0 || $toTileId <= 0) {
-        jsonResponse(['error' => 'team_id, from_tile_id, and to_tile_id are required positive integers'], 400);
+    if ($fromTileId <= 0 || $toTileId <= 0) {
+        jsonResponse(['error' => 'from_tile_id and to_tile_id are required positive integers'], 400);
     }
 
     if ($fromTileId === $toTileId) {
         jsonResponse(['error' => 'from_tile_id and to_tile_id must differ'], 400);
     }
 
-    $db = getDb();
+    if ($isGm) {
+        // GM path: team_id required in body
+        $teamId = isset($body['team_id']) && is_int($body['team_id']) ? $body['team_id'] : 0;
+        if ($teamId <= 0) {
+            jsonResponse(['error' => 'team_id is required for GM attacks'], 400);
+        }
 
-    // Verify team belongs to campaign
-    $stmt = $db->prepare('SELECT id FROM teams WHERE id = ? AND campaign_id = ?');
-    $stmt->execute([$teamId, $campaignId]);
-    if (!$stmt->fetch()) {
-        jsonResponse(['error' => 'Team not found in this campaign'], 404);
-    }
+        // Verify team belongs to campaign
+        $stmt = $db->prepare('SELECT id FROM teams WHERE id = ? AND campaign_id = ?');
+        $stmt->execute([$teamId, $campaignId]);
+        if (!$stmt->fetch()) {
+            jsonResponse(['error' => 'Team not found in this campaign'], 404);
+        }
 
-    // Verify both tiles belong to campaign
-    $stmt = $db->prepare('SELECT id FROM tiles WHERE id IN (?, ?) AND campaign_id = ?');
-    $stmt->execute([$fromTileId, $toTileId, $campaignId]);
-    if ($stmt->rowCount() !== 2) {
-        jsonResponse(['error' => 'One or both tiles not found in this campaign'], 404);
+        // Verify both tiles belong to campaign
+        $stmt = $db->prepare('SELECT id FROM tiles WHERE id IN (?, ?) AND campaign_id = ?');
+        $stmt->execute([$fromTileId, $toTileId, $campaignId]);
+        if ($stmt->rowCount() !== 2) {
+            jsonResponse(['error' => 'One or both tiles not found in this campaign'], 404);
+        }
+    } else {
+        // Player path: team_id from role, validate ownership and adjacency
+        $teamId = $playerTeamId;
+
+        // Fetch from_tile: must belong to campaign and be owned by player's team
+        $stmt = $db->prepare(
+            'SELECT id, col, row, resource_name, team_id FROM tiles WHERE id = ? AND campaign_id = ?'
+        );
+        $stmt->execute([$fromTileId, $campaignId]);
+        $fromTile = $stmt->fetch();
+        if (!$fromTile) {
+            jsonResponse(['error' => 'From tile not found in this campaign'], 404);
+        }
+        if ((int)$fromTile['team_id'] !== $teamId) {
+            jsonResponse(['error' => 'From tile is not owned by your team'], 422);
+        }
+
+        // Fetch to_tile: must belong to campaign and not be owned by player's team
+        $stmt = $db->prepare(
+            'SELECT id, col, row, team_id FROM tiles WHERE id = ? AND campaign_id = ?'
+        );
+        $stmt->execute([$toTileId, $campaignId]);
+        $toTile = $stmt->fetch();
+        if (!$toTile) {
+            jsonResponse(['error' => 'To tile not found in this campaign'], 404);
+        }
+        if ($toTile['team_id'] !== null && (int)$toTile['team_id'] === $teamId) {
+            jsonResponse(['error' => 'Cannot attack a tile owned by your own team'], 422);
+        }
+
+        // Validate adjacency (or Spaceport long-range rule)
+        $fromCol = (int)$fromTile['col'];
+        $fromRow = (int)$fromTile['row'];
+        $toCol   = (int)$toTile['col'];
+        $toRow   = (int)$toTile['row'];
+
+        if (!areHexesAdjacent($fromCol, $fromRow, $toCol, $toRow)) {
+            // Long-range attack: from_tile must have Spaceport resource
+            if ($fromTile['resource_name'] !== 'Spaceport') {
+                jsonResponse(['error' => 'Target tile is not adjacent to the source tile'], 422);
+            }
+            // Only one long-range (non-adjacent) attack allowed from a Spaceport tile at a time
+            $stmt = $db->prepare(
+                'SELECT a.id, t.col, t.row
+                   FROM attacks a
+                   JOIN tiles t ON t.id = a.to_tile_id
+                  WHERE a.campaign_id = ? AND a.from_tile_id = ? AND a.resolved_at IS NULL'
+            );
+            $stmt->execute([$campaignId, $fromTileId]);
+            foreach ($stmt->fetchAll() as $existing) {
+                if (!areHexesAdjacent($fromCol, $fromRow, (int)$existing['col'], (int)$existing['row'])) {
+                    jsonResponse(['error' => 'Spaceport is already in use for another long-range attack'], 422);
+                }
+            }
+        }
     }
 
     $stmt = $db->prepare(
@@ -175,15 +245,21 @@ function handleCreateAttack(int $campaignId): never
 
 /**
  * DELETE /api/campaigns/:campaignId/attacks/:attackId
- * Resolves an attack: sets resolved_at and records in attack_history.
- * Requires GM role for the campaign.
+ * GMs: resolves the attack (sets resolved_at, records outcome='resolved' in history).
+ * Players: cancels their own team's attack (sets resolved_at, records outcome='cancelled').
  */
 function handleResolveAttack(int $campaignId, int $attackId): never
 {
-    $user = requireAuth();
-    requireGm($user, $campaignId);
+    $user  = requireAuth();
+    $db    = getDb();
+    $roles = getUserRoles($db, $user['id']);
 
-    $db = getDb();
+    $isGm         = isGmForCampaign($roles, $campaignId);
+    $playerTeamId = getPlayerTeam($roles, $campaignId);
+
+    if (!$isGm && $playerTeamId === null) {
+        jsonResponse(['error' => 'Forbidden'], 403);
+    }
 
     // Verify attack belongs to this campaign and is unresolved
     $stmt = $db->prepare(
@@ -198,6 +274,13 @@ function handleResolveAttack(int $campaignId, int $attackId): never
         jsonResponse(['error' => 'Attack not found or already resolved'], 404);
     }
 
+    // Players may only cancel attacks belonging to their own team
+    if (!$isGm && (int)$attack['team_id'] !== $playerTeamId) {
+        jsonResponse(['error' => 'You can only cancel your own team\'s attacks'], 403);
+    }
+
+    $outcome = $isGm ? 'resolved' : 'cancelled';
+
     $db->prepare('UPDATE attacks SET resolved_at = NOW() WHERE id = ?')
        ->execute([$attackId]);
 
@@ -210,7 +293,7 @@ function handleResolveAttack(int $campaignId, int $attackId): never
         $attack['from_tile_id'],
         $attack['to_tile_id'],
         $attack['created_at'],
-        'resolved',
+        $outcome,
     ]);
 
     jsonResponse(['ok' => true]);
