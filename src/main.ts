@@ -108,9 +108,9 @@ const createScene = function (
   });
 
   const ready = Promise.all([loadTileFactory(scene, ol), fetchMapData()]).then(
-    ([createTile, mapData]) => {
+    async ([createTile, mapData]) => {
       mapData.map.forEach(createTile);
-      showMapIcons(scene, mapData);
+      await showMapIcons(scene, mapData);
       showAttackArrows(scene, mapData);
       showScores(mapData);
       return { scene, camera };

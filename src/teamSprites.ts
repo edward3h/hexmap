@@ -10,7 +10,47 @@ const rate = 120;
 let counter = 0;
 const sprites: Sprite[] = [];
 
-const showMapIcons = (scene: Scene, mapData: MapData): void => {
+async function createColoredShieldUrl(hexColor: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      const r = parseInt(hexColor.slice(1, 3), 16);
+      const g = parseInt(hexColor.slice(3, 5), 16);
+      const b = parseInt(hexColor.slice(5, 7), 16);
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] === 0) continue;
+        const pr = data[i],
+          pg = data[i + 1],
+          pb = data[i + 2];
+        const max = Math.max(pr, pg, pb);
+        const min = Math.min(pr, pg, pb);
+        // Blend proportionally by saturation: grey pixels keep their colour,
+        // fully-saturated pixels are fully recoloured, anti-aliased edge pixels
+        // get a smooth mix — avoiding jagged edges at the border.
+        const saturation = max === 0 ? 0 : (max - min) / max;
+        const t = Math.min(1, saturation / 0.3);
+        if (t === 0) continue;
+        const lum = max / 255;
+        data[i] = Math.round(pr + (r * lum - pr) * t);
+        data[i + 1] = Math.round(pg + (g * lum - pg) * t);
+        data[i + 2] = Math.round(pb + (b * lum - pb) * t);
+      }
+      ctx.putImageData(imageData, 0, 0);
+      resolve(canvas.toDataURL());
+    };
+    img.onerror = reject;
+    img.src = '/shield.png';
+  });
+}
+
+const showMapIcons = async (scene: Scene, mapData: MapData): Promise<void> => {
   const spriteManagers = Object.fromEntries(
     mapData.teams.map((team) => [
       team.name,
@@ -24,12 +64,15 @@ const showMapIcons = (scene: Scene, mapData: MapData): void => {
     ]),
   );
 
+  const shieldUrls = await Promise.all(
+    mapData.teams.map((team) => createColoredShieldUrl(team.color)),
+  );
   const shieldManagers = Object.fromEntries(
-    mapData.teams.map((team) => [
+    mapData.teams.map((team, i) => [
       team.name,
       new SpriteManager(
         `${team.name}SM`,
-        `/shield_${team.name}.png`,
+        shieldUrls[i],
         100,
         { width: 72, height: 72 },
         scene,
