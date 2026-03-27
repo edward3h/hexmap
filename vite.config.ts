@@ -45,6 +45,8 @@ export default defineConfig({
         main: path.resolve(__dirname, 'index.html'),
         map: path.resolve(__dirname, 'map/index.html'),
         admin: path.resolve(__dirname, 'admin/index.html'),
+        tos: path.resolve(__dirname, 'tos/index.html'),
+        privacy: path.resolve(__dirname, 'privacy/index.html'),
       },
       output: {
         manualChunks: {
