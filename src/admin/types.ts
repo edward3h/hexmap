@@ -66,6 +66,14 @@ export interface AdminGm {
   email: string;
 }
 
+// AdminPlayer is only used for the players-list endpoint response.
+export interface AdminPlayer {
+  user_id: number;
+  display_name: string;
+  email: string;
+  team_id: number;
+}
+
 export interface AdminSpriteHistory {
   id: number;
   sprite_url: string;

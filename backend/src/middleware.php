@@ -93,6 +93,11 @@ function isGmForCampaign(array $roles, int $campaignId): bool
     return false;
 }
 
+function isPlayerForCampaign(array $roles, int $campaignId): bool
+{
+    return getPlayerTeam($roles, $campaignId) !== null;
+}
+
 /**
  * Returns the team_id the player is assigned to in this campaign, or null.
  */
