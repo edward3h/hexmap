@@ -70,6 +70,7 @@ const _content = (data: TileData) => {
       `<div>Controlled by <span class="${data.team}">${displayName}</span></div>`,
     );
   }
+  if (data.defence) lines.push(`<div>Defence: ${data.defence}</div>`);
   if (data.terrainRules)
     lines.push(
       `<div>Terrain: <a target="_blank" href="${data.terrainRules.url}">${data.terrainRules.name}</a></div>`,

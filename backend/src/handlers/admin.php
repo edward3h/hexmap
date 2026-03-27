@@ -18,11 +18,18 @@ require_once __DIR__ . '/../hex.php';
  */
 function handleUpdateTile(int $campaignId, int $tileId): never
 {
-    $user = requireAuth();
-    requireGm($user, $campaignId);
+    $user  = requireAuth();
+    $db    = getDb();
+    $roles = getUserRoles($db, $user['id']);
+
+    $isGm         = isGmForCampaign($roles, $campaignId);
+    $playerTeamId = getPlayerTeam($roles, $campaignId);
+
+    if (!$isGm && $playerTeamId === null) {
+        jsonResponse(['error' => 'Forbidden'], 403);
+    }
 
     $body = json_decode(file_get_contents('php://input'), true) ?? [];
-    $db   = getDb();
 
     // Verify tile belongs to this campaign
     $stmt = $db->prepare('SELECT id, team_id FROM tiles WHERE id = ? AND campaign_id = ?');
@@ -30,6 +37,18 @@ function handleUpdateTile(int $campaignId, int $tileId): never
     $tile = $stmt->fetch();
     if (!$tile) {
         jsonResponse(['error' => 'Tile not found'], 404);
+    }
+
+    if (!$isGm) {
+        // Players may only update defense on their own tiles
+        if ((int)$tile['team_id'] !== $playerTeamId) {
+            jsonResponse(['error' => 'You do not own this tile'], 403);
+        }
+        foreach (array_keys($body) as $key) {
+            if ($key !== 'defense') {
+                jsonResponse(['error' => 'Players may only update defense'], 403);
+            }
+        }
     }
 
     $setClauses = [];

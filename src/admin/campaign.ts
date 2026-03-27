@@ -1540,6 +1540,15 @@ function renderPlayerView(
     )
     .join('');
 
+  const tileOptions = myTiles
+    .map(
+      (t) =>
+        `<option value="${t.id}">${esc(t.coord)}${
+          t.locationName ? ' — ' + esc(t.locationName) : ''
+        }</option>`,
+    )
+    .join('');
+
   const assetEntries = Object.entries(teamAssets);
   const assetRows =
     assetEntries.length === 0
@@ -1614,6 +1623,33 @@ function renderPlayerView(
               <button id="player-atk-submit"
                 style="padding:6px 16px;background:#1d4ed8;color:white;border:none;border-radius:3px;cursor:pointer;align-self:flex-start">
                 Submit Attack
+              </button>`
+            }
+          </div>
+        </details>
+      </section>
+
+      <section>
+        <h3 style="margin:0 0 12px">Place Defence</h3>
+        <details style="margin-top:8px">
+          <summary style="cursor:pointer;color:#7ab3f0;margin-bottom:8px">+ Set defence on a tile</summary>
+          <div style="display:flex;flex-direction:column;gap:8px;max-width:360px;margin-top:8px">
+            ${
+              myTiles.length === 0
+                ? '<p style="color:#888;font-size:0.9em">Your team owns no tiles.</p>'
+                : `<label>Tile
+                <select id="player-def-tile"
+                  style="display:block;width:100%;margin-top:2px;background:#2a2a2a;color:#eee;border:1px solid #555;padding:4px;border-radius:3px">
+                  ${tileOptions}
+                </select>
+              </label>
+              <label>Defence value
+                <input id="player-def-value" type="number" min="0" value="0"
+                  style="display:block;width:100%;margin-top:2px;background:#2a2a2a;color:#eee;border:1px solid #555;padding:4px;border-radius:3px">
+              </label>
+              <button id="player-def-submit"
+                style="padding:6px 16px;background:#1d4ed8;color:white;border:none;border-radius:3px;cursor:pointer;align-self:flex-start">
+                Set Defence
               </button>`
             }
           </div>
@@ -1715,6 +1751,32 @@ function renderPlayerView(
             err instanceof ApiError ? err.message : String(err)
           }`,
         );
+      });
+  });
+
+  const defSubmitBtn = document.getElementById(
+    'player-def-submit',
+  ) as HTMLButtonElement | null;
+  defSubmitBtn?.addEventListener('click', () => {
+    const tileId = Number(
+      (document.getElementById('player-def-tile') as HTMLSelectElement).value,
+    );
+    const value = Number(
+      (document.getElementById('player-def-value') as HTMLInputElement).value,
+    );
+    if (!Number.isInteger(value) || value < 0) {
+      alert('Defence must be a non-negative whole number.');
+      return;
+    }
+    defSubmitBtn.disabled = true;
+    void api
+      .patch(`/campaigns/${campaignId}/tiles/${tileId}`, { defense: value })
+      .then(() => reload())
+      .catch((err: unknown) => {
+        alert(
+          `Failed to set defence: ${err instanceof ApiError ? err.message : String(err)}`,
+        );
+        defSubmitBtn.disabled = false;
       });
   });
 }
